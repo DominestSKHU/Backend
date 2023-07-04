@@ -1,0 +1,40 @@
+server:
+  port: 8080
+#  ssl:
+#    key-store-type: pkcs12
+#    key-alias: local
+#    enabled: true
+#    key-store:
+#    key-store-password:
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+  datasource:
+    url:
+    username:
+    password:
+    driver-class-name: org.mariadb.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+
+    properties:
+      hibernate:
+        format_sql : true
+        default_batch_fetch_size: 1000 # where in ()
+
+    show-sql: true
+    open-in-view: false
+
+logging:
+  level:
+    org.hibernate.type: trace
+
+file:
+  upload:
+    path:
