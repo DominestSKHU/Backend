@@ -2,6 +2,7 @@ package com.dominest.dominestbackend.global.exception.handler;
 
 import com.dominest.dominestbackend.global.exception.BusinessException;
 import com.dominest.dominestbackend.global.exception.dto.ErrorResponseDto;
+import com.dominest.dominestbackend.global.util.LoggingUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,8 +14,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.List;
 
 @Slf4j
@@ -68,13 +67,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDto> handleException(Exception e, HttpServletRequest request){
         HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
-        log.error("예외처리 범위 외의 오류 발생. " + httpStatus.toString()); // enum.name() enum.toString() 차이 기억하자
+        log.error("예외처리 범위 외의 오류 발생. " + httpStatus.toString()); // enum.name() enum.toString() 차이 기억하자. name은 단순 문자열변환, toString은 오버라이딩된 메서드 호출
         printLog(e, request);
-        e.printStackTrace(); // 서버에 로그 남기기
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        e.printStackTrace(pw); // 반환값용 로그 남기기
-        String stackTrace = sw.toString();
+        e.printStackTrace(); // 콘솔에 StackTrace 남기기
+        String stackTrace = LoggingUtil.stackTraceToString(e);// 클라 반환용 StackTrace 생성
 
         return createErrorResponse(httpStatus.value(), httpStatus, e.getMessage() +", " + stackTrace);
     }
