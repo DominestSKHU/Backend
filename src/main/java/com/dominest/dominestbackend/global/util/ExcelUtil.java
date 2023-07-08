@@ -1,26 +1,41 @@
 package com.dominest.dominestbackend.global.util;
 
+import com.dominest.dominestbackend.global.exception.ErrorCode;
+import com.dominest.dominestbackend.global.exception.file.FileIOException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.NumberToTextConverter;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+@Slf4j
 public class ExcelUtil {
-    public static List<String[]> parseExcel(MultipartFile file) throws IOException {
-        List<String[]> data = new ArrayList<>();
 
-        Workbook workbook = WorkbookFactory.create(file.getInputStream());
-        Sheet sheet = workbook.getSheetAt(0);
+    public static List<List<String>> parseExcel(MultipartFile file) {
+        final int COLUMN_COUNT = 21;
+        List<List<String>> data = new ArrayList<>();
+        Sheet sheet;
 
-        Iterator<Row> rowIterator = sheet.iterator();
-        while (rowIterator.hasNext()) {
-            Row row = rowIterator.next();
+        try (
+                InputStream inputStream = file.getInputStream();
+                Workbook workbook = WorkbookFactory.create(inputStream)
+        ) {
+            sheet = workbook.getSheetAt(0);
+        } catch (IOException e) {
+            log.error("ExcelUtil.parseExcel() : Excel  to Sheet Error ", e);
+            throw new FileIOException(ErrorCode.MULTIPART_FILE_CANNOT_BE_READ);
+        }
+
+        // sheet extend Iterable<Row>
+        for (Row row : sheet) {
             Iterator<Cell> cellIterator = row.cellIterator();
 
-            List<String> rowData = new ArrayList<>();
+            List<String> rowData = new ArrayList<>(COLUMN_COUNT); // default capacity 10이므로 컬럼개수만큼 공간 확보
             while (cellIterator.hasNext()) {
                 Cell cell = cellIterator.next();
                 String cellValue = "";
@@ -29,17 +44,16 @@ public class ExcelUtil {
                         cellValue = cell.getStringCellValue();
                         break;
                     case NUMERIC:
-                        cellValue = String.valueOf(cell.getNumericCellValue());
+                        cellValue = NumberToTextConverter.toText(cell.getNumericCellValue());
                         break;
-                    // Handle other cell types as needed
+                    case BLANK:
+                        cellValue = "BLANK";
+                        break;
                 }
                 rowData.add(cellValue);
             }
-
-            data.add(rowData.toArray(new String[0]));
+            data.add(rowData);
         }
-        workbook.close();
-
         return data;
     }
 }
