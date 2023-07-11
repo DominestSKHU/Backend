@@ -8,10 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
@@ -34,6 +31,13 @@ public class ResidentController {
     public RspsTemplate<ResidentListDto.Res> getAllResident(){
         ResidentListDto.Res residents = residentService.getAllResident();
         return new RspsTemplate<>(HttpStatus.OK, residents);
+    }
+
+    // (테스트용) 입사생 데이터 전체삭제
+    @DeleteMapping("/residents")
+    public ResponseEntity<RspsTemplate<String>> deleteAllResident(){
+        residentService.deleteAllResident();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
 

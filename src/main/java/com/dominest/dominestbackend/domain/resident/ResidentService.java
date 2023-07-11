@@ -54,4 +54,9 @@ public class ResidentService {
         List<Resident> residents = residentRepository.findAll();
         return ResidentListDto.Res.from(residents);
     }
+
+    @Transactional
+    public void deleteAllResident() {
+        residentRepository.deleteAllInBatch();
+    }
 }
