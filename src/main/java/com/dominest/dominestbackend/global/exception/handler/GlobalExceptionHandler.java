@@ -1,6 +1,7 @@
 package com.dominest.dominestbackend.global.exception.handler;
 
-import com.dominest.dominestbackend.global.exception.BusinessException;
+import com.dominest.dominestbackend.global.exception.exceptions.AppServiceException;
+import com.dominest.dominestbackend.global.exception.exceptions.BusinessException;
 import com.dominest.dominestbackend.global.exception.dto.ErrorResponseDto;
 import com.dominest.dominestbackend.global.util.LoggingUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -55,8 +56,15 @@ public class GlobalExceptionHandler {
     }
 
     // BusinessException 을 상속한 다른 Custom Exception 에도 적용된다.
-    @ExceptionHandler(BusinessException.class)
+    @ExceptionHandler({BusinessException.class})
     public ResponseEntity<ErrorResponseDto> handleBusinessException(BusinessException e, HttpServletRequest request){
+        printLog(e, request);
+        return createErrorResponse(e.getStatusCode(), e.getHttpStatus(), e.getMessage());
+    }
+
+    // 비즈니스 로직이 아닌 애플리케이션 서비스 로직상 예외
+    @ExceptionHandler({AppServiceException.class})
+    public ResponseEntity<ErrorResponseDto> handleAppServiceException(AppServiceException e, HttpServletRequest request){
         printLog(e, request);
         return createErrorResponse(e.getStatusCode(), e.getHttpStatus(), e.getMessage());
     }
