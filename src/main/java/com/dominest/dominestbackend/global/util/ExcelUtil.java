@@ -1,7 +1,8 @@
 package com.dominest.dominestbackend.global.util;
 
 import com.dominest.dominestbackend.global.exception.ErrorCode;
-import com.dominest.dominestbackend.global.exception.file.FileIOException;
+import com.dominest.dominestbackend.global.exception.exceptions.AppServiceException;
+import com.dominest.dominestbackend.global.exception.exceptions.file.FileIOException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.NumberToTextConverter;
@@ -16,8 +17,13 @@ import java.util.List;
 @Slf4j
 public class ExcelUtil {
 
+    public static final int RESIDENT_COLUMN_COUNT = 21;
+
     public static List<List<String>> parseExcel(MultipartFile file) {
-        final int COLUMN_COUNT = 21;
+        if (! isExcelFile(file)) {
+            throw new AppServiceException(ErrorCode.INVALID_FILE_EXTENSION);
+        }
+
         List<List<String>> data = new ArrayList<>();
         Sheet sheet;
 
@@ -35,7 +41,7 @@ public class ExcelUtil {
         for (Row row : sheet) {
             Iterator<Cell> cellIterator = row.cellIterator();
 
-            List<String> rowData = new ArrayList<>(COLUMN_COUNT); // default capacity 10이므로 컬럼개수만큼 공간 확보
+            List<String> rowData = new ArrayList<>(RESIDENT_COLUMN_COUNT); // default capacity 10이므로 컬럼개수만큼 공간 확보
             while (cellIterator.hasNext()) {
                 Cell cell = cellIterator.next();
                 String cellValue = "";
@@ -55,5 +61,16 @@ public class ExcelUtil {
             data.add(rowData);
         }
         return data;
+    }
+
+    private static boolean isExcelFile(MultipartFile file) {
+        String originalFileName = file.getOriginalFilename();
+        String ext = extractExt(originalFileName);
+        return "xlsx".equals(ext) || "xls".equals(ext);
+    }
+
+    private static String extractExt(String originalFileName) {
+        int pos = originalFileName.lastIndexOf(".");
+        return originalFileName.substring(pos +1);
     }
 }

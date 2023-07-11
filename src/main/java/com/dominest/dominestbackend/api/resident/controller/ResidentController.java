@@ -5,6 +5,7 @@ import com.dominest.dominestbackend.api.common.SingleRspsTemplate;
 import com.dominest.dominestbackend.domain.resident.ResidentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -19,12 +20,10 @@ public class ResidentController {
 
     @PostMapping("/upload")
     @Transactional
-    public SingleRspsTemplate<String> handleFileUpload(@RequestParam("file") MultipartFile file){
+    public ResponseEntity<SingleRspsTemplate<String>> handleFileUpload(@RequestParam("file") MultipartFile file){
 
         residentService.excelUpload(file);
-        SingleRspsTemplate<String> rspsTemplate = new SingleRspsTemplate<>(HttpStatus.OK, "업로드 성공");
-
-        return rspsTemplate;
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
 

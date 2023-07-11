@@ -22,6 +22,9 @@ public enum ErrorCode {
     REFRESH_TOKEN_NOT_FOUND(400, "해당 refresh token은 존재하지 않습니다."),
     NOT_VALID_TOKEN(401, "유효하지 않은 토큰입니다."),
 
+    // 엑셀 업로드
+    COLUMN_COUNT_MISMATCHED(400, "컬럼의 개수가 일치하지 않습니다."),
+    INVALID_FILE_EXTENSION(400, "파일 확장자가 유효하지 않습니다."),
 
     // 파일
     FILE_CANNOT_BE_STORED(500, "파일을 저장할 수 없습니다."),
@@ -31,11 +34,11 @@ public enum ErrorCode {
     ;
 
 
-    private int status;
+    private int statusCode;
     private String message;
 
     ErrorCode(int status, String message) {
-        this.status = status;
+        this.statusCode = status;
         this.message = message;
     }
 }

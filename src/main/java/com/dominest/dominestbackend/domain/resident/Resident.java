@@ -100,7 +100,7 @@ public class Resident extends BaseTimeEntity {
         this.zipCode = zipCode;
         this.address = address;
     }
-
+    // 0~20까지의 데이터를 추출하므로 추가된 컬럼(22번째 열 이상)의 데이터를 무시한다.
     public static Resident from(List<String> data) {
         // create the resident object using builder
         return Resident.builder()
