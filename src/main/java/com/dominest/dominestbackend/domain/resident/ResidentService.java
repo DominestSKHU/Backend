@@ -1,5 +1,6 @@
 package com.dominest.dominestbackend.domain.resident;
 
+import com.dominest.dominestbackend.api.resident.dto.ResidentListDto;
 import com.dominest.dominestbackend.global.exception.exceptions.AppServiceException;
 import com.dominest.dominestbackend.global.util.ExcelUtil;
 import lombok.RequiredArgsConstructor;
@@ -47,5 +48,10 @@ public class ResidentService {
             Resident resident = Resident.from(row);
             residentRepository.save(resident);
         }
+    }
+
+    public ResidentListDto.Res getAllResident() {
+        List<Resident> residents = residentRepository.findAll();
+        return ResidentListDto.Res.from(residents);
     }
 }

@@ -1,12 +1,14 @@
 package com.dominest.dominestbackend.api.resident.controller;
 
 
-import com.dominest.dominestbackend.api.common.SingleRspsTemplate;
+import com.dominest.dominestbackend.api.common.RspsTemplate;
+import com.dominest.dominestbackend.api.resident.dto.ResidentListDto;
 import com.dominest.dominestbackend.domain.resident.ResidentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,13 +20,24 @@ public class ResidentController {
 
     private final ResidentService residentService;
 
-    @PostMapping("/upload")
+    // 엑셀로 업로드
+    @PostMapping("/residents/upload-excel")
     @Transactional
-    public ResponseEntity<SingleRspsTemplate<String>> handleFileUpload(@RequestParam("file") MultipartFile file){
+    public ResponseEntity<RspsTemplate<String>> handleFileUpload(@RequestParam("file") MultipartFile file){
 
         residentService.excelUpload(file);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
+
+    // 전체조회
+    @GetMapping("/residents")
+    public RspsTemplate<ResidentListDto.Res> getAllResident(){
+        ResidentListDto.Res residents = residentService.getAllResident();
+        return new RspsTemplate<>(HttpStatus.OK, residents);
+    }
+
+
+
 
 
 

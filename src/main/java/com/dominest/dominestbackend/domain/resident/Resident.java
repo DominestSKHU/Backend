@@ -44,7 +44,6 @@ public class Resident extends BaseTimeEntity {
     // Todo: 날짜타입 유지하면서 6자리로 표시할 수 있는지?
     @Column(nullable = false)
     private LocalDate dateOfBirth;
-
     @Column(nullable = false)
     private String semester; // 차수. '2023SMSK02' 형식
     @Column(nullable = false)
