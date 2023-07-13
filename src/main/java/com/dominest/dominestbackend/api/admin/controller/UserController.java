@@ -52,10 +52,15 @@ public class UserController {
 
 
     @GetMapping("/login-test")
-    public ApiResponseDto<String> loginTest(@RequestHeader(value = "Authorization") String accessToken) {
+    public ApiResponseDto<String> loginTest(@RequestHeader(value = "Authorization") String authHeader) {
         try {
-            if (accessToken != null && tokenManager.validateToken(accessToken)) {
-                return ApiResponseDto.success(SuccessStatus.TOKEN_USER_INFO, tokenManager.getMemberEmail(accessToken));
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                String accessToken = authHeader.substring(7); // "Bearer " 접두사 제거
+                if (tokenManager.validateToken(accessToken)) {
+                    return ApiResponseDto.success(SuccessStatus.TOKEN_USER_INFO, tokenManager.getMemberEmail(accessToken));
+                } else {
+                    return ApiResponseDto.error(ErrorStatus.USER_CERTIFICATION_FAILED);
+                }
             } else {
                 return ApiResponseDto.error(ErrorStatus.USER_CERTIFICATION_FAILED);
             }
@@ -64,4 +69,5 @@ public class UserController {
             return ApiResponseDto.error(ErrorStatus.USER_CERTIFICATION_FAILED);
         }
     }
+
 }
