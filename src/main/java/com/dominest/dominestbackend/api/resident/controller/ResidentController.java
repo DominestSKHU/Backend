@@ -29,35 +29,35 @@ public class ResidentController {
 
     // 전체조회
     @GetMapping("/residents")
-    public RspsTemplate<ResidentListDto.Res> getAllResident(){
+    public RspsTemplate<ResidentListDto.Res> handleGetAllResident(){
         ResidentListDto.Res residents = residentService.getAllResident();
         return new RspsTemplate<>(HttpStatus.OK, residents);
     }
 
     // (테스트용) 입사생 데이터 전체삭제
     @DeleteMapping("/residents")
-    public ResponseEntity<RspsTemplate<?>> deleteAllResident(){
+    public ResponseEntity<RspsTemplate<?>> handleDeleteAllResident(){
         residentService.deleteAllResident();
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     // 입사생 단건 등록. 단순 DTO 변환 후 저장만 하면 될듯
     @PostMapping("/residents")
-    public ResponseEntity<RspsTemplate<?>> saveResident(@RequestBody SaveResidentDto.Req reqDto){
+    public ResponseEntity<RspsTemplate<?>> handleSaveResident(@RequestBody SaveResidentDto.Req reqDto){
         residentService.saveResident(reqDto.toEntity());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     // 입사생 수정
     @PatchMapping("/residents/{id}")
-    public ResponseEntity<RspsTemplate<?>> updateResident(@PathVariable Long id, @RequestBody SaveResidentDto.Req reqDto){
+    public ResponseEntity<RspsTemplate<?>> handleUpdateResident(@PathVariable Long id, @RequestBody SaveResidentDto.Req reqDto){
         residentService.updateResident(id, reqDto.toEntity());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     // 입사생 삭제
     @DeleteMapping("/residents/{id}")
-    public ResponseEntity<RspsTemplate<?>> deleteResident(@PathVariable Long id){
+    public ResponseEntity<RspsTemplate<?>> handleDeleteResident(@PathVariable Long id){
         residentService.deleteById(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
