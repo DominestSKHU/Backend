@@ -1,7 +1,8 @@
 package com.dominest.dominestbackend.domain.resident;
 
 import com.dominest.dominestbackend.domain.common.BaseTimeEntity;
-import com.dominest.dominestbackend.global.validation.PhoneNumber;
+import com.dominest.dominestbackend.domain.resident.component.ResidenceSemester;
+import com.dominest.dominestbackend.global.util.TimeUtil;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,7 +13,6 @@ import javax.validation.constraints.Min;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.UUID;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -31,6 +31,7 @@ public class Resident extends BaseTimeEntity {
 //    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    /** 학생 개인정보 */
     @Column(nullable = false)
     private String name;
     @Column(nullable = false)
@@ -41,11 +42,13 @@ public class Resident extends BaseTimeEntity {
     private String major; // 전공. 매학년 바뀔 수도 있으니 enum 사용하지 않는 걸로
     @Column(nullable = false)
     private String grade; // '3학년' 과 같은 식으로 저장된다, //todo 이거 숫자로 바꿀 생각도 해보자
-
+    private String phoneNumber; // '010-1234-5678' 형식으로 저장
     // 엑셀데이터는 6자리로 저장되긴 하는데, 날짜 필터링 걸려면 날짜타입 사용해야 할 듯
     // Todo: 날짜타입 유지하면서 6자리로 표시할 수 있는지?
     @Column(nullable = false)
     private LocalDate dateOfBirth;
+
+    /** 기숙사정보 */
     @Column(nullable = false)
     private String semester; // 차수. '2023SMSK02' 형식
     @Column(nullable = false)
@@ -56,6 +59,8 @@ public class Resident extends BaseTimeEntity {
     @Min(1)
     private Integer roomNumber; // 호실
     private String assignedRoom; // 배정방. 'B1049A' 와 같음
+    @Enumerated(EnumType.STRING)
+    private ResidenceSemester residenceSemester; // 거주학기. '2020-2' 와 같음
 
     /** 날짜정보 */
     // 엑셀데이터는 8자리로 저장되긴 하는데, 날짜 필터링 걸려면 날짜타입 사용해야 할 듯
@@ -66,8 +71,6 @@ public class Resident extends BaseTimeEntity {
     private LocalDate semesterStartDate; // 학기시작일
     private LocalDate semesterEndDate; // 학기종료일
 
-    private String phoneNumber; // '010-1234-5678' 형식으로 저장
-
     private String socialCode; // 사회코드
     private String socialName; // 사회명
 
@@ -76,7 +79,7 @@ public class Resident extends BaseTimeEntity {
 
     @Builder
     private Resident(String name, String gender, String studentId, String major, String grade,
-                    LocalDate dateOfBirth, String semester, String currentStatus, String dormitory, String period,
+                    LocalDate dateOfBirth, String semester, ResidenceSemester residenceSemester, String currentStatus, String dormitory, String period,
                      Integer roomNumber, String assignedRoom, LocalDate admissionDate, LocalDate leavingDate,
                     LocalDate semesterStartDate, LocalDate semesterEndDate, String phoneNumber, String socialCode,
                     String socialName, String zipCode, String address) {
@@ -87,6 +90,7 @@ public class Resident extends BaseTimeEntity {
         this.grade = grade;
         this.dateOfBirth = dateOfBirth;
         this.semester = semester;
+        this.residenceSemester = residenceSemester;
         this.currentStatus = currentStatus;
         this.dormitory = dormitory;
         this.period = period;
@@ -103,15 +107,16 @@ public class Resident extends BaseTimeEntity {
         this.address = address;
     }
     // 0~20까지의 데이터를 추출하므로 추가된 컬럼(22번째 열 이상)의 데이터를 무시한다.
-    public static Resident from(List<String> data) {
+    public static Resident from(List<String> data, ResidenceSemester residenceSemester) {
         // create the resident object using builder
         return Resident.builder()
                 .name(data.get(0))
                 .gender(data.get(1))
                 .studentId(data.get(2))
                 .semester(data.get(3))
+                .residenceSemester(residenceSemester)
                 .currentStatus(data.get(4))
-                .dateOfBirth(LocalDate.parse(data.get(5), DateTimeFormatter.ofPattern("yyMMdd")))
+                .dateOfBirth(TimeUtil.yyMMddToLocalDate(data.get(5)))
                 .dormitory(data.get(6))
                 .major(data.get(7))
                 .grade(data.get(8))
