@@ -1,10 +1,14 @@
 package com.dominest.dominestbackend.domain.resident;
 
 import com.dominest.dominestbackend.api.resident.dto.ResidentListDto;
+import com.dominest.dominestbackend.global.exception.ErrorCode;
 import com.dominest.dominestbackend.global.exception.exceptions.AppServiceException;
+import com.dominest.dominestbackend.global.exception.exceptions.BusinessException;
+import com.dominest.dominestbackend.global.exception.exceptions.domain.EntityNotFoundException;
 import com.dominest.dominestbackend.global.util.ExcelUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +24,11 @@ import java.util.Optional;
 @Service
 public class ResidentService {
     private final ResidentRepository residentRepository;
+
+    public Resident findById(Long id) {
+        return residentRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.RESIDENT_NOT_FOUND));
+    }
 
     @Transactional
     public void excelUpload(MultipartFile file) {
@@ -55,8 +64,47 @@ public class ResidentService {
         return ResidentListDto.Res.from(residents);
     }
 
+    // 테스트용 전체삭제 API
     @Transactional
     public void deleteAllResident() {
         residentRepository.deleteAllInBatch();
     }
+
+    @Transactional
+    public void saveResident(Resident resident) {
+        try {
+            residentRepository.save(resident);
+        } catch (DataIntegrityViolationException e) {
+            throw new BusinessException("학생 저장 실패, 잘못된 입력값입니다. 오류 메시지: " +
+                    e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @Transactional
+    public void updateResident(Long id, Resident resident) {
+        Resident residentToUpdate = findById(id);
+        residentToUpdate.updateValueFrom(resident);
+    }
+
+    @Transactional
+    public void deleteById(Long id) {
+        Resident resident = findById(id);
+        residentRepository.delete(resident);
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -3,6 +3,7 @@ package com.dominest.dominestbackend.api.resident.controller;
 
 import com.dominest.dominestbackend.api.common.RspsTemplate;
 import com.dominest.dominestbackend.api.resident.dto.ResidentListDto;
+import com.dominest.dominestbackend.api.resident.dto.SaveResidentDto;
 import com.dominest.dominestbackend.domain.resident.ResidentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,7 +21,7 @@ public class ResidentController {
     // 엑셀로 업로드
     @PostMapping("/residents/upload-excel")
     @Transactional
-    public ResponseEntity<RspsTemplate<String>> handleFileUpload(@RequestParam("file") MultipartFile file){
+    public ResponseEntity<RspsTemplate<?>> handleFileUpload(@RequestParam("file") MultipartFile file){
 
         residentService.excelUpload(file);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
@@ -28,17 +29,40 @@ public class ResidentController {
 
     // 전체조회
     @GetMapping("/residents")
-    public RspsTemplate<ResidentListDto.Res> getAllResident(){
+    public RspsTemplate<ResidentListDto.Res> handleGetAllResident(){
         ResidentListDto.Res residents = residentService.getAllResident();
         return new RspsTemplate<>(HttpStatus.OK, residents);
     }
 
     // (테스트용) 입사생 데이터 전체삭제
     @DeleteMapping("/residents")
-    public ResponseEntity<RspsTemplate<String>> deleteAllResident(){
+    public ResponseEntity<RspsTemplate<?>> handleDeleteAllResident(){
         residentService.deleteAllResident();
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
+
+    // 입사생 단건 등록. 단순 DTO 변환 후 저장만 하면 될듯
+    @PostMapping("/residents")
+    public ResponseEntity<RspsTemplate<?>> handleSaveResident(@RequestBody SaveResidentDto.Req reqDto){
+        residentService.saveResident(reqDto.toEntity());
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    // 입사생 수정
+    @PatchMapping("/residents/{id}")
+    public ResponseEntity<RspsTemplate<?>> handleUpdateResident(@PathVariable Long id, @RequestBody SaveResidentDto.Req reqDto){
+        residentService.updateResident(id, reqDto.toEntity());
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    // 입사생 삭제
+    @DeleteMapping("/residents/{id}")
+    public ResponseEntity<RspsTemplate<?>> handleDeleteResident(@PathVariable Long id){
+        residentService.deleteById(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+
 
 
 

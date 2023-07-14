@@ -1,12 +1,14 @@
 package com.dominest.dominestbackend.domain.resident;
 
 import com.dominest.dominestbackend.domain.common.BaseTimeEntity;
+import com.dominest.dominestbackend.global.validation.PhoneNumber;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.Min;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -32,8 +34,8 @@ public class Resident extends BaseTimeEntity {
     @Column(nullable = false)
     private String name;
     @Column(nullable = false)
-    private String gender;
-    @Column(nullable = false, unique = true)
+    private String gender; // 현재 'M' or 'F' 인데 확장성을 위해 String 쓰기로 함
+    @Column(nullable = false)
     private String studentId;
     @Column(nullable = false)
     private String major; // 전공. 매학년 바뀔 수도 있으니 enum 사용하지 않는 걸로
@@ -51,6 +53,7 @@ public class Resident extends BaseTimeEntity {
     @Column(nullable = false)
     private String dormitory;
     private String period; // 기간. 'LY' 'AY' 'VY' 'YY'
+    @Min(1)
     private Integer roomNumber; // 호실
     private String assignedRoom; // 배정방. 'B1049A' 와 같음
 
@@ -105,8 +108,7 @@ public class Resident extends BaseTimeEntity {
         return Resident.builder()
                 .name(data.get(0))
                 .gender(data.get(1))
-//                .studentId(data.get(2))
-                .studentId(UUID.randomUUID().toString()) // todo unique 제한 때문에 임시로 UUID 사용. 윗줄 주석 나중에 풀자
+                .studentId(data.get(2))
                 .semester(data.get(3))
                 .currentStatus(data.get(4))
                 .dateOfBirth(LocalDate.parse(data.get(5), DateTimeFormatter.ofPattern("yyMMdd")))
@@ -126,6 +128,31 @@ public class Resident extends BaseTimeEntity {
                 .zipCode(data.get(19))
                 .address(data.get(20))
                 .build();
+    }
+
+    // 파라미터로 받은 entity의 값을 모두 복사해서 업데이트한다.
+    public void updateValueFrom(Resident resident) {
+        this.name = resident.getName();
+        this.gender = resident.getGender();
+        this.studentId = resident.getStudentId();
+        this.major = resident.getMajor();
+        this.grade = resident.getGrade();
+        this.dateOfBirth = resident.getDateOfBirth();
+        this.semester = resident.getSemester();
+        this.currentStatus = resident.getCurrentStatus();
+        this.dormitory = resident.getDormitory();
+        this.period = resident.getPeriod();
+        this.roomNumber = resident.getRoomNumber();
+        this.assignedRoom = resident.getAssignedRoom();
+        this.admissionDate = resident.getAdmissionDate();
+        this.leavingDate = resident.getLeavingDate();
+        this.semesterStartDate = resident.getSemesterStartDate();
+        this.semesterEndDate = resident.getSemesterEndDate();
+        this.phoneNumber = resident.getPhoneNumber();
+        this.socialCode = resident.getSocialCode();
+        this.socialName = resident.getSocialName();
+        this.zipCode = resident.getZipCode();
+        this.address = resident.getAddress();
     }
 
 }
