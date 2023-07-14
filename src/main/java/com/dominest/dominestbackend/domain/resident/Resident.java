@@ -130,5 +130,30 @@ public class Resident extends BaseTimeEntity {
                 .build();
     }
 
+    // 파라미터로 받은 entity의 값을 모두 복사해서 업데이트한다.
+    public void updateValueFrom(Resident resident) {
+        this.name = resident.getName();
+        this.gender = resident.getGender();
+        this.studentId = resident.getStudentId();
+        this.major = resident.getMajor();
+        this.grade = resident.getGrade();
+        this.dateOfBirth = resident.getDateOfBirth();
+        this.semester = resident.getSemester();
+        this.currentStatus = resident.getCurrentStatus();
+        this.dormitory = resident.getDormitory();
+        this.period = resident.getPeriod();
+        this.roomNumber = resident.getRoomNumber();
+        this.assignedRoom = resident.getAssignedRoom();
+        this.admissionDate = resident.getAdmissionDate();
+        this.leavingDate = resident.getLeavingDate();
+        this.semesterStartDate = resident.getSemesterStartDate();
+        this.semesterEndDate = resident.getSemesterEndDate();
+        this.phoneNumber = resident.getPhoneNumber();
+        this.socialCode = resident.getSocialCode();
+        this.socialName = resident.getSocialName();
+        this.zipCode = resident.getZipCode();
+        this.address = resident.getAddress();
+    }
+
 }
 

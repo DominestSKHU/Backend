@@ -41,12 +41,27 @@ public class ResidentController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    // 학생 단건 등록. 단순 DTO 변환 후 저장만 하면 될듯
+    // 입사생 단건 등록. 단순 DTO 변환 후 저장만 하면 될듯
     @PostMapping("/residents")
-    public ResponseEntity<RspsTemplate<String>> saveResident(@RequestBody SaveResidentDto.Req reqDto){
+    public ResponseEntity<RspsTemplate<?>> saveResident(@RequestBody SaveResidentDto.Req reqDto){
         residentService.saveResident(reqDto.toEntity());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
+
+    // 입사생 수정
+    @PatchMapping("/residents/{id}")
+    public ResponseEntity<RspsTemplate<?>> updateResident(@PathVariable Long id, @RequestBody SaveResidentDto.Req reqDto){
+        residentService.updateResident(id, reqDto.toEntity());
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    // 입사생 삭제
+    @DeleteMapping("/residents/{id}")
+    public ResponseEntity<RspsTemplate<?>> deleteResident(@PathVariable Long id){
+        residentService.deleteById(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
 
 
 
