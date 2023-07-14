@@ -1,6 +1,7 @@
 package com.dominest.dominestbackend.api.resident.dto;
 
 import com.dominest.dominestbackend.domain.resident.Resident;
+import com.dominest.dominestbackend.global.util.TimeUtil;
 import com.dominest.dominestbackend.global.validation.PhoneNumber;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
@@ -70,7 +71,7 @@ public class SaveResidentDto {
                     .studentId(studentId)
                     .semester(semester)
                     .currentStatus(currentStatus)
-                    .dateOfBirth(dateOfBirth)
+                    .dateOfBirth(TimeUtil.yyMMddToLocalDate(dateOfBirth))
                     .dormitory(dormitory)
                     .major(major)
                     .grade(grade)
