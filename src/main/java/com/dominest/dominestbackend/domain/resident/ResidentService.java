@@ -1,6 +1,7 @@
 package com.dominest.dominestbackend.domain.resident;
 
 import com.dominest.dominestbackend.api.resident.dto.ResidentListDto;
+import com.dominest.dominestbackend.domain.resident.component.ResidenceSemester;
 import com.dominest.dominestbackend.global.exception.ErrorCode;
 import com.dominest.dominestbackend.global.exception.exceptions.AppServiceException;
 import com.dominest.dominestbackend.global.exception.exceptions.BusinessException;
@@ -31,7 +32,7 @@ public class ResidentService {
     }
 
     @Transactional
-    public void excelUpload(MultipartFile file) {
+    public void excelUpload(MultipartFile file, ResidenceSemester residenceSemester) {
         // 예상 컬럼 개수
         int columnCount = ExcelUtil.RESIDENT_COLUMN_COUNT;
 
@@ -54,13 +55,13 @@ public class ResidentService {
         for (List<String> row : sheet) {
             if ("BLANK".equals(row.get(columnCount - 1))) // 빈 row 발견 시 continue;
                 continue;
-            Resident resident = Resident.from(row);
+            Resident resident = Resident.from(row, residenceSemester);
             residentRepository.save(resident);
         }
     }
 
-    public ResidentListDto.Res getAllResident() {
-        List<Resident> residents = residentRepository.findAll();
+    public ResidentListDto.Res getAllResidentByResidenceSemester(ResidenceSemester residenceSemester) {
+        List<Resident> residents = residentRepository.findAllByResidenceSemester(residenceSemester);
         return ResidentListDto.Res.from(residents);
     }
 
