@@ -1,7 +1,7 @@
 package com.dominest.dominestbackend.api.resident.dto;
 
 import com.dominest.dominestbackend.domain.resident.Resident;
-import com.dominest.dominestbackend.global.util.TimeUtil;
+import com.dominest.dominestbackend.domain.resident.component.ResidenceSemester;
 import com.dominest.dominestbackend.global.validation.PhoneNumber;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
@@ -31,6 +31,8 @@ public class SaveResidentDto {
         private LocalDate dateOfBirth;
         @NotBlank(message = "학기를 입력해주세요.")
         private String semester;
+        @NotNull(message = "거주학기를 입력해주세요.")
+        private ResidenceSemester residenceSemester;
         @NotBlank(message = "현재 상태를 입력해주세요.")
         private String currentStatus;
         @NotBlank(message = "기숙사를 입력해주세요.")
@@ -71,7 +73,8 @@ public class SaveResidentDto {
                     .studentId(studentId)
                     .semester(semester)
                     .currentStatus(currentStatus)
-                    .dateOfBirth(TimeUtil.yyMMddToLocalDate(dateOfBirth))
+                    .dateOfBirth(dateOfBirth)
+                    .residenceSemester(residenceSemester)
                     .dormitory(dormitory)
                     .major(major)
                     .grade(grade)
