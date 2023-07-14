@@ -2,9 +2,11 @@ package com.dominest.dominestbackend.domain.resident;
 
 import com.dominest.dominestbackend.api.resident.dto.ResidentListDto;
 import com.dominest.dominestbackend.global.exception.exceptions.AppServiceException;
+import com.dominest.dominestbackend.global.exception.exceptions.BusinessException;
 import com.dominest.dominestbackend.global.util.ExcelUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,4 +61,30 @@ public class ResidentService {
     public void deleteAllResident() {
         residentRepository.deleteAllInBatch();
     }
+
+    @Transactional
+    public void saveResident(Resident resident) {
+        try {
+            residentRepository.save(resident);
+        } catch (DataIntegrityViolationException e) {
+            throw new BusinessException("학생 저장 실패, 잘못된 입력값입니다. 오류 메시지: " +
+                    e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
