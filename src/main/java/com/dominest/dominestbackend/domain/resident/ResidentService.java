@@ -60,8 +60,8 @@ public class ResidentService {
         }
     }
 
-    public ResidentListDto.Res getAllResident() {
-        List<Resident> residents = residentRepository.findAll();
+    public ResidentListDto.Res getAllResidentByResidenceSemester(ResidenceSemester residenceSemester) {
+        List<Resident> residents = residentRepository.findAllByResidenceSemester(residenceSemester);
         return ResidentListDto.Res.from(residents);
     }
 

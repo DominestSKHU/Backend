@@ -88,7 +88,7 @@ public class Resident extends BaseTimeEntity {
         this.studentId = studentId;
         this.major = major;
         this.grade = grade;
-        this.dateOfBirth = dateOfBirth;
+        this.dateOfBirth = TimeUtil.parseyyMMddToLocalDate(dateOfBirth);
         this.semester = semester;
         this.residenceSemester = residenceSemester;
         this.currentStatus = currentStatus;
@@ -116,7 +116,7 @@ public class Resident extends BaseTimeEntity {
                 .semester(data.get(3))
                 .residenceSemester(residenceSemester)
                 .currentStatus(data.get(4))
-                .dateOfBirth(TimeUtil.yyMMddToLocalDate(data.get(5)))
+                .dateOfBirth(TimeUtil.parseyyMMddToLocalDate(data.get(5)))
                 .dormitory(data.get(6))
                 .major(data.get(7))
                 .grade(data.get(8))
@@ -144,6 +144,7 @@ public class Resident extends BaseTimeEntity {
         this.grade = resident.getGrade();
         this.dateOfBirth = resident.getDateOfBirth();
         this.semester = resident.getSemester();
+        this.residenceSemester = resident.getResidenceSemester();
         this.currentStatus = resident.getCurrentStatus();
         this.dormitory = resident.getDormitory();
         this.period = resident.getPeriod();

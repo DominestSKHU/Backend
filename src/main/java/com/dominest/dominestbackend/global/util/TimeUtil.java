@@ -11,7 +11,7 @@ public class TimeUtil {
      *  800101 -> 1980-01-01
      *  990101 -> 1999-01-01
      */
-    public static LocalDate yyMMddToLocalDate(String yyMMdd) {
+    public static LocalDate parseyyMMddToLocalDate(String yyMMdd) {
         LocalDate localDate = LocalDate.parse(yyMMdd, DateTimeFormatter.ofPattern("yyMMdd"));
         int year = localDate.getYear();
 
@@ -22,7 +22,7 @@ public class TimeUtil {
         return localDate;
     }
 
-    public static LocalDate yyMMddToLocalDate(LocalDate yyMMdd) {
+    public static LocalDate parseyyMMddToLocalDate(LocalDate yyMMdd) {
         LocalDate copyedLocalDate = LocalDate.of(yyMMdd.getYear(), yyMMdd.getMonth(), yyMMdd.getDayOfMonth());
         int year = copyedLocalDate.getYear();
 

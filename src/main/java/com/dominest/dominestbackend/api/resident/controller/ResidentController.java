@@ -24,16 +24,16 @@ public class ResidentController {
     // 엑셀로 업로드
     @PostMapping("/residents/upload-excel")
     @Transactional
-    public ResponseEntity<RspsTemplate<?>> handleFileUpload(@RequestParam("file") MultipartFile file
-                                                                                                            , @RequestParam(value = "semester", required = true) ResidenceSemester residenceSemester){
+    public ResponseEntity<RspsTemplate<?>> handleFileUpload(@RequestParam(required = true) MultipartFile file
+                                                                                                            , @RequestParam(required = true) ResidenceSemester residenceSemester){
         residentService.excelUpload(file, residenceSemester);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     // 전체조회
     @GetMapping("/residents")
-    public RspsTemplate<ResidentListDto.Res> handleGetAllResident(){
-        ResidentListDto.Res residents = residentService.getAllResident();
+    public RspsTemplate<ResidentListDto.Res> handleGetAllResident(@RequestParam(required = true) ResidenceSemester residenceSemester){
+        ResidentListDto.Res residents = residentService.getAllResidentByResidenceSemester(residenceSemester);
         return new RspsTemplate<>(HttpStatus.OK, residents);
     }
 
