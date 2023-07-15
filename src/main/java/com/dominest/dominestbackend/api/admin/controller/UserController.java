@@ -13,6 +13,8 @@ import com.dominest.dominestbackend.global.apiResponse.ErrorStatus;
 import com.dominest.dominestbackend.global.apiResponse.SuccessStatus;
 import com.dominest.dominestbackend.global.exception.exceptions.auth.NotValidTokenException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
@@ -29,45 +31,45 @@ public class UserController {
 
     private final TokenManager tokenManager;
 
-    @PostMapping("/join")
-    // @ResponseStatus(HttpStatus.CREATED)
-    public ApiResponseDto<JoinResponse> signUp(@RequestBody @Valid final JoinRequest request){
-        return ApiResponseDto.success(SuccessStatus.JOIN_SUCCESS, userService.create(request));
+    @PostMapping("/join") // 회원가입
+    public ResponseEntity<ApiResponseDto<JoinResponse>> signUp(@RequestBody @Valid final JoinRequest request){
+        User existingUser = userRepository.findByEmail(request.getEmail());
+        if (existingUser != null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponseDto.error(ErrorStatus.USER_ALREADY_EXIST)); // 400 Bad Request 상태로 실패 응답 반환
+        }
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseDto.success(SuccessStatus.JOIN_SUCCESS, userService.create(request)));
     }
 
     @PostMapping("/login")
-    public ApiResponseDto<TokenDto> login(@RequestBody @Valid final LoginRequest request) {
+    public ResponseEntity<ApiResponseDto<TokenDto>> login(@RequestBody @Valid final LoginRequest request) {
         User user = userRepository.findByEmail(request.getEmail());
         if (user == null) {
-            return ApiResponseDto.error(ErrorStatus.USER_CERTIFICATION_FAILED);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponseDto.error(ErrorStatus.USER_CERTIFICATION_FAILED)); // 401 Unauthorized 상태로 실패 응답 반환
         }
-
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            return ApiResponseDto.error(ErrorStatus.USER_NOT_JOIN);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponseDto.error(ErrorStatus.USER_NOT_JOIN)); // 401 Unauthorized 상태로 실패 응답 반환
         }
 
-        TokenDto tokenDto = userService.login(request.getEmail(), request.getPassword());
-        return ApiResponseDto.success(SuccessStatus.LOGIN_SUCCESS, tokenDto);
-    }
-
+        return ResponseEntity.ok(ApiResponseDto.success(SuccessStatus.LOGIN_SUCCESS, userService.login(request.getEmail(), request.getPassword())));
+        }
 
     @GetMapping("/login-test")
-    public ApiResponseDto<String> loginTest(@RequestHeader(value = "Authorization") String authHeader) {
+    public ResponseEntity<ApiResponseDto<String>> loginTest(@RequestHeader(value = "Authorization") String authHeader) {
         try {
             if (authHeader != null && authHeader.startsWith("Bearer ")) {
                 String accessToken = authHeader.substring(7); // "Bearer " 접두사 제거
                 if (tokenManager.validateToken(accessToken)) {
-                    return ApiResponseDto.success(SuccessStatus.TOKEN_USER_INFO, tokenManager.getMemberEmail(accessToken));
+                    return ResponseEntity.ok(ApiResponseDto.success(SuccessStatus.TOKEN_USER_INFO, tokenManager.getMemberEmail(accessToken)));
                 } else {
-                    return ApiResponseDto.error(ErrorStatus.USER_CERTIFICATION_FAILED);
+                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponseDto.error(ErrorStatus.USER_CERTIFICATION_FAILED)); // 401 Unauthorized 상태로 실패 응답 반환
                 }
             } else {
-                return ApiResponseDto.error(ErrorStatus.USER_CERTIFICATION_FAILED);
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponseDto.error(ErrorStatus.USER_CERTIFICATION_FAILED)); // 401 Unauthorized 상태로 실패 응답 반환
             }
         } catch (NotValidTokenException e) {
             e.printStackTrace();
-            return ApiResponseDto.error(ErrorStatus.USER_CERTIFICATION_FAILED);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponseDto.error(ErrorStatus.USER_CERTIFICATION_FAILED)); // 401 Unauthorized 상태로 실패 응답 반환
         }
     }
-
 }
