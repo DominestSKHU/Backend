@@ -100,7 +100,7 @@ public class TokenManager {
         try {
             Claims claims = Jwts.parser().setSigningKey(decodedTokenSecret)
                     .parseClaimsJws(accessToken).getBody();
-            email = (String) claims.get("email"); // 이메일을 'email' 클레임에서 가져옴
+            email = claims.getAudience(); // 이메일을 'email' 클레임에서 가져옴
         } catch (Exception e){
             e.printStackTrace();
             throw new NotValidTokenException(ErrorCode.NOT_VALID_TOKEN);
