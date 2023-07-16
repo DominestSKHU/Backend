@@ -41,7 +41,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseDto.success(SuccessStatus.JOIN_SUCCESS, userService.create(request)));
     }
 
-    @PostMapping("/login")
+    @PostMapping("/login") // 로그인
     public ResponseEntity<ApiResponseDto<TokenDto>> login(@RequestBody @Valid final LoginRequest request) {
         User user = userRepository.findByEmail(request.getEmail());
         if (user == null) {
@@ -52,9 +52,9 @@ public class UserController {
         }
 
         return ResponseEntity.ok(ApiResponseDto.success(SuccessStatus.LOGIN_SUCCESS, userService.login(request.getEmail(), request.getPassword())));
-        }
+    }
 
-    @GetMapping("/login-test")
+    @GetMapping("/login-test") // accesstoken으로 유저정보 가져오기
     public ResponseEntity<ApiResponseDto<String>> loginTest(@RequestHeader(value = "Authorization") String authHeader) {
         try {
             if (authHeader != null && authHeader.startsWith("Bearer ")) {
