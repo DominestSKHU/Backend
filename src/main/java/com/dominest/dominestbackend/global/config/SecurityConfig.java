@@ -1,5 +1,6 @@
 package com.dominest.dominestbackend.global.config;
 
+import com.dominest.dominestbackend.domain.jwt.service.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,11 +10,14 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @RequiredArgsConstructor
 @EnableWebSecurity
 @Configuration
 public class SecurityConfig{
+
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -25,24 +29,15 @@ public class SecurityConfig{
         http.httpBasic().disable()
                 .csrf().disable()
                 .sessionManagement()
-                .sessionCreationPolicy((SessionCreationPolicy.STATELESS))
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-//                .antMatchers(HttpMethod.GET, "fsadfsdf").permitAll()
-//                .antMatchers(HttpMethod.POST, "fsadfsdf").hasRole("ADMIN")
-                .anyRequest().permitAll();
+                .antMatchers("/user/join").permitAll() // 회원가입 요청은 토큰 검증 예외
+                .antMatchers("/user/login").permitAll()
+                .anyRequest().authenticated()
+                .and()
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
+
 }
-
-
-
-
-
-
-
-
-
-
-
-
