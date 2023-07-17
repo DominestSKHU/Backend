@@ -8,6 +8,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Getter
-public class EmailRequest {
-    private String email;
+public class CodeRequest {
+    private String code;
 }
