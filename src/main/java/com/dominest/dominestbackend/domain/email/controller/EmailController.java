@@ -1,6 +1,7 @@
 package com.dominest.dominestbackend.domain.email.controller;
 
 import com.dominest.dominestbackend.domain.email.request.CodeRequest;
+import com.dominest.dominestbackend.domain.email.request.EmailRequest;
 import com.dominest.dominestbackend.domain.email.service.EmailService;
 import com.dominest.dominestbackend.global.apiResponse.ApiResponseDto;
 import com.dominest.dominestbackend.global.apiResponse.ErrorStatus;
@@ -8,7 +9,10 @@ import com.dominest.dominestbackend.global.apiResponse.SuccessStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpSession;
 

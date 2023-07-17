@@ -10,7 +10,7 @@ spring:
     url:
     username:
     password:
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    driver-class-name: org.mariadb.jdbc.Driver
   servlet:
     multipart:
       max-file-size: 10MB
