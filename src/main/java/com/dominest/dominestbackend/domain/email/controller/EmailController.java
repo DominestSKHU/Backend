@@ -1,7 +1,6 @@
 package com.dominest.dominestbackend.domain.email.controller;
 
 import com.dominest.dominestbackend.domain.email.request.CodeRequest;
-import com.dominest.dominestbackend.domain.email.request.EmailRequest;
 import com.dominest.dominestbackend.domain.email.service.EmailService;
 import com.dominest.dominestbackend.global.apiResponse.ApiResponseDto;
 import com.dominest.dominestbackend.global.apiResponse.ErrorStatus;
