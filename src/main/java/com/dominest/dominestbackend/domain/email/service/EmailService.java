@@ -7,8 +7,6 @@ import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import java.io.UnsupportedEncodingException;
-import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -16,7 +14,8 @@ public class EmailService {
     private final JavaMailSender emailsender; // Bean 등록해둔 MailConfig 를 emailsender 라는 이름으로 autowired
 
     private final EmailVerificationService emailVerificationService;
-    private String authNum; // 인증번호
+    // Fixme
+    //  아니 @Service @Controller @Configuration 처럼 @Component 붙은데에서 final이 아닌 멤버변수 쓰면 멀티스레드에서 공유함!!!!!!!!!님뭐함!!!!!!!!!!!!!!!!!!!!!!!!!
 
     //랜덤 인증 코드 생성
 //    public void createCode() {
@@ -42,14 +41,14 @@ public class EmailService {
 //    }
 
     // 메일 양식 작성
-    public MimeMessage createMessage(String email) throws MessagingException{
-        authNum = emailVerificationService.generateCode(email);
+    // Fixme: 클래스 내부에서만 쓰이는 메서드는 private 으로 하고, 소스코드상 public 메시지보다 아래에 위치시키는게 좋음, 체크 예외처리는 바로바로 해주는게 좋음
+    private MimeMessage createMessage(String toEmail) throws MessagingException{
+        String authNum = emailVerificationService.generateCode(toEmail);
         String setFrom = "gjwldud0719@naver.com";
-        String toEmail = email;
         String title = "회원가입 인증 번호";
 
         MimeMessage message = emailsender.createMimeMessage();
-        message.addRecipients(MimeMessage.RecipientType.TO, email); // 보내는 대상
+        message.addRecipients(MimeMessage.RecipientType.TO, toEmail); // 보내는 대상
         message.setSubject(title);
         message.setFrom(setFrom);
         String n = "";
@@ -92,7 +91,7 @@ public class EmailService {
 
 
     // 메일 발송
-    public String sendSimpleMessage(String email) throws Exception{
+    public void sendSimpleMessage(String email) throws Exception{
         MimeMessage message = createMessage(email); // 메일 발송
         try{
             emailsender.send((message));
@@ -100,7 +99,7 @@ public class EmailService {
             es.printStackTrace();
             throw new IllegalArgumentException();
         }
-        return authNum; // 메일로 보냈던 인증 코드를 서버로 반환
+        // Fixme 반환값 안쓸거면 void return
     }
 
 

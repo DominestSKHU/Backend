@@ -34,21 +34,20 @@ public class UserController {
 
     @PostMapping("/join") // 회원가입
     public ResponseEntity<ApiResponseDto<JoinResponse>> signUp(@RequestBody @Valid final JoinRequest request){
-        Optional<User> existingUser = userRepository.findByEmail(request.getEmail());
-//        if (existingUser != null) {
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponseDto.error(ErrorStatus.USER_ALREADY_EXIST)); // 400 Bad Request 상태로 실패 응답 반환
-//        }
         if(userService.checkDuplicateEmail(request.getEmail())){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponseDto.error(ErrorStatus.EMAIL_ALREADY_EXIST));
         }
-
+        // Todo 이메일 인증 통과한거 맞는지 검사하는 로직 필요
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseDto.success(SuccessStatus.JOIN_SUCCESS, userService.create(request)));
     }
 
     @PostMapping("/login") // 로그인
     public ResponseEntity<ApiResponseDto<TokenDto>> login(@RequestBody @Valid final LoginRequest request) {
         Optional<User> user = userRepository.findByEmail(request.getEmail());
-        if (user == null) {
+        // Fixme user == null 은 Optional에서 안먹음. Optional은 절대로 NULL이 아님
+        //  Optioanl.empty() Optional.of() Optional.ofNullable()의 구현내용 확인 ㄱㄱ
+        if (user.isEmpty()) {
+            // 메서드 반환값은 ResponseEntity<ApiResponseDto<TokenDto>> 인데 ApiResponseDto.error() 는 <T>의 타입이 TokenDto가 아님
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponseDto.error(ErrorStatus.USER_CERTIFICATION_FAILED)); // 401 Unauthorized 상태로 실패 응답 반환
         }
         if (!passwordEncoder.matches(request.getPassword(), user.get().getPassword())) {
