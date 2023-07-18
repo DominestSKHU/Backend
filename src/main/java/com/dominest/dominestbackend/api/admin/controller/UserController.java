@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -33,28 +34,31 @@ public class UserController {
 
     @PostMapping("/join") // 회원가입
     public ResponseEntity<ApiResponseDto<JoinResponse>> signUp(@RequestBody @Valid final JoinRequest request){
-        User existingUser = userRepository.findByEmail(request.getEmail());
-        if (existingUser != null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponseDto.error(ErrorStatus.USER_ALREADY_EXIST)); // 400 Bad Request 상태로 실패 응답 반환
+        Optional<User> existingUser = userRepository.findByEmail(request.getEmail());
+//        if (existingUser != null) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponseDto.error(ErrorStatus.USER_ALREADY_EXIST)); // 400 Bad Request 상태로 실패 응답 반환
+//        }
+        if(userService.checkDuplicateEmail(request.getEmail())){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponseDto.error(ErrorStatus.EMAIL_ALREADY_EXIST));
         }
 
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseDto.success(SuccessStatus.JOIN_SUCCESS, userService.create(request)));
     }
 
-    @PostMapping("/login")
+    @PostMapping("/login") // 로그인
     public ResponseEntity<ApiResponseDto<TokenDto>> login(@RequestBody @Valid final LoginRequest request) {
-        User user = userRepository.findByEmail(request.getEmail());
+        Optional<User> user = userRepository.findByEmail(request.getEmail());
         if (user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponseDto.error(ErrorStatus.USER_CERTIFICATION_FAILED)); // 401 Unauthorized 상태로 실패 응답 반환
         }
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+        if (!passwordEncoder.matches(request.getPassword(), user.get().getPassword())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponseDto.error(ErrorStatus.USER_NOT_JOIN)); // 401 Unauthorized 상태로 실패 응답 반환
         }
 
         return ResponseEntity.ok(ApiResponseDto.success(SuccessStatus.LOGIN_SUCCESS, userService.login(request.getEmail(), request.getPassword())));
-        }
+    }
 
-    @GetMapping("/login-test")
+    @GetMapping("/login-test") // accesstoken으로 유저정보 가져오기
     public ResponseEntity<ApiResponseDto<String>> loginTest(@RequestHeader(value = "Authorization") String authHeader) {
         try {
             if (authHeader != null && authHeader.startsWith("Bearer ")) {

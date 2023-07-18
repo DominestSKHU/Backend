@@ -1,6 +1,5 @@
 package com.dominest.dominestbackend.global.config;
 
-import com.dominest.dominestbackend.global.interceptor.AuthenticationInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;

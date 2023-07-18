@@ -36,6 +36,8 @@ public class User implements UserDetails {
 //        this.isLogin = isLogin;
 //    }
 
+
+
     @Enumerated(EnumType.STRING)
     private Role role;
 

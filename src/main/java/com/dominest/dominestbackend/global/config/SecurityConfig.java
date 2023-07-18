@@ -34,10 +34,11 @@ public class SecurityConfig{
                 .authorizeRequests()
                 .antMatchers("/user/join").permitAll() // 회원가입 요청은 토큰 검증 예외
                 .antMatchers("/user/login").permitAll()
+                .antMatchers("/email/send").permitAll()
+                .antMatchers("/email/verify/code").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
-
 }

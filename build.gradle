@@ -29,6 +29,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
     runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+    runtimeOnly 'com.mysql:mysql-connector-j'
+
 
     //auth
     implementation 'org.springframework.boot:spring-boot-starter-security'
@@ -42,8 +44,12 @@ dependencies {
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     annotationProcessor 'org.projectlombok:lombok'
 
+
     // other
     implementation 'org.apache.poi:poi-ooxml:5.2.2' // ooxml 이어야 xlsx(2007 이후 확장자) 파일을 읽을 수 있음.
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+    implementation 'com.github.ben-manes.caffeine:caffeine:3.0.0'
+
 
     //test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
