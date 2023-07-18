@@ -13,6 +13,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 
 @Service
 @RequiredArgsConstructor
@@ -40,5 +42,9 @@ public class UserService {
         TokenDto tokenDto = tokenManager.createTokenDto(String.valueOf(authenticationToken));
 
         return tokenDto;
+    }
+
+    public boolean checkDuplicateEmail(String email){
+        return userRepository.findByEmail(email).isPresent();
     }
 }

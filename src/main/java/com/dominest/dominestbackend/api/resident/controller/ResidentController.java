@@ -32,9 +32,8 @@ public class ResidentController {
 
     // 전체조회
     @GetMapping("/residents")
-    public RspsTemplate<ResidentListDto.Res> handleGetAllResident(@RequestParam(required = false) ResidenceSemester residenceSemester){
+    public RspsTemplate<ResidentListDto.Res> handleGetAllResident(@RequestParam(required = true) ResidenceSemester residenceSemester){
         ResidentListDto.Res residents = residentService.getAllResidentByResidenceSemester(residenceSemester);
-
         return new RspsTemplate<>(HttpStatus.OK, residents);
     }
 

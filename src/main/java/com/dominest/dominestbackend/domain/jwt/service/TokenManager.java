@@ -6,11 +6,16 @@ import com.dominest.dominestbackend.domain.jwt.constant.TokenType;
 import com.dominest.dominestbackend.domain.jwt.dto.TokenDto;
 import com.dominest.dominestbackend.global.exception.ErrorCode;
 import com.dominest.dominestbackend.global.exception.exceptions.auth.NotValidTokenException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Date;
@@ -26,16 +31,16 @@ public class TokenManager {
     @Value("${token.refresh-token-expiration-time}")
     private String refreshTokenExpirationTime;
 
-//    @Value("${token.secret}")
-//    private String tokenSecret;
-
-    private String decodedTokenSecret;
-
     @Value("${token.secret}")
-    public void setTokenSecret(String encodedTokenSecret) {
-        byte[] decodedBytes = Base64.getDecoder().decode(encodedTokenSecret);
-        this.decodedTokenSecret = new String(decodedBytes, StandardCharsets.UTF_8);
-    }
+    private String tokenSecret;
+
+//    private String decodedTokenSecret;
+//
+//    @Value("${token.secret}")
+//    public void setTokenSecret(String encodedTokenSecret) {
+//        byte[] decodedBytes = Base64.getDecoder().decode(encodedTokenSecret);
+//        this.decodedTokenSecret = new String(decodedBytes, StandardCharsets.UTF_8);
+//    }
 
     public TokenDto createTokenDto(String email) {
         Date accessTokenExpireTime = createAccessTokenExpireTime();
@@ -72,7 +77,7 @@ public class TokenManager {
          *      DB에서 정보를 조회해 Role을 확인하거나 할 필요가 없음. 토큰만 뜯어도 정보가 있어서.
          */
 //                .claim("role", role)                          // 유저 role.
-                .signWith(SignatureAlgorithm.HS512, decodedTokenSecret)
+                .signWith(SignatureAlgorithm.HS512, tokenSecret)
                 .setHeaderParam("typ", "JWT")
                 .compact();
         return accessToken;
@@ -84,7 +89,7 @@ public class TokenManager {
                 .setAudience(email)                                 // 토큰 대상자
                 .setIssuedAt(new Date())                            // 토큰 발급 시간
                 .setExpiration(expirationTime)                      // 토큰 만료 시간
-                .signWith(SignatureAlgorithm.HS512, decodedTokenSecret)
+                .signWith(SignatureAlgorithm.HS512, tokenSecret)
                 .setHeaderParam("typ", "JWT")
                 .compact();
         return refreshToken;
@@ -93,7 +98,7 @@ public class TokenManager {
     public String getMemberEmail(String accessToken) {
         String email;
         try {
-            Claims claims = Jwts.parser().setSigningKey(decodedTokenSecret)
+            Claims claims = Jwts.parser().setSigningKey(tokenSecret)
                     .parseClaimsJws(accessToken).getBody();
             email = claims.getAudience(); // 이메일을 'email' 클레임에서 가져옴
         } catch (Exception e){
@@ -118,7 +123,7 @@ public class TokenManager {
 
     public boolean validateToken(String token) {
         try {
-            Jws<Claims> claims = Jwts.parser().setSigningKey(decodedTokenSecret).parseClaimsJws(token);
+            Jws<Claims> claims = Jwts.parser().setSigningKey(tokenSecret).parseClaimsJws(token);
             return true;
         } catch (MalformedJwtException e) {
             log.info("잘못된 jwt token", e);
@@ -133,7 +138,7 @@ public class TokenManager {
     public Claims getTokenClaims(String token) {
         Claims claims;
         try {
-            claims = Jwts.parser().setSigningKey(decodedTokenSecret)  //jwt 만들 때 사용했던 키
+            claims = Jwts.parser().setSigningKey(tokenSecret)  //jwt 만들 때 사용했던 키
                     .parseClaimsJws(token).getBody()
             ;
         } catch (Exception e) {
@@ -154,7 +159,7 @@ public class TokenManager {
     public String getTokenType(String token){
         String tokenType;
         try{
-            Claims claims = Jwts.parser().setSigningKey(decodedTokenSecret)
+            Claims claims = Jwts.parser().setSigningKey(tokenSecret)
                     .parseClaimsJws(token).getBody();
             tokenType = claims.getSubject();
         } catch (Exception e){

@@ -14,40 +14,42 @@ import java.util.Random;
 @RequiredArgsConstructor
 public class EmailService {
     private final JavaMailSender emailsender; // Bean 등록해둔 MailConfig 를 emailsender 라는 이름으로 autowired
+
+    private final EmailVerificationService emailVerificationService;
     private String authNum; // 인증번호
 
     //랜덤 인증 코드 생성
-    public void createCode() {
-        Random random = new Random();
-        StringBuffer key = new StringBuffer();
-
-        for(int i=0;i<8;i++) {
-            int index = random.nextInt(3);
-
-            switch (index) {
-                case 0 :
-                    key.append((char) ((int)random.nextInt(26) + 97));
-                    break;
-                case 1:
-                    key.append((char) ((int)random.nextInt(26) + 65));
-                    break;
-                case 2:
-                    key.append(random.nextInt(9));
-                    break;
-            }
-        }
-        authNum = key.toString();
-    }
+//    public void createCode() {
+//        Random random = new Random();
+//        StringBuffer key = new StringBuffer();
+//
+//        for(int i=0;i<8;i++) {
+//            int index = random.nextInt(3);
+//
+//            switch (index) {
+//                case 0 :
+//                    key.append((char) ((int)random.nextInt(26) + 97));
+//                    break;
+//                case 1:
+//                    key.append((char) ((int)random.nextInt(26) + 65));
+//                    break;
+//                case 2:
+//                    key.append(random.nextInt(9));
+//                    break;
+//            }
+//        }
+//        authNum = key.toString();
+//    }
 
     // 메일 양식 작성
-    public MimeMessage createMessage(String to) throws MessagingException, UnsupportedEncodingException {
-        createCode();
+    public MimeMessage createMessage(String email) throws MessagingException{
+        authNum = emailVerificationService.generateCode(email);
         String setFrom = "gjwldud0719@naver.com";
-        String toEmail = to;
+        String toEmail = email;
         String title = "회원가입 인증 번호";
 
         MimeMessage message = emailsender.createMimeMessage();
-        message.addRecipients(MimeMessage.RecipientType.TO, to); // 보내는 대상
+        message.addRecipients(MimeMessage.RecipientType.TO, email); // 보내는 대상
         message.setSubject(title);
         message.setFrom(setFrom);
         String n = "";
@@ -90,9 +92,8 @@ public class EmailService {
 
 
     // 메일 발송
-    public String sendSimpleMessage(String to) throws Exception{
-        createCode(); // 랜덤 인증코드 생성
-        MimeMessage message = createMessage(to); // 메일 발송
+    public String sendSimpleMessage(String email) throws Exception{
+        MimeMessage message = createMessage(email); // 메일 발송
         try{
             emailsender.send((message));
         } catch(MailException es){
@@ -101,5 +102,6 @@ public class EmailService {
         }
         return authNum; // 메일로 보냈던 인증 코드를 서버로 반환
     }
+
 
 }

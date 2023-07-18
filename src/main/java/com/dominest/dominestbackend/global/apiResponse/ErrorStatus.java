@@ -15,7 +15,8 @@ public enum ErrorStatus {
     VALIDATION_EXCEPTION(HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
     NOT_LOGIN_STATUS(HttpStatus.BAD_REQUEST, "로그인 되어있지 않습니다."),
     VALIDATION_REQUEST_MISSING_EXCEPTION(HttpStatus.BAD_REQUEST, "요청값이 입력되지 않았습니다."),
-    USER_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "이미 존재하는 아이디입니다."),
+    EMAIL_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "이미 존재하는 이메일입니다."),
+
 
 
     VERIFY_EMAIL_FAILED(HttpStatus.BAD_REQUEST, "이메일 인증 실패"),
@@ -26,9 +27,7 @@ public enum ErrorStatus {
     SERVER_ERROR
      */
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "예상치 못한 서버 에러가 발생했습니다."),
-    BAD_GATEWAY_EXCEPTION(HttpStatus.BAD_GATEWAY, "일시적인 에러가 발생하였습니다.\n잠시 후 다시 시도해주세요"),
-
-    ;
+    BAD_GATEWAY_EXCEPTION(HttpStatus.BAD_GATEWAY, "일시적인 에러가 발생하였습니다.\n잠시 후 다시 시도해주세요");
 
     private final HttpStatus httpStatus;
     private final String message;
