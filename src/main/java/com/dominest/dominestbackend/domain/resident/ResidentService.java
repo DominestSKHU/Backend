@@ -37,8 +37,7 @@ public class ResidentService {
         int columnCount = ExcelUtil.RESIDENT_COLUMN_COUNT;
 
         // 엑셀 파싱
-        List<List<String>> sheet;
-        sheet = ExcelUtil.parseExcel(file);
+        List<List<String>> sheet= ExcelUtil.parseExcel(file);
 
         Integer sheetColumnCount = Optional.ofNullable(sheet.get(0))
                 .map(List::size)

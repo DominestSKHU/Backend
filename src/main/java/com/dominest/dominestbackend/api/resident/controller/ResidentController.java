@@ -9,7 +9,6 @@ import com.dominest.dominestbackend.domain.resident.component.ResidenceSemester;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,7 +22,6 @@ public class ResidentController {
 
     // 엑셀로 업로드
     @PostMapping("/residents/upload-excel")
-    @Transactional
     public ResponseEntity<RspsTemplate<?>> handleFileUpload(@RequestParam(required = true) MultipartFile file
                                                                                                             , @RequestParam(required = true) ResidenceSemester residenceSemester){
         residentService.excelUpload(file, residenceSemester);
