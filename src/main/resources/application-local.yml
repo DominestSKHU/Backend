@@ -8,11 +8,6 @@ server:
 #    key-store-password:
 
 spring:
-  servlet:
-    multipart:
-      max-file-size: 10MB
-      max-request-size: 10MB
-
   datasource:
     url: ${DB_URL}
     username: ${DB_ID}
@@ -20,9 +15,6 @@ spring:
     driver-class-name: org.mariadb.jdbc.Driver
 
   jpa:
-    hibernate:
-      ddl-auto: create
-
     properties:
       hibernate:
         format_sql : true
@@ -39,26 +31,3 @@ file:
   upload:
     path:
 
-jwt:
-  secret: ${token.secret}
-  access-token-expiration-time: ${token.access-token-expiration-time}
-  refresh-token-expiration-time: ${token.refresh-token-expiration-time}
-
-  mail:
-    host: smtp.naver.com #smtp
-    port: 465
-    username: ${email.id}
-    password: ${email.pw}
-    properties:
-      mail:
-        smtp:
-          starttls:
-            enable: true
-          #            required: true
-          auth: true
-          #          connectiontimeout: 5000
-          #          timeout: 5000
-          #          writetimeout: 5000
-          ssl:
-            trust: smtp.naver.com
-            enable: true

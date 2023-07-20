@@ -11,10 +11,6 @@ spring:
     username:
     password:
     driver-class-name: org.mariadb.jdbc.Driver
-  servlet:
-    multipart:
-      max-file-size: 10MB
-      max-request-size: 10MB
 
   jpa:
     hibernate:
@@ -31,6 +27,7 @@ spring:
 logging:
   level:
     org.hibernate.type: debug
+
 #  logback:
 #    rollingpolicy:
 #      max-file-size: 20MB
