@@ -20,6 +20,8 @@ public enum ErrorStatus {
 
 
     VERIFY_EMAIL_FAILED(HttpStatus.BAD_REQUEST, "이메일 인증 실패"),
+
+    EMAIL_NOT_VERIFIED(HttpStatus.UNAUTHORIZED, "인증되지 않은 이메일입니다."),
     USER_CERTIFICATION_FAILED(HttpStatus.UNAUTHORIZED, "해당 아이디나 비밀번호를 가진 유저가 존재하지 않습니다."),
     USER_NOT_JOIN(HttpStatus.FORBIDDEN, "해당 사용자가 존재하지 않습니다."),
 
