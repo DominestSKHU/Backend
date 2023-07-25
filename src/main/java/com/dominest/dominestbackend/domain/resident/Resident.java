@@ -36,7 +36,7 @@ public class Resident extends BaseTimeEntity {
     private String name;
     @Column(nullable = false)
     private String gender; // 현재 'M' or 'F' 인데 확장성을 위해 String 쓰기로 함
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String studentId;
     @Column(nullable = false)
     private String major; // 전공. 매학년 바뀔 수도 있으니 enum 사용하지 않는 걸로
@@ -124,7 +124,8 @@ public class Resident extends BaseTimeEntity {
                 .roomNumber(Integer.valueOf(data.get(10)))
                 .assignedRoom(data.get(11))
                 .admissionDate(LocalDate.parse(data.get(12), DateTimeFormatter.ofPattern("yyyyMMdd")))
-                .leavingDate(LocalDate.parse(data.get(12), DateTimeFormatter.ofPattern("yyyyMMdd"))) // todo get(13)빈 값에 대응하는 코드 작성해야 함
+                .leavingDate("".equals(data.get(13)) ?  null :
+                        LocalDate.parse(data.get(13), DateTimeFormatter.ofPattern("yyyyMMdd")))
                 .semesterStartDate(LocalDate.parse(data.get(14), DateTimeFormatter.ofPattern("yyyyMMdd")))
                 .semesterEndDate(LocalDate.parse(data.get(15), DateTimeFormatter.ofPattern("yyyyMMdd")))
                 .phoneNumber(data.get(16))
