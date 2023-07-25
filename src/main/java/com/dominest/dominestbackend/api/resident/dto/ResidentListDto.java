@@ -6,7 +6,6 @@ import lombok.Getter;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class ResidentListDto {
@@ -54,7 +53,7 @@ public class ResidentListDto {
                         .id(resident.getId())
                         .name(resident.getName())
                         .gender(resident.getGender())
-                        .studentId(UUID.randomUUID().toString()) // todo unique 제한 때문에 임시로 UUID 사용.
+                        .studentId(resident.getStudentId())
                         .semester(resident.getSemester())
                         .currentStatus(resident.getCurrentStatus())
                         .dateOfBirth(resident.getDateOfBirth())
