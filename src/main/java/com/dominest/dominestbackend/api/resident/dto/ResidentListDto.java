@@ -38,7 +38,7 @@ public class ResidentListDto {
             private Integer roomNumber;
             private String assignedRoom;
             private LocalDate admissionDate;
-            private LocalDate leavingDate;
+            private String leavingDate; // null일 경우 빈 칸으로 반환하기 위해 String 사용
             private LocalDate semesterStartDate;
             private LocalDate semesterEndDate;
             private String phoneNumber;
@@ -64,7 +64,8 @@ public class ResidentListDto {
                         .roomNumber(resident.getRoomNumber())
                         .assignedRoom(resident.getAssignedRoom())
                         .admissionDate(resident.getAdmissionDate())
-                        .leavingDate(resident.getLeavingDate())
+                        .leavingDate(resident.getLeavingDate() == null ? "" :
+                                resident.getLeavingDate().toString())
                         .semesterStartDate(resident.getSemesterStartDate())
                         .semesterEndDate(resident.getSemesterEndDate())
                         .phoneNumber(resident.getPhoneNumber())

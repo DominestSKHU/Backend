@@ -69,11 +69,6 @@ public class ResidentService {
         List<Resident> residents = residentRepository.findAllByResidenceSemester(residenceSemester);
         return ResidentListDto.Res.from(residents);
     }
-    // Todo 테스트용 나중에 지우기
-    public ResidentListDto.Res getAllResidentByResidenceSemester() {
-        List<Resident> residents = residentRepository.findAll();
-        return ResidentListDto.Res.from(residents);
-    }
 
     // 테스트용 전체삭제 API
     @Transactional
