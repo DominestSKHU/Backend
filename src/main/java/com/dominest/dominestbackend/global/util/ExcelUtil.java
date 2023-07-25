@@ -53,7 +53,7 @@ public class ExcelUtil {
                         cellValue = NumberToTextConverter.toText(cell.getNumericCellValue());
                         break;
                     case BLANK:
-                        cellValue = "BLANK";
+                        cellValue = "";
                         break;
                 }
                 rowData.add(cellValue);
