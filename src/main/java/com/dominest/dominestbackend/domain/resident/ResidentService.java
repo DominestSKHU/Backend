@@ -61,7 +61,7 @@ public class ResidentService {
             if ("".equals(row.get(columnCount - 1))) // 빈 row 발견 시 continue;
                 continue;
             Resident resident = Resident.from(row, residenceSemester);
-            residentRepository.save(resident);
+            saveResident(resident);
         }
     }
 
@@ -81,7 +81,7 @@ public class ResidentService {
         try {
             residentRepository.save(resident);
         } catch (DataIntegrityViolationException e) {
-            throw new BusinessException("학생 저장 실패, 잘못된 입력값입니다. 오류 메시지: " +
+            throw new BusinessException("학생 저장 실패, 잘못된 입력값입니다. 학번 중복 혹은 데이터 형식을 확인해주세요.오류 메시지: " +
                     e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
