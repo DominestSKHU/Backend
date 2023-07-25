@@ -16,7 +16,6 @@ public class EmailVerificationService {
     @Getter
     private final Cache<String, String> codeExpirationCache; // <email, verification code>. thread-safe map.
     private final Cache<String, Boolean> emailVerificationStatusCache; // <email, verification status>. thread-safe map.
-    private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 
     @Autowired
     public EmailVerificationService() {
@@ -34,15 +33,7 @@ public class EmailVerificationService {
         String verificationCode = UUID.randomUUID().toString().substring(0, 4);
         codeExpirationCache.put(email, verificationCode);
 
-        // 20분 후에 캐시에서 삭제. 검증코드는 20분간 유효
-        executorService.schedule(() -> invalidateCode(email), 20, TimeUnit.MINUTES);
         return verificationCode;
-    }
-
-    // fixme: expireAfterWrite 와 기능이 겹치는지 확인
-    private void invalidateCode(String email) {
-        // Discards any cached value for the key.
-        codeExpirationCache.invalidate(email);
     }
 
     public boolean verifyCode(String email, String verificationCode) {

@@ -1,4 +1,4 @@
-package com.dominest.dominestbackend.domain.email.request;
+package com.dominest.dominestbackend.api.admin.request;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -8,10 +8,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Getter
-public class EmailRequest {
-    private String email;
+public class ChangePasswordRequest {
 
-    private String code;
+    private String password;
 
     private String newPassword;
 }

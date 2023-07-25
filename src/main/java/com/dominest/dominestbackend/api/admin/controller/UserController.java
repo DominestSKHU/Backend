@@ -1,8 +1,10 @@
 package com.dominest.dominestbackend.api.admin.controller;
 
+import com.dominest.dominestbackend.api.admin.request.ChangePasswordRequest;
 import com.dominest.dominestbackend.api.admin.request.JoinRequest;
 import com.dominest.dominestbackend.api.admin.response.JoinResponse;
 import com.dominest.dominestbackend.domain.email.service.EmailVerificationService;
+import com.dominest.dominestbackend.domain.jwt.service.UserDetailsServiceImpl;
 import com.dominest.dominestbackend.domain.user.User;
 import com.dominest.dominestbackend.domain.user.repository.UserRepository;
 import com.dominest.dominestbackend.api.admin.request.LoginRequest;
@@ -16,6 +18,8 @@ import com.dominest.dominestbackend.global.exception.exceptions.auth.NotValidTok
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
@@ -79,6 +83,29 @@ public class UserController {
         } catch (NotValidTokenException e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponseDto.error(ErrorStatus.USER_CERTIFICATION_FAILED)); // 401 Unauthorized 상태로 실패 응답 반환
+        }
+    }
+
+    @PostMapping("/myPage/password") // 비밀번호 변경
+    public ResponseEntity<ApiResponseDto> changePassword(@RequestBody ChangePasswordRequest request) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String logInUserEmail = authentication.getPrincipal().toString().split(",")[0].split("=")[1]; // email주소만 가져오기
+
+        Optional<User> userOptional = userRepository.findByEmail(logInUserEmail);
+
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+
+            // 현재 비밀번호와 입력한 비밀번호가 일치하는지 확인
+            if (userService.validateUserPassword(request.getPassword(), user.getPassword())) {
+                user.changePassword(passwordEncoder.encode(request.getNewPassword())); // 비밀번호 변경
+                userRepository.save(user);
+                return ResponseEntity.ok(ApiResponseDto.success(SuccessStatus.CHANGE_PASSWORD_SUCCESS));
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponseDto.error(ErrorStatus.INCORRECT_PASSWORD_ERROR));
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponseDto.error(ErrorStatus.USER_CERTIFICATION_FAILED));
         }
     }
 }

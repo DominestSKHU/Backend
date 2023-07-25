@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -36,7 +38,9 @@ public class User implements UserDetails {
 //        this.isLogin = isLogin;
 //    }
 
-
+    public void changePassword(String newPassword) {
+        this.password = newPassword;
+    }
 
     @Enumerated(EnumType.STRING)
     private Role role;
@@ -57,7 +61,8 @@ public class User implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return this.roles.stream()
                 .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());    }
+                .collect(Collectors.toList());
+    }
 
     @Override
     public String getUsername() {

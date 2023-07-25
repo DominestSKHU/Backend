@@ -14,10 +14,9 @@ public enum ErrorStatus {
      */
     VALIDATION_EXCEPTION(HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
     NOT_LOGIN_STATUS(HttpStatus.BAD_REQUEST, "로그인 되어있지 않습니다."),
+    INCORRECT_PASSWORD_ERROR(HttpStatus.BAD_REQUEST, "현재 비밀번호와 일치하지 않습니다."),
     VALIDATION_REQUEST_MISSING_EXCEPTION(HttpStatus.BAD_REQUEST, "요청값이 입력되지 않았습니다."),
     EMAIL_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "이미 존재하는 이메일입니다."),
-
-
 
     VERIFY_EMAIL_FAILED(HttpStatus.BAD_REQUEST, "이메일 인증 실패"),
 
