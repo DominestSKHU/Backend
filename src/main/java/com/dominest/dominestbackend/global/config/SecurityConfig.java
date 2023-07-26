@@ -4,6 +4,7 @@ import com.dominest.dominestbackend.domain.jwt.service.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -33,11 +34,11 @@ public class SecurityConfig {
                 .and()
                 .formLogin().disable() // 폼 로그인 비활성화. JWT 필터로 대체
                 .authorizeRequests()
+                .antMatchers(HttpMethod.GET).permitAll() // GET 요청은 토큰 검증 예외
                 .antMatchers("/user/join").permitAll() // 회원가입 요청은 토큰 검증 예외
                 .antMatchers("/user/login").permitAll()
                 .antMatchers("/email/send").permitAll()
                 .antMatchers("/email/verify/code").permitAll()
-                // .antMatchers("/user/myPage/password").permitAll()
                 .antMatchers("/email/change/password").permitAll()
                 .anyRequest().authenticated()
                 .and()
