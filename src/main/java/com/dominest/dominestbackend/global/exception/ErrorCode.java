@@ -36,7 +36,6 @@ public enum ErrorCode {
     RESIDENT_NOT_FOUND(404, "해당 입사자가 존재하지 않습니다."),
     ;
 
-
     private int statusCode;
     private String message;
 
@@ -44,4 +43,5 @@ public enum ErrorCode {
         this.statusCode = status;
         this.message = message;
     }
+
 }

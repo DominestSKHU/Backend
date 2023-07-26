@@ -15,7 +15,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 @EnableWebSecurity
 @Configuration
-public class SecurityConfig{
+public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
@@ -33,9 +33,13 @@ public class SecurityConfig{
                 .and()
                 .formLogin().disable() // 폼 로그인 비활성화. JWT 필터로 대체
                 .authorizeRequests()
-                // 현재 JwtFilter를 사용하는 로직이 없으므로 모든 요청을 허용한다.
-//                .antMatchers("/user/join").permitAll() // 회원가입 요청은 토큰 검증 예외 //
-                .anyRequest().permitAll()
+                .antMatchers("/user/join").permitAll() // 회원가입 요청은 토큰 검증 예외
+                .antMatchers("/user/login").permitAll()
+                .antMatchers("/email/send").permitAll()
+                .antMatchers("/email/verify/code").permitAll()
+                // .antMatchers("/user/myPage/password").permitAll()
+                .antMatchers("/email/change/password").permitAll()
+                .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

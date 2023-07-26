@@ -13,10 +13,16 @@ import java.util.concurrent.TimeUnit;
 public class EmailVerificationService {
     @Getter
     private final Cache<String, String> codeExpirationCache; // <email, verification code>. thread-safe map.
+    private final Cache<String, Boolean> emailVerificationStatusCache; // <email, verification status>. thread-safe map.
+
 
     @Autowired
     public EmailVerificationService() {
         codeExpirationCache = Caffeine.newBuilder()
+                .expireAfterWrite(20, TimeUnit.MINUTES)
+                .build();
+
+        emailVerificationStatusCache = Caffeine.newBuilder()
                 .expireAfterWrite(20, TimeUnit.MINUTES)
                 .build();
     }
@@ -35,6 +41,17 @@ public class EmailVerificationService {
         }
 
         String storedCode = codeExpirationCache.getIfPresent(email);
-        return storedCode != null && storedCode.equalsIgnoreCase(verificationCode);
+        boolean isValid = storedCode != null && storedCode.equalsIgnoreCase(verificationCode);
+
+        // Cache the email verification status
+        if (isValid) {
+            emailVerificationStatusCache.put(email, true);
+        }
+
+        return isValid;
+    }
+
+    public boolean isEmailVerified(String email) {
+        return emailVerificationStatusCache.getIfPresent(email) != null;
     }
 }

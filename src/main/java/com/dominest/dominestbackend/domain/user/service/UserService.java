@@ -9,6 +9,7 @@ import com.dominest.dominestbackend.domain.jwt.dto.TokenDto;
 import com.dominest.dominestbackend.domain.jwt.service.TokenManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +19,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class UserService {
     private final UserRepository userRepository;
 
@@ -44,7 +46,12 @@ public class UserService {
         return tokenDto;
     }
 
+
     public boolean checkDuplicateEmail(String email){
         return userRepository.findByEmail(email).isPresent();
+    }
+
+    public boolean validateUserPassword(String currentPassword, String loggedInUserPassword) {
+        return passwordEncoder.matches(currentPassword, loggedInUserPassword);
     }
 }
