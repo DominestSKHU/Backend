@@ -67,6 +67,7 @@ public class Resident extends BaseTimeEntity {
     // Todo: 날짜타입 유지하면서 8자리로 표시할 수 있는지?
     // 아래의 날짜들은 '20191106' 형식으로 저장됨
     private LocalDate admissionDate; // 입사일.
+    @Column(nullable = true)
     private LocalDate leavingDate; // 퇴사일
     private LocalDate semesterStartDate; // 학기시작일
     private LocalDate semesterEndDate; // 학기종료일

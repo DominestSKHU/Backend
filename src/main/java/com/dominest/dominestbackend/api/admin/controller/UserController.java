@@ -37,7 +37,6 @@ public class UserController {
 
     @PostMapping("/join") // 회원가입
     public ResponseEntity<ApiResponseDto<JoinResponse>> signUp(@RequestBody @Valid final JoinRequest request){
-        Optional<User> existingUser = userRepository.findByEmail(request.getEmail());
 
         if(userService.checkDuplicateEmail(request.getEmail())){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponseDto.error(ErrorStatus.EMAIL_ALREADY_EXIST));
