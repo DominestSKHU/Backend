@@ -6,29 +6,60 @@ import com.dominest.dominestbackend.api.resident.dto.ResidentListDto;
 import com.dominest.dominestbackend.api.resident.dto.SaveResidentDto;
 import com.dominest.dominestbackend.domain.resident.ResidentService;
 import com.dominest.dominestbackend.domain.resident.component.ResidenceSemester;
+import com.dominest.dominestbackend.global.exception.ErrorCode;
+import com.dominest.dominestbackend.global.exception.exceptions.file.FileIOException;
+import com.dominest.dominestbackend.global.util.FileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.IOException;
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
 public class ResidentController {
 
     private final ResidentService residentService;
+    private final FileService fileService;
 
     // 엑셀로 업로드
     @PostMapping("/residents/upload-excel")
-    @Transactional
     public ResponseEntity<RspsTemplate<?>> handleFileUpload(@RequestParam(required = true) MultipartFile file
                                                                                                             , @RequestParam(required = true) ResidenceSemester residenceSemester){
         residentService.excelUpload(file, residenceSemester);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
+
+    @GetMapping("/pdf")
+    public ResponseEntity<RspsTemplate<?>> handlePdf(HttpServletResponse response){
+        byte[] bytes = fileService.getByteArr("test.pdf");
+        response.setContentType(MediaType.APPLICATION_PDF_VALUE);
+
+        try(ServletOutputStream outputStream = response.getOutputStream()) {
+            outputStream.write(bytes);
+        } catch (IOException e) {
+            throw new FileIOException(ErrorCode.FILE_CANNOT_BE_SENT);
+        }
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @PostMapping("/pdf")
+    public String handlePdfUpload(@RequestParam("pdf1") List<MultipartFile> file){
+
+        List<String> strings = fileService.saveAll(file);
+        return strings.get(0);
+    }
+
+
+
+
 
     // 전체조회
     @GetMapping("/residents")

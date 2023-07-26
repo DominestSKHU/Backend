@@ -1,6 +1,35 @@
 spring:
   profiles:
     active:
+  servlet:
+    multipart:
+      max-file-size: 30MB
+      max-request-size: 30MB
+  jpa:
+    hibernate:
+      ddl-auto: create
 
+jwt:
+  secret: ${token.secret}
+  access-token-expiration-time: ${token.access-token-expiration-time}
+  refresh-token-expiration-time: ${token.refresh-token-expiration-time}
 
+  mail:
+    host: smtp.naver.com #smtp
+    port: 465
+    username: ${email.id}
+    password: ${email.pw}
+    properties:
+      mail:
+        smtp:
+          starttls:
+            enable: true
+          #            required: true
+          auth: true
+          #          connectiontimeout: 5000
+          #          timeout: 5000
+          #          writetimeout: 5000
+          ssl:
+            trust: smtp.naver.com
+            enable: true
 

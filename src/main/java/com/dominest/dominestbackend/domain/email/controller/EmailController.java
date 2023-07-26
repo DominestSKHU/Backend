@@ -9,7 +9,10 @@ import com.dominest.dominestbackend.global.apiResponse.SuccessStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
@@ -17,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/email")
 public class EmailController {
     private final EmailService emailService;
-
     private final EmailVerificationService emailVerificationService;
 
     @PostMapping("/send") // 인증번호 발송 버튼 누르면 메일 가게
@@ -26,11 +28,13 @@ public class EmailController {
         return ResponseEntity.ok(ApiResponseDto.success(SuccessStatus.SEND_EMAIL_SUCCESS, emailRequest.getEmail() + "로 검증코드를 전송했습니다."));
     }
 
+
     @PostMapping("/change/password") // 임시 비밀번호 이메일 전송
     public ResponseEntity<ApiResponseDto<String>> changePasswordEmail(@RequestBody EmailRequest emailRequest) throws Exception {
         emailService.sendChangeMessage(emailRequest.getEmail()); // 이메일로 인증코드를 보냄
         return ResponseEntity.ok(ApiResponseDto.success(SuccessStatus.SEND_EMAIL_SUCCESS, emailRequest.getEmail() + "로 검증코드를 전송했습니다."));
     }
+
 
     @PostMapping("/verify/code") // 이메일 인증코드 검증
     public ResponseEntity<ApiResponseDto<String>> verifyEmail(@RequestBody EmailRequest emailRequest) {

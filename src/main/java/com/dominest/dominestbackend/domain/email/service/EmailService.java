@@ -15,26 +15,30 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 
+
 @Service
 @RequiredArgsConstructor
 public class EmailService {
     private final JavaMailSender emailsender; // Bean 등록해둔 MailConfig 를 emailsender 라는 이름으로 autowired
 
     private final EmailVerificationService emailVerificationService;
-
     private final UserRepository userRepository;
-
     private final PasswordEncoder passwordEncoder;
 
 
     // 회원가입 메일 양식 작성
     private MimeMessage createJoinMessage(String email) throws MessagingException{
         String authNum = emailVerificationService.generateCode(email);
+
+
+    // 메일 양식 작성
+    private MimeMessage createMessage(String toEmail) throws MessagingException{
+        String authNum = emailVerificationService.generateCode(toEmail);
         String setFrom = "gjwldud0719@naver.com";
         String title = "회원가입 인증 번호";
 
         MimeMessage message = emailsender.createMimeMessage();
-        message.addRecipients(MimeMessage.RecipientType.TO, email); // 보내는 대상
+        message.addRecipients(MimeMessage.RecipientType.TO, toEmail); // 보내는 대상
         message.setSubject(title);
         message.setFrom(setFrom);
         String n = "";

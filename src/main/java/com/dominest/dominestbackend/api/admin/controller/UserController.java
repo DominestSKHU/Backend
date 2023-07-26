@@ -30,18 +30,15 @@ import java.util.Optional;
 @RequestMapping("/user")
 public class UserController {
     private final UserRepository userRepository;
-
     private final UserService userService;
-
     private final PasswordEncoder passwordEncoder;
-
     private final TokenManager tokenManager;
-
     private final EmailVerificationService emailVerificationService;
 
     @PostMapping("/join") // 회원가입
     public ResponseEntity<ApiResponseDto<JoinResponse>> signUp(@RequestBody @Valid final JoinRequest request){
         Optional<User> existingUser = userRepository.findByEmail(request.getEmail());
+
         if(userService.checkDuplicateEmail(request.getEmail())){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponseDto.error(ErrorStatus.EMAIL_ALREADY_EXIST));
         }
@@ -50,13 +47,14 @@ public class UserController {
         if (!isEmailVerified) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponseDto.error(ErrorStatus.EMAIL_NOT_VERIFIED));
         }
-
+        // Todo 이메일 인증 통과한거 맞는지 검사하는 로직 필요
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseDto.success(SuccessStatus.JOIN_SUCCESS, userService.create(request)));
     }
 
     @PostMapping("/login") // 로그인
     public ResponseEntity<ApiResponseDto<TokenDto>> login(@RequestBody @Valid final LoginRequest request) {
         Optional<User> user = userRepository.findByEmail(request.getEmail());
+
         if (user.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponseDto.error(ErrorStatus.USER_CERTIFICATION_FAILED)); // 401 Unauthorized 상태로 실패 응답 반환
         }

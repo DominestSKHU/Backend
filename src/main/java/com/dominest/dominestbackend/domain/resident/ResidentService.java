@@ -37,8 +37,7 @@ public class ResidentService {
         int columnCount = ExcelUtil.RESIDENT_COLUMN_COUNT;
 
         // 엑셀 파싱
-        List<List<String>> sheet;
-        sheet = ExcelUtil.parseExcel(file);
+        List<List<String>> sheet= ExcelUtil.parseExcel(file);
 
         Integer sheetColumnCount = Optional.ofNullable(sheet.get(0))
                 .map(List::size)
@@ -52,11 +51,17 @@ public class ResidentService {
         // 첫 3줄 제거 후 유효 데이터만 추출
         sheet.remove(0); sheet.remove(0);sheet.remove(0);
 
+        // 지정 차수에 이미 데이터가 있을 경우 전체삭제.
+        // 현재 서로 다른 차수의 데이터가 존재하지 않는 것이 요구되므로 전체삭제.  TODO 차수 컬럼이 꼭 필요한지 다시 생각해봐야 할 듯
+        if (residentRepository.existsByResidenceSemester(residenceSemester)) {
+            residentRepository.deleteAllInBatch();
+        }
+        // 데이터를 저장한다. 예외발생시 삭제나 저장 작업의 트랜잭션 롤백.
         for (List<String> row : sheet) {
-            if ("BLANK".equals(row.get(columnCount - 1))) // 빈 row 발견 시 continue;
+            if ("".equals(row.get(columnCount - 1))) // 빈 row 발견 시 continue;
                 continue;
             Resident resident = Resident.from(row, residenceSemester);
-            residentRepository.save(resident);
+            saveResident(resident);
         }
     }
 
@@ -76,7 +81,7 @@ public class ResidentService {
         try {
             residentRepository.save(resident);
         } catch (DataIntegrityViolationException e) {
-            throw new BusinessException("학생 저장 실패, 잘못된 입력값입니다. 오류 메시지: " +
+            throw new BusinessException("학생 저장 실패, 잘못된 입력값입니다. 학번 중복 혹은 데이터 형식을 확인해주세요.오류 메시지: " +
                     e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
