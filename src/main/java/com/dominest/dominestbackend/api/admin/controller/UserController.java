@@ -2,14 +2,13 @@ package com.dominest.dominestbackend.api.admin.controller;
 
 import com.dominest.dominestbackend.api.admin.request.ChangePasswordRequest;
 import com.dominest.dominestbackend.api.admin.request.JoinRequest;
+import com.dominest.dominestbackend.api.admin.request.LoginRequest;
 import com.dominest.dominestbackend.api.admin.response.JoinResponse;
 import com.dominest.dominestbackend.domain.email.service.EmailVerificationService;
-import com.dominest.dominestbackend.domain.jwt.service.UserDetailsServiceImpl;
-import com.dominest.dominestbackend.domain.user.User;
-import com.dominest.dominestbackend.domain.user.repository.UserRepository;
-import com.dominest.dominestbackend.api.admin.request.LoginRequest;
 import com.dominest.dominestbackend.domain.jwt.dto.TokenDto;
 import com.dominest.dominestbackend.domain.jwt.service.TokenManager;
+import com.dominest.dominestbackend.domain.user.User;
+import com.dominest.dominestbackend.domain.user.repository.UserRepository;
 import com.dominest.dominestbackend.domain.user.service.UserService;
 import com.dominest.dominestbackend.global.apiResponse.ApiResponseDto;
 import com.dominest.dominestbackend.global.apiResponse.ErrorStatus;
@@ -22,6 +21,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+
 import javax.validation.Valid;
 import java.util.Optional;
 
@@ -47,7 +47,7 @@ public class UserController {
         if (!isEmailVerified) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponseDto.error(ErrorStatus.EMAIL_NOT_VERIFIED));
         }
-        // Todo 이메일 인증 통과한거 맞는지 검사하는 로직 필요
+
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseDto.success(SuccessStatus.JOIN_SUCCESS, userService.create(request)));
     }
 
