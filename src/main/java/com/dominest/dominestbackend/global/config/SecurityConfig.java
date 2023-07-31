@@ -35,6 +35,7 @@ public class SecurityConfig {
                 .formLogin().disable() // 폼 로그인 비활성화. JWT 필터로 대체
                 .authorizeRequests()
                 .antMatchers(HttpMethod.GET).permitAll() // GET 요청은 토큰 검증 예외
+                .antMatchers(HttpMethod.OPTIONS).permitAll() // OPTIONS 요청은 토큰 검증 예외
                 .antMatchers("/user/join").permitAll() // 회원가입 요청은 토큰 검증 예외
                 .antMatchers("/user/login").permitAll()
                 .antMatchers("/email/send").permitAll()
