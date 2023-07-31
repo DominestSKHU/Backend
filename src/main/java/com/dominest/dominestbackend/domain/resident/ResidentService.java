@@ -1,6 +1,7 @@
 package com.dominest.dominestbackend.domain.resident;
 
 import com.dominest.dominestbackend.api.resident.dto.ResidentListDto;
+import com.dominest.dominestbackend.api.resident.dto.ResidentPdfListDto;
 import com.dominest.dominestbackend.domain.resident.component.ResidenceSemester;
 import com.dominest.dominestbackend.global.exception.ErrorCode;
 import com.dominest.dominestbackend.global.exception.exceptions.AppServiceException;
@@ -143,6 +144,11 @@ public class ResidentService {
     public void deleteById(Long id) {
         Resident resident = findById(id);
         residentRepository.delete(resident);
+    }
+
+    public ResidentPdfListDto.Res getAllPdfs(ResidenceSemester semester) {
+        List<Resident> residents = residentRepository.findAllByResidenceSemester(semester);
+        return ResidentPdfListDto.Res.from(residents);
     }
 
 //    @Transactional

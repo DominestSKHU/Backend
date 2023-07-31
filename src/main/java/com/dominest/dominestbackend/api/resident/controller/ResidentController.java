@@ -2,6 +2,7 @@ package com.dominest.dominestbackend.api.resident.controller;
 
 
 import com.dominest.dominestbackend.api.common.ResTemplate;
+import com.dominest.dominestbackend.api.resident.dto.ResidentPdfListDto;
 import com.dominest.dominestbackend.api.resident.dto.ResidentListDto;
 import com.dominest.dominestbackend.api.resident.dto.SaveResidentDto;
 import com.dominest.dominestbackend.domain.resident.ResidentService;
@@ -107,6 +108,14 @@ public class ResidentController {
         ResTemplate<String> resTemplate = new ResTemplate<>(HttpStatus.CREATED, "pdf zip 업로드 완료. 저장된 파일 수: " + uploadCount + "개");
         return ResponseEntity.created(URI.create("/residents/pdf")).body(resTemplate);
     }
+
+    // 해당차수 입사생 전체 PDF 조회
+    @GetMapping("/residents/pdf")
+    public ResTemplate<ResidentPdfListDto.Res> handleGetAllPdfs(@RequestParam(required = true) ResidenceSemester residenceSemester){
+        ResidentPdfListDto.Res res = residentService.getAllPdfs(residenceSemester);
+        return new ResTemplate<>(HttpStatus.OK, "pdf url 조회 성공", res);
+    }
+
 }
 
 
