@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.net.URI;
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -91,10 +92,20 @@ public class ResidentController {
 
     // PDF 단건 업로드
     @PostMapping("/residents/{id}/pdf")
-    public ResponseEntity<ResTemplate<String>> handlePdfUpload(@RequestParam MultipartFile pdf, @PathVariable Long id){
+    public ResponseEntity<ResTemplate<String>> handlePdfUpload(@RequestParam(required = true) MultipartFile pdf, @PathVariable Long id){
         String uploadedFileName = residentService.uploadPdf(id, FileService.FilePrefix.RESIDENT_PDF, pdf);
         ResTemplate<String> resTemplate = new ResTemplate<>(HttpStatus.CREATED, "pdf 업로드 완료");
         return ResponseEntity.created(URI.create("/residents/"+id+"/pdf?filename=" + uploadedFileName)).body(resTemplate);
+    }
+
+    // PDF 전체 업로드
+    @PostMapping("/residents/pdf")
+    public ResponseEntity<ResTemplate<String>> handlePdfUpload(@RequestParam(required = true) List<MultipartFile> pdfZips
+                                                                                                                    , @RequestParam(required = true) ResidenceSemester residenceSemester){
+        int uploadCount = residentService.uploadPdfs(FileService.FilePrefix.RESIDENT_PDF, pdfZips, residenceSemester);
+
+        ResTemplate<String> resTemplate = new ResTemplate<>(HttpStatus.CREATED, "pdf zip 업로드 완료. 저장된 파일 수: " + uploadCount + "개");
+        return ResponseEntity.created(URI.create("/residents/pdf")).body(resTemplate);
     }
 }
 

@@ -28,6 +28,7 @@ public class ResidentService {
     private final ResidentRepository residentRepository;
     private final FileService fileService;
 
+    /** @return 저장한 파일명 */
     @Transactional
     public String uploadPdf(Long id, FileService.FilePrefix filePrefix, MultipartFile pdf) {
         // 로컬에 파일 저장
@@ -37,6 +38,39 @@ public class ResidentService {
         // 파일명 저장 후 반환
         resident.setPdfFileName(uploadedFileName);
         return uploadedFileName;
+    }
+
+    /**@return 업로드한 파일 개수*/
+    @Transactional
+    public int uploadPdfs(FileService.FilePrefix filePrefix, List<MultipartFile> pdfs, ResidenceSemester residenceSemester) {
+        int uploadCount = 0;
+        for (MultipartFile pdf : pdfs) {
+            // 빈 객체면 continue
+            if (pdf.isEmpty()) {
+                continue;
+            }
+
+            String filename = pdf.getOriginalFilename();
+            // pdf 확장자가 아니라면 continue
+            if (! filename.endsWith(".pdf")){
+                continue;
+            }
+
+            // 1. 파일명으로 해당 차수의 학생이름을 찾는다. 파일명은 '학생이름.pdf' 여야 한다.
+            String residentName = fileService.extractFileNameNoExt(filename);
+            Resident resident = residentRepository.findByNameAndResidenceSemester(residentName, residenceSemester);
+
+            // 파일명에 해당하는 학생이 없으면 continue
+            if (resident == null) continue;
+
+            // 로컬에 파일 저장
+            String uploadedFileName = fileService.save(filePrefix, pdf);
+            uploadCount++;
+
+            // resident 객체에 파일명 저장
+            resident.setPdfFileName(uploadedFileName);
+        }
+        return uploadCount; // 업로드한 파일 개수 반환
     }
 
     @Transactional
@@ -110,6 +144,53 @@ public class ResidentService {
         Resident resident = findById(id);
         residentRepository.delete(resident);
     }
+
+//    @Transactional
+//    public int uploadPdfZip(MultipartFile pdfZip, ResidenceSemester residenceSemester) {
+//        // 1. zip 확장자 검사
+//        if (! pdfZip.getOriginalFilename().endsWith(".zip")){
+//            throw new BusinessException(ErrorCode.FILE_NOT_ZIP);
+//        }
+//        // 2. 내부 파일 순회
+//        Path destinationPath = fileService.getUploadPath();
+//
+//        int uploadCount = 0;
+//        // 3. zip 파일의 inputStream을 추출해서 내부의 PDF 파일들을 저장
+//        try (ZipInputStream zipInputStream = new ZipInputStream(pdfZip.getInputStream(), StandardCharsets.UTF_8)) {
+////        try (ZipInputStream zipInputStream = new ZipInputStream(pdfZip.getInputStream(), StandardCharsets.ISO_8859_1)) {
+//            ZipEntry entry;
+//            while ((entry = zipInputStream.getNextEntry()) != null) {
+//                try {
+//                    String filename = entry.getName(); // 원본 파일명
+//                    // pdf 확장자가 아니라면 continue
+//                    if (! filename.endsWith(".pdf")){
+//                        continue;
+//                    }
+//                    // 2. 파일명으로 해당 차수의 학생이름을 찾는다. 파일명은 '학생이름.pdf' 여야 한다.
+//                    // 못 찾으면 continue, 찾았으면 저장(개별업로드 로직)
+//                    String residentName = fileService.extractFileNameNoExt(filename);
+//                    Resident resident = residentRepository.findByNameAndResidenceSemester(residentName, residenceSemester);
+//                    Resident resident2 = residentRepository.findByNameAndResidenceSemester("윤현우", residenceSemester);
+//
+//                    if (resident == null) continue;
+//
+//                    // 파일명에 해당하는 학생이 있으므로, 이제 파일명을 UUID로 변경하고 Path객체를 생성한다.
+//                    //  filename = UUID.randomUUID() + ".pdf";
+//                    Path filePath = destinationPath.resolve(filename);
+//
+//                    fileService.extractFile(zipInputStream, filePath);
+//                    uploadCount++;
+//                    resident.setPdfFileName(filename);
+//                } finally {
+//                    zipInputStream.closeEntry();
+//                }
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//        return uploadCount;
+//    }
 }
 
 
