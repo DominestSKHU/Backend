@@ -36,29 +36,6 @@ public class ResidentController {
         residentService.excelUpload(file, residenceSemester);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
-    // 특정 입사생의 PDF 조회
-    @GetMapping("/residents/{id}/pdf")
-    public ResponseEntity<ResTemplate<?>> handlePdf(@RequestParam(required = true) String filename,
-                                                                                                 HttpServletResponse response){
-        byte[] bytes = fileService.getByteArr("test.pdf");
-        response.setContentType(MediaType.APPLICATION_PDF_VALUE);
-
-        try(ServletOutputStream outputStream = response.getOutputStream()) {
-            outputStream.write(bytes);
-        } catch (IOException e) {
-            throw new FileIOException(ErrorCode.FILE_CANNOT_BE_SENT);
-        }
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-    }
-
-    // PDF 단건 업로드
-    @PostMapping("/residents/{id}/pdf")
-    public ResponseEntity<ResTemplate<String>> handlePdfUpload(@RequestParam MultipartFile pdf, @PathVariable Long id){
-        String uploadedFileName = residentService.uploadPdf(id, FileService.FilePrefix.RESIDENT_PDF, pdf);
-        ResTemplate<String> resTemplate = new ResTemplate<>(HttpStatus.CREATED, "pdf 업로드 완료", null);
-        // Todo 조회API 만들고 location Header 다시 확인하기
-        return ResponseEntity.created(URI.create("/residents/"+id+"/pdf/" + uploadedFileName)).body(resTemplate);
-    }
 
     // 전체조회
     @GetMapping("/residents")
@@ -95,24 +72,30 @@ public class ResidentController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
+    // 특정 입사생의 PDF 조회
+    @GetMapping("/residents/{id}/pdf")
+    public ResTemplate<?> handlePdf(@RequestParam(required = true) String filename,
+                                    HttpServletResponse response){
+        // PDF 파일 읽기
+        byte[] bytes = fileService.getByteArr(FileService.FilePrefix.RESIDENT_PDF, filename);
 
+        response.setContentType(MediaType.APPLICATION_PDF_VALUE);
 
+        try(ServletOutputStream outputStream = response.getOutputStream()) {
+            outputStream.write(bytes);
+        } catch (IOException e) {
+            throw new FileIOException(ErrorCode.FILE_CANNOT_BE_SENT);
+        }
+        return new ResTemplate<>(HttpStatus.OK, "pdf 조회 성공");
+    }
 
-
-
-
-
-
-//    StringBuilder sb = new StringBuilder();
-//        for (List<String> strings : sheet) {
-//        for (String string : strings) {
-//            sb.append(string).append(" ");
-//        }
-//        sb.append("\n");
-//    }
-//        System.out.println(sb);
-//        System.out.println("row 수 => "+sheet.size());
-//        System.out.println("column 수 => "+sheet.get(0).size());
+    // PDF 단건 업로드
+    @PostMapping("/residents/{id}/pdf")
+    public ResponseEntity<ResTemplate<String>> handlePdfUpload(@RequestParam MultipartFile pdf, @PathVariable Long id){
+        String uploadedFileName = residentService.uploadPdf(id, FileService.FilePrefix.RESIDENT_PDF, pdf);
+        ResTemplate<String> resTemplate = new ResTemplate<>(HttpStatus.CREATED, "pdf 업로드 완료");
+        return ResponseEntity.created(URI.create("/residents/"+id+"/pdf?filename=" + uploadedFileName)).body(resTemplate);
+    }
 }
 
 
