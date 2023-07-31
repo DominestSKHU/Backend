@@ -23,10 +23,10 @@ public class FileService {
     private String fileUploadPath;
 
     // return fullFilePath
-    public List<String> save(List<MultipartFile> multipartFiles, FilePrefix prefix){
+    public List<String> save(FilePrefix prefix, List<MultipartFile> multipartFiles){
         List<String> storedFilePaths = new ArrayList<>();
         for (MultipartFile multipartFile : multipartFiles) {
-            String storedFilePath = save(multipartFile, prefix);
+            String storedFilePath = save(prefix, multipartFile);
             if (storedFilePath == null) continue;
             storedFilePaths.add(storedFilePath);
         }
@@ -38,7 +38,7 @@ public class FileService {
      * @return "prefix" + "저장된 파일명 UUID" + ".확장자"
      */
     // return fullFilePath
-    public String save(MultipartFile multipartFile, FilePrefix prefix){
+    public String save(FilePrefix prefix, MultipartFile multipartFile){
         // empty Check. type=file 이며 name이 일치한다면, 본문이 비어있어도 MultiPartFile 객체가 생성된다.
         if (multipartFile.isEmpty()) {
             return null;
@@ -77,8 +77,9 @@ public class FileService {
         return originalFileName.substring(pos +1);
     }
 
-    public byte[] getByteArr(String fileName) {
-        try (InputStream imageStream = new FileInputStream(fileUploadPath + fileName)) {
+    public byte[] getByteArr(FilePrefix filePrefix, String fileName) {
+        String fullFilePath = filePrefix.getPrefix() + fileName;
+        try (InputStream imageStream = new FileInputStream(fileUploadPath + fullFilePath)) {
             return imageStream.readAllBytes();
         } catch (IOException e) {
             e.printStackTrace();

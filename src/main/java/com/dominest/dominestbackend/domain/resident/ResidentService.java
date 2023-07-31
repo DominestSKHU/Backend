@@ -29,9 +29,9 @@ public class ResidentService {
     private final FileService fileService;
 
     @Transactional
-    public String uploadPdf(Long id, MultipartFile pdf, FileService.FilePrefix filePrefix) {
+    public String uploadPdf(Long id, FileService.FilePrefix filePrefix, MultipartFile pdf) {
         // 로컬에 파일 저장
-        String uploadedFileName = fileService.save(pdf, filePrefix);
+        String uploadedFileName = fileService.save(filePrefix, pdf);
         Resident resident = findById(id);
 
         // 파일명 저장 후 반환

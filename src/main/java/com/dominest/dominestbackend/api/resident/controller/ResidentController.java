@@ -36,9 +36,10 @@ public class ResidentController {
         residentService.excelUpload(file, residenceSemester);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
-
-    @GetMapping("/pdf")
-    public ResponseEntity<ResTemplate<?>> handlePdf(HttpServletResponse response){
+    // 특정 입사생의 PDF 조회
+    @GetMapping("/residents/{id}/pdf")
+    public ResponseEntity<ResTemplate<?>> handlePdf(@RequestParam(required = true) String filename,
+                                                                                                 HttpServletResponse response){
         byte[] bytes = fileService.getByteArr("test.pdf");
         response.setContentType(MediaType.APPLICATION_PDF_VALUE);
 
@@ -53,7 +54,7 @@ public class ResidentController {
     // PDF 단건 업로드
     @PostMapping("/residents/{id}/pdf")
     public ResponseEntity<ResTemplate<String>> handlePdfUpload(@RequestParam MultipartFile pdf, @PathVariable Long id){
-        String uploadedFileName = residentService.uploadPdf(id, pdf, FileService.FilePrefix.RESIDENT_PDF);
+        String uploadedFileName = residentService.uploadPdf(id, FileService.FilePrefix.RESIDENT_PDF, pdf);
         ResTemplate<String> resTemplate = new ResTemplate<>(HttpStatus.CREATED, "pdf 업로드 완료", null);
         // Todo 조회API 만들고 location Header 다시 확인하기
         return ResponseEntity.created(URI.create("/residents/"+id+"/pdf/" + uploadedFileName)).body(resTemplate);
