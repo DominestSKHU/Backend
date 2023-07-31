@@ -3,10 +3,7 @@ package com.dominest.dominestbackend.domain.resident;
 import com.dominest.dominestbackend.domain.common.BaseTimeEntity;
 import com.dominest.dominestbackend.domain.resident.component.ResidenceSemester;
 import com.dominest.dominestbackend.global.util.TimeUtil;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
@@ -58,8 +55,6 @@ public class Resident extends BaseTimeEntity {
     @Min(1)
     private Integer roomNumber; // 호실
     private String assignedRoom; // 배정방. 'B1049A' 와 같음
-    @Enumerated(EnumType.STRING)
-    private ResidenceSemester residenceSemester; // 거주학기. '2020-2' 와 같음
 
     /** 날짜정보 */
     // 엑셀데이터는 8자리로 저장되긴 하는데, 날짜 필터링 걸려면 날짜타입 사용해야 할 듯
@@ -76,6 +71,15 @@ public class Resident extends BaseTimeEntity {
 
     private String zipCode; // 우편번호
     private String address; // 주소. 이거 거주지별로 분류할 일이 생기나?
+
+    /** 아래는 학생정보 페이지에 표시되지 않는 정보들 */
+    @Enumerated(EnumType.STRING)
+    private ResidenceSemester residenceSemester; // 거주학기. '2020-2' 와 같음
+    @Column(nullable = true)
+    @Setter()
+    private String pdfFileName; // UUID로 저장된다.
+
+
 
     @Builder
     private Resident(String name, String gender, String studentId, String major, String grade,

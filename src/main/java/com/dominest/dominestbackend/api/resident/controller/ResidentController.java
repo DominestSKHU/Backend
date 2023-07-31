@@ -1,7 +1,7 @@
 package com.dominest.dominestbackend.api.resident.controller;
 
 
-import com.dominest.dominestbackend.api.common.RspsTemplate;
+import com.dominest.dominestbackend.api.common.ResTemplate;
 import com.dominest.dominestbackend.api.resident.dto.ResidentListDto;
 import com.dominest.dominestbackend.api.resident.dto.SaveResidentDto;
 import com.dominest.dominestbackend.domain.resident.ResidentService;
@@ -20,7 +20,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
-import java.util.List;
+import java.net.URI;
 
 @RequiredArgsConstructor
 @RestController
@@ -31,14 +31,14 @@ public class ResidentController {
 
     // 엑셀로 업로드
     @PostMapping("/residents/upload-excel")
-    public ResponseEntity<RspsTemplate<?>> handleFileUpload(@RequestParam(required = true) MultipartFile file
+    public ResponseEntity<ResTemplate<?>> handleFileUpload(@RequestParam(required = true) MultipartFile file
                                                                                                             , @RequestParam(required = true) ResidenceSemester residenceSemester){
         residentService.excelUpload(file, residenceSemester);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @GetMapping("/pdf")
-    public ResponseEntity<RspsTemplate<?>> handlePdf(HttpServletResponse response){
+    public ResponseEntity<ResTemplate<?>> handlePdf(HttpServletResponse response){
         byte[] bytes = fileService.getByteArr("test.pdf");
         response.setContentType(MediaType.APPLICATION_PDF_VALUE);
 
@@ -50,48 +50,46 @@ public class ResidentController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @PostMapping("/pdf")
-    public String handlePdfUpload(@RequestParam("pdf1") List<MultipartFile> file){
-
-        List<String> strings = fileService.saveAll(file);
-        return strings.get(0);
+    // PDF 단건 업로드
+    @PostMapping("/residents/{id}/pdf")
+    public ResponseEntity<ResTemplate<String>> handlePdfUpload(@RequestParam MultipartFile pdf, @PathVariable Long id){
+        String uploadedFileName = residentService.uploadPdf(id, pdf, FileService.FilePrefix.RESIDENT_PDF);
+        ResTemplate<String> resTemplate = new ResTemplate<>(HttpStatus.CREATED, "pdf 업로드 완료", null);
+        // Todo 조회API 만들고 location Header 다시 확인하기
+        return ResponseEntity.created(URI.create("/residents/"+id+"/pdf/" + uploadedFileName)).body(resTemplate);
     }
-
-
-
-
 
     // 전체조회
     @GetMapping("/residents")
-    public RspsTemplate<ResidentListDto.Res> handleGetAllResident(@RequestParam(required = true) ResidenceSemester residenceSemester){
+    public ResTemplate<ResidentListDto.Res> handleGetAllResident(@RequestParam(required = true) ResidenceSemester residenceSemester){
         ResidentListDto.Res residents = residentService.getAllResidentByResidenceSemester(residenceSemester);
-        return new RspsTemplate<>(HttpStatus.OK, residents);
+        return new ResTemplate<>(HttpStatus.OK, "입사생 목록 조회 성공", residents);
     }
 
     // (테스트용) 입사생 데이터 전체삭제
     @DeleteMapping("/residents")
-    public ResponseEntity<RspsTemplate<?>> handleDeleteAllResident(){
+    public ResponseEntity<ResTemplate<?>> handleDeleteAllResident(){
         residentService.deleteAllResident();
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     // 입사생 단건 등록. 단순 DTO 변환 후 저장만 하면 될듯
     @PostMapping("/residents")
-    public ResponseEntity<RspsTemplate<?>> handleSaveResident(@RequestBody @Valid SaveResidentDto.Req reqDto){
+    public ResponseEntity<ResTemplate<?>> handleSaveResident(@RequestBody @Valid SaveResidentDto.Req reqDto){
         residentService.saveResident(reqDto.toEntity());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     // 입사생 수정
     @PatchMapping("/residents/{id}")
-    public ResponseEntity<RspsTemplate<?>> handleUpdateResident(@PathVariable Long id, @RequestBody @Valid SaveResidentDto.Req reqDto){
+    public ResponseEntity<ResTemplate<?>> handleUpdateResident(@PathVariable Long id, @RequestBody @Valid SaveResidentDto.Req reqDto){
         residentService.updateResident(id, reqDto.toEntity());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     // 입사생 삭제
     @DeleteMapping("/residents/{id}")
-    public ResponseEntity<RspsTemplate<?>> handleDeleteResident(@PathVariable Long id){
+    public ResponseEntity<ResTemplate<?>> handleDeleteResident(@PathVariable Long id){
         residentService.deleteById(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

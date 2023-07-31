@@ -7,6 +7,7 @@ import com.dominest.dominestbackend.global.exception.exceptions.AppServiceExcept
 import com.dominest.dominestbackend.global.exception.exceptions.BusinessException;
 import com.dominest.dominestbackend.global.exception.exceptions.domain.EntityNotFoundException;
 import com.dominest.dominestbackend.global.util.ExcelUtil;
+import com.dominest.dominestbackend.global.util.FileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -25,10 +26,17 @@ import java.util.Optional;
 @Service
 public class ResidentService {
     private final ResidentRepository residentRepository;
+    private final FileService fileService;
 
-    public Resident findById(Long id) {
-        return residentRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.RESIDENT_NOT_FOUND));
+    @Transactional
+    public String uploadPdf(Long id, MultipartFile pdf, FileService.FilePrefix filePrefix) {
+        // 로컬에 파일 저장
+        String uploadedFileName = fileService.save(pdf, filePrefix);
+        Resident resident = findById(id);
+
+        // 파일명 저장 후 반환
+        resident.setPdfFileName(uploadedFileName);
+        return uploadedFileName;
     }
 
     @Transactional
@@ -90,6 +98,11 @@ public class ResidentService {
     public void updateResident(Long id, Resident resident) {
         Resident residentToUpdate = findById(id);
         residentToUpdate.updateValueFrom(resident);
+    }
+
+    public Resident findById(Long id) {
+        return residentRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.RESIDENT_NOT_FOUND));
     }
 
     @Transactional
