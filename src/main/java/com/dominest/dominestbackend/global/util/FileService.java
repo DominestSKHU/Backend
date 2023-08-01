@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.constraints.NotNull;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -90,20 +91,20 @@ public class FileService {
         }
     }
 
-    public void deleteFile(FilePrefix filePrefix, String prevFileName) {
+    public void deleteFile(FilePrefix filePrefix, @NotNull String prevFileName) {
         String filePathToDelete = fileUploadPath + filePrefix.getPrefix() + prevFileName;
         Path pathToDelete = Paths.get(filePathToDelete);
 
+        // NotNull 이므로 예외를 발생시키지 않고 바로 빠져나온다.
+        // 파일을 찾을 수 없다면 지울 수도 없으므로 작업 취소. DB파일명은 그대로인데 물리적인 파일만 삭제했을 경우를 대비한다.
         if (! Files.exists(pathToDelete))
-            throw new FileIOException(ErrorCode.FILE_NOT_FOUND);
+            return;
 
         try {
             Files.delete(pathToDelete);
         } catch (IOException e) {
             throw new FileIOException(ErrorCode.FILE_CANNOT_BE_DELETED);
         }
-
-
     }
 
     // zipInputStream을 받아서 Path에 저장한다.
