@@ -5,6 +5,7 @@ import com.dominest.dominestbackend.api.common.ResTemplate;
 import com.dominest.dominestbackend.api.resident.dto.ResidentPdfListDto;
 import com.dominest.dominestbackend.api.resident.dto.ResidentListDto;
 import com.dominest.dominestbackend.api.resident.dto.SaveResidentDto;
+import com.dominest.dominestbackend.domain.resident.Resident;
 import com.dominest.dominestbackend.domain.resident.ResidentService;
 import com.dominest.dominestbackend.domain.resident.component.ResidenceSemester;
 import com.dominest.dominestbackend.global.exception.ErrorCode;
@@ -76,8 +77,12 @@ public class ResidentController {
 
     // 특정 입사생의 PDF 조회
     @GetMapping("/residents/{id}/pdf")
-    public ResTemplate<?> handlePdf(@RequestParam(required = true) String filename,
-                                    HttpServletResponse response){
+    public ResTemplate<?> handleGetPdf(@PathVariable Long id,  HttpServletResponse response){
+
+        // filename 가져오기.
+        Resident resident = residentService.findById(id);
+        String filename = resident.getPdfFileName();
+
         // PDF 파일 읽기
         byte[] bytes = fileService.getByteArr(FileService.FilePrefix.RESIDENT_PDF, filename);
 
