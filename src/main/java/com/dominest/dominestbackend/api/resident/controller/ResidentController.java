@@ -99,9 +99,9 @@ public class ResidentController {
     // PDF 단건 업로드
     @PostMapping("/residents/{id}/pdf")
     public ResponseEntity<ResTemplate<String>> handlePdfUpload(@RequestParam(required = true) MultipartFile pdf, @PathVariable Long id){
-        String uploadedFileName = residentService.uploadPdf(id, FileService.FilePrefix.RESIDENT_PDF, pdf);
+        residentService.uploadPdf(id, FileService.FilePrefix.RESIDENT_PDF, pdf);
         ResTemplate<String> resTemplate = new ResTemplate<>(HttpStatus.CREATED, "pdf 업로드 완료");
-        return ResponseEntity.created(URI.create("/residents/"+id+"/pdf?filename=" + uploadedFileName)).body(resTemplate);
+        return ResponseEntity.created(URI.create("/residents/"+id+"/pdf")).body(resTemplate);
     }
 
     // PDF 전체 업로드
@@ -110,7 +110,7 @@ public class ResidentController {
                                                                                                                     , @RequestParam(required = true) ResidenceSemester residenceSemester){
         int uploadCount = residentService.uploadPdfs(FileService.FilePrefix.RESIDENT_PDF, pdfs, residenceSemester);
 
-        ResTemplate<String> resTemplate = new ResTemplate<>(HttpStatus.CREATED, "pdf zip 업로드 완료. 저장된 파일 수: " + uploadCount + "개");
+        ResTemplate<String> resTemplate = new ResTemplate<>(HttpStatus.CREATED, "pdf 업로드 완료. 저장된 파일 수: " + uploadCount + "개");
         return ResponseEntity.created(URI.create("/residents/pdf")).body(resTemplate);
     }
 
@@ -120,7 +120,6 @@ public class ResidentController {
         ResidentPdfListDto.Res res = residentService.getAllPdfs(residenceSemester);
         return new ResTemplate<>(HttpStatus.OK, "pdf url 조회 성공", res);
     }
-
 }
 
 

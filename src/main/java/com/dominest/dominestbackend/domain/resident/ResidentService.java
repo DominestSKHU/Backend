@@ -35,12 +35,16 @@ public class ResidentService {
         // 로컬에 파일 저장
         String uploadedFileName = fileService.save(filePrefix, pdf);
         Resident resident = findById(id);
+        String prevFileName = resident.getPdfFileName();
 
         // 파일명 저장 후 반환
         resident.setPdfFileName(uploadedFileName);
+
+        fileService.deleteFile(FileService.FilePrefix.RESIDENT_PDF, prevFileName);
         return uploadedFileName;
     }
 
+    // Todo 무시된 데이터는 클라이언트에 반환하기. 'xxx.pdf' 파일이 변경되었다 식으로.
     /**@return 업로드한 파일 개수*/
     @Transactional
     public int uploadPdfs(FileService.FilePrefix filePrefix, List<MultipartFile> pdfs, ResidenceSemester residenceSemester) {
@@ -71,7 +75,10 @@ public class ResidentService {
             // resident 객체에 파일명 저장
             resident.setPdfFileName(uploadedFileName);
         }
-        return uploadCount; // 업로드한 파일 개수 반환
+        // 한 건도 업로드하지 못했으면 예외발생
+        if (uploadCount == 0)
+            throw new BusinessException(ErrorCode.NO_FILE_UPLOADED);
+        return uploadCount;
     }
 
     @Transactional

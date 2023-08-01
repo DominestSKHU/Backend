@@ -11,6 +11,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +46,7 @@ public class FileService {
         String storedFilePath = prefix.getPrefix() + createStoredFilePath(originalFileName);
 
         try {
+            // transferTo()는 내부적으로 알아서 is, os close를 해준다.
             multipartFile.transferTo(Paths.get(fileUploadPath + storedFilePath));
         } catch (IOException e) {
             // FileIOException 발생시키기 전에, IOEXCEPTION 에 대한 로그를 남긴다.
@@ -85,6 +88,22 @@ public class FileService {
             e.printStackTrace();
             throw new FileIOException(ErrorCode.FILE_CANNOT_BE_READ);
         }
+    }
+
+    public void deleteFile(FilePrefix filePrefix, String prevFileName) {
+        String filePathToDelete = fileUploadPath + filePrefix.getPrefix() + prevFileName;
+        Path pathToDelete = Paths.get(filePathToDelete);
+
+        if (! Files.exists(pathToDelete))
+            throw new FileIOException(ErrorCode.FILE_NOT_FOUND);
+
+        try {
+            Files.delete(pathToDelete);
+        } catch (IOException e) {
+            throw new FileIOException(ErrorCode.FILE_CANNOT_BE_DELETED);
+        }
+
+
     }
 
     // zipInputStream을 받아서 Path에 저장한다.
