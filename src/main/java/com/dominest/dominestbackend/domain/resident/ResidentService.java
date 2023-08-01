@@ -1,5 +1,6 @@
 package com.dominest.dominestbackend.domain.resident;
 
+import com.dominest.dominestbackend.api.resident.dto.PdfBulkUploadDto;
 import com.dominest.dominestbackend.api.resident.dto.ResidentListDto;
 import com.dominest.dominestbackend.api.resident.dto.ResidentPdfListDto;
 import com.dominest.dominestbackend.domain.resident.component.ResidenceSemester;
@@ -47,8 +48,9 @@ public class ResidentService {
     // Todo 무시된 데이터는 클라이언트에 반환하기. 'xxx.pdf' 파일이 변경되었다 식으로.
     /**@return 업로드한 파일 개수*/
     @Transactional
-    public int uploadPdfs(FileService.FilePrefix filePrefix, List<MultipartFile> pdfs, ResidenceSemester residenceSemester) {
-        int uploadCount = 0;
+    public PdfBulkUploadDto.Res uploadPdfs(FileService.FilePrefix filePrefix, List<MultipartFile> pdfs, ResidenceSemester residenceSemester) {
+        PdfBulkUploadDto.Res res = new PdfBulkUploadDto.Res();
+
         for (MultipartFile pdf : pdfs) {
             // 빈 객체면 continue
             if (pdf.isEmpty()) {
@@ -66,19 +68,23 @@ public class ResidentService {
             Resident resident = residentRepository.findByNameAndResidenceSemester(residentName, residenceSemester);
 
             // 파일명에 해당하는 학생이 없으면 continue
-            if (resident == null) continue;
+            if (resident == null) {
+                res.addToDtoList(filename, "FAILED", "학생명이 파일명과 일치하지 않습니다.");
+                continue;
+            }
 
             // 로컬에 파일 저장
             String uploadedFileName = fileService.save(filePrefix, pdf);
-            uploadCount++;
 
             // resident 객체에 파일명 저장
             resident.setPdfFileName(uploadedFileName);
+            res.addToDtoList(filename, "OK", null);
+            res.addSuccessCount();
         }
         // 한 건도 업로드하지 못했으면 예외발생
-        if (uploadCount == 0)
+        if (res.getSuccessCount() == 0)
             throw new BusinessException(ErrorCode.NO_FILE_UPLOADED);
-        return uploadCount;
+        return res;
     }
 
     @Transactional

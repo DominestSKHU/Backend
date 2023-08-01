@@ -37,7 +37,7 @@ public enum ErrorCode {
     // 입사자
     RESIDENT_NOT_FOUND(404, "해당 입사자가 존재하지 않습니다."),
     FILE_CANNOT_BE_DELETED(500, "파일을 삭제할 수 없습니다."),
-
+;
     private int statusCode;
     private String message;
 

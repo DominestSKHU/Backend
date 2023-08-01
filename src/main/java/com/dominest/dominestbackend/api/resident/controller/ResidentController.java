@@ -2,6 +2,7 @@ package com.dominest.dominestbackend.api.resident.controller;
 
 
 import com.dominest.dominestbackend.api.common.ResTemplate;
+import com.dominest.dominestbackend.api.resident.dto.PdfBulkUploadDto;
 import com.dominest.dominestbackend.api.resident.dto.ResidentPdfListDto;
 import com.dominest.dominestbackend.api.resident.dto.ResidentListDto;
 import com.dominest.dominestbackend.api.resident.dto.SaveResidentDto;
@@ -106,11 +107,12 @@ public class ResidentController {
 
     // PDF 전체 업로드
     @PostMapping("/residents/pdf")
-    public ResponseEntity<ResTemplate<String>> handlePdfUpload(@RequestParam(required = true) List<MultipartFile> pdfs
+    public ResponseEntity<ResTemplate<PdfBulkUploadDto.Res>> handlePdfUpload(@RequestParam(required = true) List<MultipartFile> pdfs
                                                                                                                     , @RequestParam(required = true) ResidenceSemester residenceSemester){
-        int uploadCount = residentService.uploadPdfs(FileService.FilePrefix.RESIDENT_PDF, pdfs, residenceSemester);
+        PdfBulkUploadDto.Res res = residentService.uploadPdfs(FileService.FilePrefix.RESIDENT_PDF, pdfs, residenceSemester);
 
-        ResTemplate<String> resTemplate = new ResTemplate<>(HttpStatus.CREATED, "pdf 업로드 완료. 저장된 파일 수: " + uploadCount + "개");
+        ResTemplate<PdfBulkUploadDto.Res> resTemplate = new ResTemplate<>(HttpStatus.CREATED,
+                "pdf 업로드 완료. 저장된 파일 수: " + res.getSuccessCount() + "개", res);
         return ResponseEntity.created(URI.create("/residents/pdf")).body(resTemplate);
     }
 
