@@ -106,9 +106,9 @@ public class ResidentController {
 
     // PDF 전체 업로드
     @PostMapping("/residents/pdf")
-    public ResponseEntity<ResTemplate<String>> handlePdfUpload(@RequestParam(required = true) List<MultipartFile> pdfZips
+    public ResponseEntity<ResTemplate<String>> handlePdfUpload(@RequestParam(required = true) List<MultipartFile> pdfs
                                                                                                                     , @RequestParam(required = true) ResidenceSemester residenceSemester){
-        int uploadCount = residentService.uploadPdfs(FileService.FilePrefix.RESIDENT_PDF, pdfZips, residenceSemester);
+        int uploadCount = residentService.uploadPdfs(FileService.FilePrefix.RESIDENT_PDF, pdfs, residenceSemester);
 
         ResTemplate<String> resTemplate = new ResTemplate<>(HttpStatus.CREATED, "pdf zip 업로드 완료. 저장된 파일 수: " + uploadCount + "개");
         return ResponseEntity.created(URI.create("/residents/pdf")).body(resTemplate);
