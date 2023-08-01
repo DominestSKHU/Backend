@@ -36,18 +36,19 @@ public class FileService {
         return storedFilePaths;
     }
 
-    /**@return "prefix" + "저장된 파일명 UUID" + ".확장자". 즉 디렉토리 + 파일명이 반환된다.*/
+    /**@return "저장된 파일명 UUID" + ".확장자". */
     public String save(FilePrefix prefix, MultipartFile multipartFile){
         // empty Check. type=file 이며 name이 일치한다면, 본문이 비어있어도 MultiPartFile 객체가 생성된다.
         if (multipartFile.isEmpty()) {
             return null;
         }
         String originalFileName = multipartFile.getOriginalFilename();
-        String storedFilePath = prefix.getPrefix() + createStoredFilePath(originalFileName);
+        String storedFileName = createStoredFilePath(originalFileName);
+        Path storedFilePath = Paths.get(fileUploadPath + prefix.getPrefix() + storedFileName);
 
         try {
             // transferTo()는 내부적으로 알아서 is, os close를 해준다.
-            multipartFile.transferTo(Paths.get(fileUploadPath + storedFilePath));
+            multipartFile.transferTo(storedFilePath);
         } catch (IOException e) {
             // FileIOException 발생시키기 전에, IOEXCEPTION 에 대한 로그를 남긴다.
             log.error("IOEXCEPTION: " + originalFileName + " 저장 불가" );
@@ -55,8 +56,7 @@ public class FileService {
             throw new FileIOException(ErrorCode.FILE_CANNOT_BE_STORED);
         }
 
-        // 저장한 파일의 경로 리스트를 반환한다.
-        return storedFilePath;
+        return storedFileName;
     }
 
     private String createStoredFilePath(String originalFileName) {
