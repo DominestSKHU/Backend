@@ -3,9 +3,10 @@ package com.dominest.dominestbackend.api.resident.controller;
 
 import com.dominest.dominestbackend.api.common.ResTemplate;
 import com.dominest.dominestbackend.api.resident.dto.PdfBulkUploadDto;
-import com.dominest.dominestbackend.api.resident.dto.ResidentPdfListDto;
 import com.dominest.dominestbackend.api.resident.dto.ResidentListDto;
+import com.dominest.dominestbackend.api.resident.dto.ResidentPdfListDto;
 import com.dominest.dominestbackend.api.resident.dto.SaveResidentDto;
+import com.dominest.dominestbackend.api.resident.util.PdfType;
 import com.dominest.dominestbackend.domain.resident.Resident;
 import com.dominest.dominestbackend.domain.resident.ResidentService;
 import com.dominest.dominestbackend.domain.resident.component.ResidenceSemester;
@@ -78,14 +79,17 @@ public class ResidentController {
 
     // 특정 입사생의 PDF 조회
     @GetMapping("/residents/{id}/pdf")
-    public ResTemplate<?> handleGetPdf(@PathVariable Long id,  HttpServletResponse response){
-
+    public ResTemplate<?> handleGetPdf(@PathVariable Long id,  @RequestParam(required = true) PdfType pdfType,
+                                                                        HttpServletResponse response){
         // filename 가져오기.
         Resident resident = residentService.findById(id);
-        String filename = resident.getPdfFileName();
+
+        // PdfType에 따라 입사 혹은 퇴사신청서 filename 가져오기
+        String filename = pdfType.getPdfFileName(resident);
+        FileService.FilePrefix filePrefix = pdfType.toFilePrefix();
 
         // PDF 파일 읽기
-        byte[] bytes = fileService.getByteArr(FileService.FilePrefix.RESIDENT_PDF, filename);
+        byte[] bytes = fileService.getByteArr(filePrefix, filename);
 
         response.setContentType(MediaType.APPLICATION_PDF_VALUE);
 
@@ -99,8 +103,11 @@ public class ResidentController {
 
     // PDF 단건 업로드
     @PostMapping("/residents/{id}/pdf")
-    public ResponseEntity<ResTemplate<String>> handlePdfUpload(@RequestParam(required = true) MultipartFile pdf, @PathVariable Long id){
-        residentService.uploadPdf(id, FileService.FilePrefix.RESIDENT_PDF, pdf);
+    public ResponseEntity<ResTemplate<String>> handlePdfUpload(@PathVariable Long id, @RequestParam(required = true) MultipartFile pdf,
+                                                                                                                    @RequestParam(required = true) PdfType pdfType){
+        FileService.FilePrefix filePrefix = pdfType.toFilePrefix();
+
+        residentService.uploadPdf(id, filePrefix, pdf);
         ResTemplate<String> resTemplate = new ResTemplate<>(HttpStatus.CREATED, "pdf 업로드 완료");
         return ResponseEntity.created(URI.create("/residents/"+id+"/pdf")).body(resTemplate);
     }
@@ -108,8 +115,10 @@ public class ResidentController {
     // PDF 전체 업로드
     @PostMapping("/residents/pdf")
     public ResponseEntity<ResTemplate<PdfBulkUploadDto.Res>> handlePdfUpload(@RequestParam(required = true) List<MultipartFile> pdfs
-                                                                                                                    , @RequestParam(required = true) ResidenceSemester residenceSemester){
-        PdfBulkUploadDto.Res res = residentService.uploadPdfs(FileService.FilePrefix.RESIDENT_PDF, pdfs, residenceSemester);
+                                                                                                                    , @RequestParam(required = true) ResidenceSemester residenceSemester
+                                                                                                                    , @RequestParam(required = true) PdfType pdfType){
+        FileService.FilePrefix filePrefix = pdfType.toFilePrefix();
+        PdfBulkUploadDto.Res res = residentService.uploadPdfs(filePrefix, pdfs, residenceSemester);
 
         ResTemplate<PdfBulkUploadDto.Res> resTemplate = new ResTemplate<>(HttpStatus.CREATED,
                 "pdf 업로드 완료. 저장된 파일 수: " + res.getSuccessCount() + "개", res);
