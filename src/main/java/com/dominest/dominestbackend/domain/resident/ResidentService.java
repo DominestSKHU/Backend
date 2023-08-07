@@ -36,13 +36,12 @@ public class ResidentService {
         Resident resident = findById(id);
         // 로컬에 파일 저장
         String uploadedFileName = fileService.save(filePrefix, pdf);
-        String prevFileName = resident.getPdfFileName();
 
-        // 파일명 저장 후 반환
-        resident.setPdfFileName(uploadedFileName);
+        String prevFileName = filePrefix.getPdfFileName(resident);
+        filePrefix.setPdfFileNameToResident(resident, uploadedFileName);
 
         if (prevFileName != null)
-            fileService.deleteFile(FileService.FilePrefix.RESIDENT_PDF, prevFileName);
+            fileService.deleteFile(filePrefix, prevFileName);
 
         return uploadedFileName;
     }
@@ -75,15 +74,16 @@ public class ResidentService {
             // 로컬에 파일 저장
             String uploadedFileName = fileService.save(filePrefix, pdf);
 
-            String prevFileName = resident.getPdfFileName();
-            // 파일명 저장 후 반환
-            resident.setPdfFileName(uploadedFileName);
+            // filePrefix에 맞는 파일명을 가져온다.
+            String prevFileName = filePrefix.getPdfFileName(resident);
+            // 파일명을 filePrefix를 단서로 하여(입사신청, 퇴사신청서) Resident에 저장한다.
+            filePrefix.setPdfFileNameToResident(resident, uploadedFileName);
 
             res.addToDtoList(filename, "OK", null);
             res.addSuccessCount();
 
             if (prevFileName != null)
-                fileService.deleteFile(FileService.FilePrefix.RESIDENT_PDF, prevFileName);
+                fileService.deleteFile(filePrefix, prevFileName);
         }
         // 한 건도 업로드하지 못했으면 예외발생
         if (res.getSuccessCount() == 0)

@@ -1,10 +1,13 @@
 package com.dominest.dominestbackend.global.util;
 
+import com.dominest.dominestbackend.domain.resident.Resident;
 import com.dominest.dominestbackend.global.exception.ErrorCode;
+import com.dominest.dominestbackend.global.exception.exceptions.BusinessException;
 import com.dominest.dominestbackend.global.exception.exceptions.file.FileIOException;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -122,7 +125,8 @@ public class FileService {
     // fileUplaodPath + FilePrefix + fileName 으로 저장된다.
     @Getter
     public enum FilePrefix {
-        RESIDENT_PDF("resident/pdf/"),
+        RESIDENT_ADMISSION("resident/admission/"),
+        RESIDENT_DEPARTURE("resident/departure/"),
         NONE(""),
         ;
 
@@ -131,5 +135,36 @@ public class FileService {
         FilePrefix(String prefix) {
             this.prefix = prefix;
         }
+
+        public String getPdfFileName(Resident resident) {
+            if (this.equals(RESIDENT_ADMISSION)) {
+                return resident.getAdmissionPdfFileName();
+            } else if (this.equals(RESIDENT_DEPARTURE)) {
+                return resident.getDeparturePdfFileName();
+            } else {
+                return null;
+            }
+        }
+
+        public void setPdfFileNameToResident(Resident resident, String uploadedFileName) {
+            if (this.equals(RESIDENT_ADMISSION)) {
+                resident.setAdmissionPdfFileName(uploadedFileName);
+            } else if (this.equals(RESIDENT_DEPARTURE)) {
+                resident.setDeparturePdfFileName(uploadedFileName);
+            } else { // 입사신청서, 퇴사신청서가 아닌 다른 FilePrefix 값일 때
+                throw new BusinessException("잘못된 FilePrefix 값입니다.", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        }
     }
 }
+
+
+
+
+
+
+
+
+
+
+

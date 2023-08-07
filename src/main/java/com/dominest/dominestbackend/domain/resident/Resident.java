@@ -75,9 +75,13 @@ public class Resident extends BaseTimeEntity {
     /** 아래는 학생정보 페이지에 표시되지 않는 정보들 */
     @Enumerated(EnumType.STRING)
     private ResidenceSemester residenceSemester; // 거주학기. '2020-2' 와 같음
+
     @Column(nullable = true)
-    @Setter()
-    private String pdfFileName; // UUID로 저장된다.
+    @Setter
+    private String admissionPdfFileName; // UUID로 저장된다.
+    @Column(nullable = true)
+    @Setter
+    private String departurePdfFileName; // UUID로 저장된다.
 
 
 
