@@ -28,11 +28,11 @@ public class Resident extends BaseTimeEntity {
     private Long id;
 
     /** 학생 개인정보 */
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String name;
     @Column(nullable = false)
     private String gender; // 현재 'M' or 'F' 인데 확장성을 위해 String 쓰기로 함
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String studentId;
     @Column(nullable = false)
     private String major; // 전공. 매학년 바뀔 수도 있으니 enum 사용하지 않는 걸로
