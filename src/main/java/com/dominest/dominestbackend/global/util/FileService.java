@@ -122,7 +122,8 @@ public class FileService {
     // fileUplaodPath + FilePrefix + fileName 으로 저장된다.
     @Getter
     public enum FilePrefix {
-        RESIDENT_PDF("resident/pdf/"),
+        RESIDENT_ADMISSION("resident/admission/"),
+        RESIDENT_DEPARTURE("resident/departure/"),
         NONE(""),
         ;
 
