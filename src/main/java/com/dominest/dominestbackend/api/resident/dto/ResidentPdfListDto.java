@@ -25,10 +25,12 @@ public class ResidentPdfListDto {
         @Getter
         private static class PdfDto {
             // 사용자 화면에 이름, 파일존재유무, 개별파일 조회 url
+            long id;
             String residentName;
             String existsFile;
 
             public PdfDto(Resident resident) {
+                this.id = resident.getId();
                 this.residentName = resident.getName();
                 this.existsFile = resident.getPdfFileName() != null ? "성공" : "오류(파일없음)";
             }
