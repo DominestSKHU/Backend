@@ -4,7 +4,6 @@ import com.dominest.dominestbackend.api.admin.request.ChangePasswordRequest;
 import com.dominest.dominestbackend.api.admin.request.JoinRequest;
 import com.dominest.dominestbackend.api.admin.response.JoinResponse;
 import com.dominest.dominestbackend.domain.email.service.EmailVerificationService;
-import com.dominest.dominestbackend.domain.jwt.service.UserDetailsServiceImpl;
 import com.dominest.dominestbackend.domain.user.User;
 import com.dominest.dominestbackend.domain.user.repository.UserRepository;
 import com.dominest.dominestbackend.api.admin.request.LoginRequest;
@@ -14,6 +13,8 @@ import com.dominest.dominestbackend.domain.user.service.UserService;
 import com.dominest.dominestbackend.global.apiResponse.ApiResponseDto;
 import com.dominest.dominestbackend.global.apiResponse.ErrorStatus;
 import com.dominest.dominestbackend.global.apiResponse.SuccessStatus;
+import com.dominest.dominestbackend.global.exception.ErrorCode;
+import com.dominest.dominestbackend.global.exception.exceptions.BusinessException;
 import com.dominest.dominestbackend.global.exception.exceptions.auth.NotValidTokenException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -86,6 +87,7 @@ public class UserController {
         }
     }
 
+    // 실패를 위에 성공을 아래에... 통일하기...
     @PostMapping("/myPage/password") // 비밀번호 변경
     public ResponseEntity<ApiResponseDto> changePassword(@RequestBody ChangePasswordRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -102,7 +104,9 @@ public class UserController {
                 userRepository.save(user);
                 return ResponseEntity.ok(ApiResponseDto.success(SuccessStatus.CHANGE_PASSWORD_SUCCESS));
             } else {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponseDto.error(ErrorStatus.INCORRECT_PASSWORD_ERROR));
+                throw new BusinessException(ErrorCode.EMAIL_VERIFICATION_CODE_MISMATCHED);
+                //return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponseDto.error(ErrorStatus.INCORRECT_PASSWORD_ERROR));
+
             }
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponseDto.error(ErrorStatus.USER_CERTIFICATION_FAILED));

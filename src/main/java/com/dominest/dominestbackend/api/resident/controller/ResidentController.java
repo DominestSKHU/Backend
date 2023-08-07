@@ -34,7 +34,7 @@ public class ResidentController {
     @GetMapping("/residents")
     public RspsTemplate<ResidentListDto.Res> handleGetAllResident(@RequestParam(required = true) ResidenceSemester residenceSemester){
         ResidentListDto.Res residents = residentService.getAllResidentByResidenceSemester(residenceSemester);
-        return new RspsTemplate<>(HttpStatus.OK, residents);
+        return new RspsTemplate<>(HttpStatus.OK, residents, "오예~");
     }
 
     // (테스트용) 입사생 데이터 전체삭제
@@ -64,14 +64,6 @@ public class ResidentController {
         residentService.deleteById(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
-
-
-
-
-
-
-
-
 
 //    StringBuilder sb = new StringBuilder();
 //        for (List<String> strings : sheet) {

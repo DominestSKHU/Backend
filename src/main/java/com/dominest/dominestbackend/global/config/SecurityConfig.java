@@ -32,12 +32,12 @@ public class SecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/user/join").permitAll() // 회원가입 요청은 토큰 검증 예외
+                .antMatchers("/user/join").permitAll() // 토큰 검증 예외
                 .antMatchers("/user/login").permitAll()
                 .antMatchers("/email/send").permitAll()
                 .antMatchers("/email/verify/code").permitAll()
-                // .antMatchers("/user/myPage/password").permitAll()
                 .antMatchers("/email/change/password").permitAll()
+                .antMatchers("/category/create").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

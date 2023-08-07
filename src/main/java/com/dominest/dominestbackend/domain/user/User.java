@@ -8,8 +8,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -32,23 +30,22 @@ public class User implements UserDetails {
     @Column(nullable = false, unique = true)
     private String password;
 
-//    private boolean isLogin; // 로그인 여부
-//
-//    public void updateLoginStatus(boolean isLogin){
-//        this.isLogin = isLogin;
-//    }
+    @Column(nullable = false)
+    private String name;
 
-    public void changePassword(String newPassword) {
-        this.password = newPassword;
-    }
+    @Column(nullable = false, unique = true)
+    private String phoneNumber;
+
 
     @Enumerated(EnumType.STRING)
     private Role role;
 
     @Builder
-    public User(String email, String password) {
+    public User(String email, String password, String name, String phoneNumber) {
         this.email = email;
         this.password = password;
+        this.name = name;
+        this.phoneNumber = phoneNumber;
     }
 
     public User(String email, String password, Collection<? extends GrantedAuthority> authorities) {
@@ -87,5 +84,9 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public void changePassword(String newPassword) {
+        this.password = newPassword;
     }
 }
