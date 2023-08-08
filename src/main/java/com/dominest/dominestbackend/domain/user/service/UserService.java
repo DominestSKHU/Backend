@@ -18,7 +18,6 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class UserService {
     private final UserRepository userRepository;
 
@@ -31,13 +30,11 @@ public class UserService {
         User user = User.builder()
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .name(request.getName())
-                .phoneNumber(request.getPhoneNumber())
                 .build();
 
         userRepository.save(user);
 
-        return JoinResponse.of(user.getEmail(), user.getName(), user.getPhoneNumber());
+        return JoinResponse.of(user.getEmail(), user.getPassword());
     }
 
     public TokenDto login(String email, String password){
@@ -47,16 +44,7 @@ public class UserService {
         return tokenDto;
     }
 
-
     public boolean checkDuplicateEmail(String email){
         return userRepository.findByEmail(email).isPresent();
-    }
-
-    public boolean validateUserPassword(String currentPassword, String loggedInUserPassword) {
-        return passwordEncoder.matches(currentPassword, loggedInUserPassword);
-    }
-
-    public Optional<User> getUserByEmail(String email) {
-        return userRepository.findByEmail(email);
     }
 }
