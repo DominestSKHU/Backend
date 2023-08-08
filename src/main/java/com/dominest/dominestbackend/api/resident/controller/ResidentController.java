@@ -46,6 +46,7 @@ public class ResidentController {
     @GetMapping("/residents")
     public ResTemplate<ResidentListDto.Res> handleGetAllResident(@RequestParam(required = true) ResidenceSemester residenceSemester){
         ResidentListDto.Res residents = residentService.getAllResidentByResidenceSemester(residenceSemester);
+        
         return new ResTemplate<>(HttpStatus.OK, "입사생 목록 조회 성공", residents);
     }
 

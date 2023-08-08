@@ -93,19 +93,6 @@ public class TokenManager {
         return email;
     }
 
-//    public boolean validateToken(String token){ // 토큰 유효성 검사
-//        try {
-//            Jwts.parser().setSigningKey(decodedTokenSecret)
-//                    .parseClaimsJws(token);
-//            return true;
-//        } catch(JwtException e) {  //토큰 변조
-//            log.info("잘못된 jwt token", e);
-//        } catch (Exception e){
-//            log.info("jwt token 검증 중 에러 발생", e);
-//        }
-//        return false;
-//    }
-
     public boolean validateToken(String token) {
         try {
             Jws<Claims> claims = Jwts.parser().setSigningKey(tokenSecret).parseClaimsJws(token);

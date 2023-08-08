@@ -9,7 +9,6 @@ import com.dominest.dominestbackend.domain.jwt.dto.TokenDto;
 import com.dominest.dominestbackend.domain.jwt.service.TokenManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,11 +31,13 @@ public class UserService {
         User user = User.builder()
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
+                .name(request.getName())
+                .phoneNumber(request.getPhoneNumber())
                 .build();
 
         userRepository.save(user);
 
-        return JoinResponse.of(user.getEmail(), user.getPassword());
+        return JoinResponse.of(user.getEmail(), user.getName(), user.getPhoneNumber());
     }
 
     public TokenDto login(String email, String password){
@@ -53,5 +54,9 @@ public class UserService {
 
     public boolean validateUserPassword(String currentPassword, String loggedInUserPassword) {
         return passwordEncoder.matches(currentPassword, loggedInUserPassword);
+    }
+
+    public Optional<User> getUserByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 }

@@ -1,4 +1,4 @@
-package com.dominest.dominestbackend.api.admin.request;
+package com.dominest.dominestbackend.api.category.request;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -8,8 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Getter
-public class LoginRequest {
-    private String email;
-
-    private String password;
+public class CategoryUpdateRequest {
+    private Long id;
+    private String categoryName;
 }
