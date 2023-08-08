@@ -46,7 +46,7 @@ public class ResidentController {
     @GetMapping("/residents")
     public ResTemplate<ResidentListDto.Res> handleGetAllResident(@RequestParam(required = true) ResidenceSemester residenceSemester){
         ResidentListDto.Res residents = residentService.getAllResidentByResidenceSemester(residenceSemester);
-        return new ResTemplate<>(HttpStatus.OK, "입사생 목록 조회 성공", residents);
+        return new RspsTemplate<>(HttpStatus.OK, residents, "오예~");
     }
 
     // (테스트용) 입사생 데이터 전체삭제
@@ -76,6 +76,7 @@ public class ResidentController {
         residentService.deleteById(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
+
 
     // 특정 입사생의 PDF 조회
     @GetMapping("/residents/{id}/pdf")
@@ -131,6 +132,7 @@ public class ResidentController {
         ResidentPdfListDto.Res res = residentService.getAllPdfs(residenceSemester);
         return new ResTemplate<>(HttpStatus.OK, "pdf url 조회 성공", res);
     }
+
 }
 
 

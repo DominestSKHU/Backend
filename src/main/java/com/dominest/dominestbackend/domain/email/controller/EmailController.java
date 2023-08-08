@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/email")
@@ -27,7 +28,6 @@ public class EmailController {
         emailService.sendJoinMessage(emailRequest.getEmail()); // 이메일로 인증코드를 보낸다.
         return ResponseEntity.ok(ApiResponseDto.success(SuccessStatus.SEND_EMAIL_SUCCESS, emailRequest.getEmail() + "로 검증코드를 전송했습니다."));
     }
-
 
     @PostMapping("/change/password") // 임시 비밀번호 이메일 전송
     public ResponseEntity<ApiResponseDto<String>> changePasswordEmail(@RequestBody EmailRequest emailRequest) throws Exception {

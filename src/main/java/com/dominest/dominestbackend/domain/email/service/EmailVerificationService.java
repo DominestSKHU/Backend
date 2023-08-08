@@ -15,7 +15,6 @@ public class EmailVerificationService {
     private final Cache<String, String> codeExpirationCache; // <email, verification code>. thread-safe map.
     private final Cache<String, Boolean> emailVerificationStatusCache; // <email, verification status>. thread-safe map.
 
-
     @Autowired
     public EmailVerificationService() {
         codeExpirationCache = Caffeine.newBuilder()
