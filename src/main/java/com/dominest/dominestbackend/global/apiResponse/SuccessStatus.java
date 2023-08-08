@@ -16,7 +16,8 @@ public enum SuccessStatus {
 
     VERIFY_EMAIL_SUCCESS(HttpStatus.OK, "이메일 인증 성공!"),
 
-    TOKEN_USER_INFO(HttpStatus.OK, "accessToken으로 유저 정보 가져오기 성공!!");
+    TOKEN_USER_INFO(HttpStatus.OK, "accessToken으로 유저 정보 가져오기 성공!!"),
+    CHANGE_PASSWORD_SUCCESS(HttpStatus.OK, "비밀번호 변경 성공");
 
     private final HttpStatus httpStatus;
     private final String message;
