@@ -6,11 +6,18 @@ import com.dominest.dominestbackend.domain.jwt.constant.TokenType;
 import com.dominest.dominestbackend.domain.jwt.dto.TokenDto;
 import com.dominest.dominestbackend.global.exception.ErrorCode;
 import com.dominest.dominestbackend.global.exception.exceptions.auth.NotValidTokenException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Date;
 
 
@@ -26,6 +33,14 @@ public class TokenManager {
 
     @Value("${token.secret}")
     private String tokenSecret;
+
+//    private String decodedTokenSecret;
+//
+//    @Value("${token.secret}")
+//    public void setTokenSecret(String encodedTokenSecret) {
+//        byte[] decodedBytes = Base64.getDecoder().decode(encodedTokenSecret);
+//        this.decodedTokenSecret = new String(decodedBytes, StandardCharsets.UTF_8);
+//    }
 
     public TokenDto createTokenDto(String email) {
         Date accessTokenExpireTime = createAccessTokenExpireTime();
@@ -92,6 +107,19 @@ public class TokenManager {
         }
         return email;
     }
+
+//    public boolean validateToken(String token){ // 토큰 유효성 검사
+//        try {
+//            Jwts.parser().setSigningKey(decodedTokenSecret)
+//                    .parseClaimsJws(token);
+//            return true;
+//        } catch(JwtException e) {  //토큰 변조
+//            log.info("잘못된 jwt token", e);
+//        } catch (Exception e){
+//            log.info("jwt token 검증 중 에러 발생", e);
+//        }
+//        return false;
+//    }
 
     public boolean validateToken(String token) {
         try {
