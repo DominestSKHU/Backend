@@ -13,7 +13,7 @@ public class JoinRequest {
 
     private String password;
 
-    public static JoinRequest of(String email, String password){
-        return new JoinRequest(email, password);
-    }
+    private String name;
+
+    private String phoneNumber;
 }
