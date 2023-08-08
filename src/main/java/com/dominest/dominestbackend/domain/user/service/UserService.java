@@ -9,6 +9,7 @@ import com.dominest.dominestbackend.domain.jwt.dto.TokenDto;
 import com.dominest.dominestbackend.domain.jwt.service.TokenManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

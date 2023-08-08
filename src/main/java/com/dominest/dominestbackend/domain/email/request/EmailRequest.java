@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 @Getter
 public class EmailRequest {
     private String email;
-
     private String code;
 
     private String newPassword;

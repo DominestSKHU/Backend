@@ -18,12 +18,10 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class EmailService {
-    private final JavaMailSender emailsender; // Bean 등록해둔 MailConfig 를 emailsender 라는 이름으로 autowired
+    private final JavaMailSender emailSender; // Bean 등록해둔 MailConfig 를 emailsender 라는 이름으로 autowired
 
     private final EmailVerificationService emailVerificationService;
-
     private final UserRepository userRepository;
-
     private final PasswordEncoder passwordEncoder;
 
 
@@ -33,7 +31,7 @@ public class EmailService {
         String setFrom = "gjwldud0719@naver.com";
         String title = "회원가입 인증 번호";
 
-        MimeMessage message = emailsender.createMimeMessage();
+        MimeMessage message = emailSender.createMimeMessage();
         message.addRecipients(MimeMessage.RecipientType.TO, email); // 보내는 대상
         message.setSubject(title);
         message.setFrom(setFrom);
@@ -132,7 +130,7 @@ public class EmailService {
     public void sendJoinMessage(String email) throws Exception{ // 회원가입 메일 발송
         MimeMessage message = createJoinMessage(email);
         try{
-            emailsender.send((message));
+            emailSender.send((message));
         } catch(MailException es){
             es.printStackTrace();
             throw new IllegalArgumentException();

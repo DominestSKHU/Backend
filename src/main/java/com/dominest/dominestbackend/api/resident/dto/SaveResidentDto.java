@@ -11,6 +11,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class SaveResidentDto {
     @NoArgsConstructor
@@ -47,8 +48,8 @@ public class SaveResidentDto {
         @NotNull(message = "입사일을 입력해주세요.")
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyyMMdd")
         private LocalDate admissionDate;
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyyMMdd")
-        private LocalDate leavingDate;
+        @NotNull(message = "퇴사일을 입력해주세요.")
+        private String leavingDate; // 빈 칸일 경우 null 처리하기 위해 String 사용
         @NotNull(message = "학기 시작일을 입력해주세요.")
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyyMMdd")
         private LocalDate semesterStartDate;
@@ -67,6 +68,7 @@ public class SaveResidentDto {
         private String address;
 
         public Resident toEntity(){
+
             return Resident.builder()
                     .name(name)
                     .gender(gender)
@@ -82,7 +84,8 @@ public class SaveResidentDto {
                     .roomNumber(roomNumber)
                     .assignedRoom(assignedRoom)
                     .admissionDate(admissionDate)
-                    .leavingDate(leavingDate)
+                    .leavingDate("".equals(leavingDate) ?  null :
+                            LocalDate.parse(leavingDate, DateTimeFormatter.ofPattern("yyyyMMdd")))
                     .semesterStartDate(semesterStartDate)
                     .semesterEndDate(semesterEndDate)
                     .phoneNumber(phoneNumber)

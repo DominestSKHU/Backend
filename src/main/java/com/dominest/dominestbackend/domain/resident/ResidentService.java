@@ -1,12 +1,15 @@
 package com.dominest.dominestbackend.domain.resident;
 
+import com.dominest.dominestbackend.api.resident.dto.PdfBulkUploadDto;
 import com.dominest.dominestbackend.api.resident.dto.ResidentListDto;
+import com.dominest.dominestbackend.api.resident.dto.ResidentPdfListDto;
 import com.dominest.dominestbackend.domain.resident.component.ResidenceSemester;
 import com.dominest.dominestbackend.global.exception.ErrorCode;
 import com.dominest.dominestbackend.global.exception.exceptions.AppServiceException;
 import com.dominest.dominestbackend.global.exception.exceptions.BusinessException;
 import com.dominest.dominestbackend.global.exception.exceptions.domain.EntityNotFoundException;
 import com.dominest.dominestbackend.global.util.ExcelUtil;
+import com.dominest.dominestbackend.global.util.FileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -25,10 +28,67 @@ import java.util.Optional;
 @Service
 public class ResidentService {
     private final ResidentRepository residentRepository;
+    private final FileService fileService;
 
-    public Resident findById(Long id) {
-        return residentRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.RESIDENT_NOT_FOUND));
+    /** @return 저장한 파일명 */
+    @Transactional
+    public String uploadPdf(Long id, FileService.FilePrefix filePrefix, MultipartFile pdf) {
+        Resident resident = findById(id);
+        // 로컬에 파일 저장
+        String uploadedFileName = fileService.save(filePrefix, pdf);
+
+        String prevFileName = filePrefix.getPdfFileName(resident);
+        filePrefix.setPdfFileNameToResident(resident, uploadedFileName);
+
+        if (prevFileName != null)
+            fileService.deleteFile(filePrefix, prevFileName);
+
+        return uploadedFileName;
+    }
+
+    @Transactional
+    public PdfBulkUploadDto.Res uploadPdfs(FileService.FilePrefix filePrefix, List<MultipartFile> pdfs, ResidenceSemester residenceSemester) {
+        PdfBulkUploadDto.Res res = new PdfBulkUploadDto.Res();
+        for (MultipartFile pdf : pdfs) {
+            // 빈 객체면 continue
+            if (pdf.isEmpty()) {
+                continue;
+            }
+
+            String filename = pdf.getOriginalFilename();
+            // pdf 확장자가 아니라면 continue
+            if (! filename.endsWith(".pdf")){
+                continue;
+            }
+
+            // 1. 파일명으로 해당 차수의 학생이름을 찾는다. 파일명은 '학생이름.pdf' 여야 한다.
+            String residentName = fileService.extractFileNameNoExt(filename);
+            Resident resident = residentRepository.findByNameAndResidenceSemester(residentName, residenceSemester);
+
+            // 파일명에 해당하는 학생이 없으면 continue
+            if (resident == null) {
+                res.addToDtoList(filename, "FAILED", "학생명이 파일명과 일치하지 않습니다.");
+                continue;
+            }
+
+            // 로컬에 파일 저장
+            String uploadedFileName = fileService.save(filePrefix, pdf);
+
+            // filePrefix에 맞는 파일명을 가져온다.
+            String prevFileName = filePrefix.getPdfFileName(resident);
+            // 파일명을 filePrefix를 단서로 하여(입사신청, 퇴사신청서) Resident에 저장한다.
+            filePrefix.setPdfFileNameToResident(resident, uploadedFileName);
+
+            res.addToDtoList(filename, "OK", null);
+            res.addSuccessCount();
+
+            if (prevFileName != null)
+                fileService.deleteFile(filePrefix, prevFileName);
+        }
+        // 한 건도 업로드하지 못했으면 예외발생
+        if (res.getSuccessCount() == 0)
+            throw new BusinessException(ErrorCode.NO_FILE_UPLOADED);
+        return res;
     }
 
     @Transactional
@@ -37,8 +97,7 @@ public class ResidentService {
         int columnCount = ExcelUtil.RESIDENT_COLUMN_COUNT;
 
         // 엑셀 파싱
-        List<List<String>> sheet;
-        sheet = ExcelUtil.parseExcel(file);
+        List<List<String>> sheet= ExcelUtil.parseExcel(file);
 
         Integer sheetColumnCount = Optional.ofNullable(sheet.get(0))
                 .map(List::size)
@@ -52,21 +111,22 @@ public class ResidentService {
         // 첫 3줄 제거 후 유효 데이터만 추출
         sheet.remove(0); sheet.remove(0);sheet.remove(0);
 
+        // 지정 차수에 이미 데이터가 있을 경우 전체삭제.
+        // 현재 서로 다른 차수의 데이터가 존재하지 않는 것이 요구되므로 전체삭제.  TODO 차수 컬럼이 꼭 필요한지 다시 생각해봐야 할 듯
+        if (residentRepository.existsByResidenceSemester(residenceSemester)) {
+            residentRepository.deleteAllInBatch();
+        }
+        // 데이터를 저장한다. 예외발생시 삭제나 저장 작업의 트랜잭션 롤백.
         for (List<String> row : sheet) {
-            if ("BLANK".equals(row.get(columnCount - 1))) // 빈 row 발견 시 continue;
+            if ("".equals(row.get(columnCount - 1))) // 빈 row 발견 시 continue;
                 continue;
             Resident resident = Resident.from(row, residenceSemester);
-            residentRepository.save(resident);
+            saveResident(resident);
         }
     }
 
     public ResidentListDto.Res getAllResidentByResidenceSemester(ResidenceSemester residenceSemester) {
         List<Resident> residents = residentRepository.findAllByResidenceSemester(residenceSemester);
-        return ResidentListDto.Res.from(residents);
-    }
-    // Todo 테스트용 나중에 지우기
-    public ResidentListDto.Res getAllResidentByResidenceSemester() {
-        List<Resident> residents = residentRepository.findAll();
         return ResidentListDto.Res.from(residents);
     }
 
@@ -81,7 +141,7 @@ public class ResidentService {
         try {
             residentRepository.save(resident);
         } catch (DataIntegrityViolationException e) {
-            throw new BusinessException("학생 저장 실패, 잘못된 입력값입니다. 오류 메시지: " +
+            throw new BusinessException("학생 저장 실패, 잘못된 입력값입니다. 학번 중복 혹은 데이터 형식을 확인해주세요.오류 메시지: " +
                     e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
@@ -92,11 +152,68 @@ public class ResidentService {
         residentToUpdate.updateValueFrom(resident);
     }
 
+    public Resident findById(Long id) {
+        return residentRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.RESIDENT_NOT_FOUND));
+    }
+
     @Transactional
     public void deleteById(Long id) {
         Resident resident = findById(id);
         residentRepository.delete(resident);
     }
+
+    public ResidentPdfListDto.Res getAllPdfs(ResidenceSemester semester) {
+        List<Resident> residents = residentRepository.findAllByResidenceSemester(semester);
+        return ResidentPdfListDto.Res.from(residents);
+    }
+
+//    @Transactional
+//    public int uploadPdfZip(MultipartFile pdfZip, ResidenceSemester residenceSemester) {
+//        // 1. zip 확장자 검사
+//        if (! pdfZip.getOriginalFilename().endsWith(".zip")){
+//            throw new BusinessException(ErrorCode.FILE_NOT_ZIP);
+//        }
+//        // 2. 내부 파일 순회
+//        Path destinationPath = fileService.getUploadPath();
+//
+//        int uploadCount = 0;
+//        // 3. zip 파일의 inputStream을 추출해서 내부의 PDF 파일들을 저장
+//        try (ZipInputStream zipInputStream = new ZipInputStream(pdfZip.getInputStream(), StandardCharsets.UTF_8)) {
+////        try (ZipInputStream zipInputStream = new ZipInputStream(pdfZip.getInputStream(), StandardCharsets.ISO_8859_1)) {
+//            ZipEntry entry;
+//            while ((entry = zipInputStream.getNextEntry()) != null) {
+//                try {
+//                    String filename = entry.getName(); // 원본 파일명
+//                    // pdf 확장자가 아니라면 continue
+//                    if (! filename.endsWith(".pdf")){
+//                        continue;
+//                    }
+//                    // 2. 파일명으로 해당 차수의 학생이름을 찾는다. 파일명은 '학생이름.pdf' 여야 한다.
+//                    // 못 찾으면 continue, 찾았으면 저장(개별업로드 로직)
+//                    String residentName = fileService.extractFileNameNoExt(filename);
+//                    Resident resident = residentRepository.findByNameAndResidenceSemester(residentName, residenceSemester);
+//                    Resident resident2 = residentRepository.findByNameAndResidenceSemester("윤현우", residenceSemester);
+//
+//                    if (resident == null) continue;
+//
+//                    // 파일명에 해당하는 학생이 있으므로, 이제 파일명을 UUID로 변경하고 Path객체를 생성한다.
+//                    //  filename = UUID.randomUUID() + ".pdf";
+//                    Path filePath = destinationPath.resolve(filename);
+//
+//                    fileService.extractFile(zipInputStream, filePath);
+//                    uploadCount++;
+//                    resident.setPdfFileName(filename);
+//                } finally {
+//                    zipInputStream.closeEntry();
+//                }
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//        return uploadCount;
+//    }
 }
 
 

@@ -7,4 +7,8 @@ import java.util.List;
 
 public interface ResidentRepository extends JpaRepository<Resident, Long> {
     List<Resident> findAllByResidenceSemester(ResidenceSemester residenceSemester);
+
+    boolean existsByResidenceSemester(ResidenceSemester residenceSemester);
+
+    Resident findByNameAndResidenceSemester(String name, ResidenceSemester residenceSemester);
 }
