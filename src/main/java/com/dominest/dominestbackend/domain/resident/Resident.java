@@ -3,10 +3,7 @@ package com.dominest.dominestbackend.domain.resident;
 import com.dominest.dominestbackend.domain.common.BaseTimeEntity;
 import com.dominest.dominestbackend.domain.resident.component.ResidenceSemester;
 import com.dominest.dominestbackend.global.util.TimeUtil;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
@@ -28,15 +25,14 @@ public class Resident extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE
                                     , generator = "resident_seq_generator"
     )
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     /** 학생 개인정보 */
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String name;
     @Column(nullable = false)
     private String gender; // 현재 'M' or 'F' 인데 확장성을 위해 String 쓰기로 함
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String studentId;
     @Column(nullable = false)
     private String major; // 전공. 매학년 바뀔 수도 있으니 enum 사용하지 않는 걸로
@@ -59,14 +55,13 @@ public class Resident extends BaseTimeEntity {
     @Min(1)
     private Integer roomNumber; // 호실
     private String assignedRoom; // 배정방. 'B1049A' 와 같음
-    @Enumerated(EnumType.STRING)
-    private ResidenceSemester residenceSemester; // 거주학기. '2020-2' 와 같음
 
     /** 날짜정보 */
     // 엑셀데이터는 8자리로 저장되긴 하는데, 날짜 필터링 걸려면 날짜타입 사용해야 할 듯
     // Todo: 날짜타입 유지하면서 8자리로 표시할 수 있는지?
     // 아래의 날짜들은 '20191106' 형식으로 저장됨
     private LocalDate admissionDate; // 입사일.
+    @Column(nullable = true)
     private LocalDate leavingDate; // 퇴사일
     private LocalDate semesterStartDate; // 학기시작일
     private LocalDate semesterEndDate; // 학기종료일
@@ -76,6 +71,19 @@ public class Resident extends BaseTimeEntity {
 
     private String zipCode; // 우편번호
     private String address; // 주소. 이거 거주지별로 분류할 일이 생기나?
+
+    /** 아래는 학생정보 페이지에 표시되지 않는 정보들 */
+    @Enumerated(EnumType.STRING)
+    private ResidenceSemester residenceSemester; // 거주학기. '2020-2' 와 같음
+
+    @Column(nullable = true)
+    @Setter
+    private String admissionPdfFileName; // UUID로 저장된다.
+    @Column(nullable = true)
+    @Setter
+    private String departurePdfFileName; // UUID로 저장된다.
+
+
 
     @Builder
     private Resident(String name, String gender, String studentId, String major, String grade,
@@ -124,7 +132,8 @@ public class Resident extends BaseTimeEntity {
                 .roomNumber(Integer.valueOf(data.get(10)))
                 .assignedRoom(data.get(11))
                 .admissionDate(LocalDate.parse(data.get(12), DateTimeFormatter.ofPattern("yyyyMMdd")))
-                .leavingDate(LocalDate.parse(data.get(12), DateTimeFormatter.ofPattern("yyyyMMdd"))) // todo get(13)빈 값에 대응하는 코드 작성해야 함
+                .leavingDate("".equals(data.get(13)) ?  null :
+                        LocalDate.parse(data.get(13), DateTimeFormatter.ofPattern("yyyyMMdd")))
                 .semesterStartDate(LocalDate.parse(data.get(14), DateTimeFormatter.ofPattern("yyyyMMdd")))
                 .semesterEndDate(LocalDate.parse(data.get(15), DateTimeFormatter.ofPattern("yyyyMMdd")))
                 .phoneNumber(data.get(16))

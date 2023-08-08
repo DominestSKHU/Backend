@@ -7,8 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -16,6 +14,7 @@ public class EmailVerificationService {
     @Getter
     private final Cache<String, String> codeExpirationCache; // <email, verification code>. thread-safe map.
     private final Cache<String, Boolean> emailVerificationStatusCache; // <email, verification status>. thread-safe map.
+
 
     @Autowired
     public EmailVerificationService() {

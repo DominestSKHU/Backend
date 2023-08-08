@@ -2,6 +2,7 @@ package com.dominest.dominestbackend.api.admin.controller;
 
 import com.dominest.dominestbackend.api.admin.request.ChangePasswordRequest;
 import com.dominest.dominestbackend.api.admin.request.JoinRequest;
+import com.dominest.dominestbackend.api.admin.request.LoginRequest;
 import com.dominest.dominestbackend.api.admin.response.JoinResponse;
 import com.dominest.dominestbackend.domain.email.service.EmailVerificationService;
 import com.dominest.dominestbackend.domain.user.User;
@@ -9,6 +10,8 @@ import com.dominest.dominestbackend.domain.user.repository.UserRepository;
 import com.dominest.dominestbackend.api.admin.request.LoginRequest;
 import com.dominest.dominestbackend.domain.jwt.dto.TokenDto;
 import com.dominest.dominestbackend.domain.jwt.service.TokenManager;
+import com.dominest.dominestbackend.domain.user.User;
+import com.dominest.dominestbackend.domain.user.repository.UserRepository;
 import com.dominest.dominestbackend.domain.user.service.UserService;
 import com.dominest.dominestbackend.global.apiResponse.ApiResponseDto;
 import com.dominest.dominestbackend.global.apiResponse.ErrorStatus;
@@ -23,6 +26,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+
 import javax.validation.Valid;
 import java.util.Optional;
 
@@ -31,18 +35,14 @@ import java.util.Optional;
 @RequestMapping("/user")
 public class UserController {
     private final UserRepository userRepository;
-
     private final UserService userService;
-
     private final PasswordEncoder passwordEncoder;
-
     private final TokenManager tokenManager;
-
     private final EmailVerificationService emailVerificationService;
 
     @PostMapping("/join") // 회원가입
     public ResponseEntity<ApiResponseDto<JoinResponse>> signUp(@RequestBody @Valid final JoinRequest request){
-        Optional<User> existingUser = userRepository.findByEmail(request.getEmail());
+
         if(userService.checkDuplicateEmail(request.getEmail())){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponseDto.error(ErrorStatus.EMAIL_ALREADY_EXIST));
         }
@@ -58,6 +58,7 @@ public class UserController {
     @PostMapping("/login") // 로그인
     public ResponseEntity<ApiResponseDto<TokenDto>> login(@RequestBody @Valid final LoginRequest request) {
         Optional<User> user = userRepository.findByEmail(request.getEmail());
+
         if (user.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponseDto.error(ErrorStatus.USER_CERTIFICATION_FAILED)); // 401 Unauthorized 상태로 실패 응답 반환
         }
