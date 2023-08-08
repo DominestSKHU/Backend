@@ -1,7 +1,8 @@
 package com.dominest.dominestbackend.api.category.controller;
+
 import com.dominest.dominestbackend.api.category.request.CategoryCreateRequest;
 import com.dominest.dominestbackend.api.category.request.CategoryUpdateRequest;
-import com.dominest.dominestbackend.api.common.RspsTemplate;
+import com.dominest.dominestbackend.api.common.ResTemplate;
 import com.dominest.dominestbackend.domain.category.Category;
 import com.dominest.dominestbackend.domain.category.service.CategoryService;
 import com.dominest.dominestbackend.domain.user.User;
@@ -27,8 +28,8 @@ public class CategoryController {
 
     private final UserService userService;
 
-    @PostMapping("/create") // 카테고리 생성
-    public ResponseEntity<RspsTemplate<?>> createCategory(@RequestBody @Valid final CategoryCreateRequest request, Authentication authentication) {
+    @PostMapping // 카테고리 생성
+    public ResponseEntity<ResTemplate<?>> createCategory(@RequestBody @Valid final CategoryCreateRequest request, Authentication authentication) {
         try {
             String logInUserEmail = SecurityContextHolder.getContext().getAuthentication()
                     .getPrincipal().toString().split(",")[0].split("=")[1]; // email 주소 가져오기
@@ -44,7 +45,7 @@ public class CategoryController {
         }
     }
 
-    @PutMapping("/update") // 카테고리 수정
+    @PutMapping // 카테고리 수정
     public ResponseEntity<String> updateCategories(@RequestBody @Valid final List<CategoryUpdateRequest> requests,
                                                    Authentication authentication) {
         try {
@@ -67,7 +68,7 @@ public class CategoryController {
         }
     }
 
-    @DeleteMapping("/delete/{id}") // 카테고리 삭제
+    @DeleteMapping("/{id}") // 카테고리 삭제
     public ResponseEntity<String> deleteCategory(@PathVariable Long id, Authentication authentication) {
         try {
             if (authentication != null && authentication.isAuthenticated()) {
