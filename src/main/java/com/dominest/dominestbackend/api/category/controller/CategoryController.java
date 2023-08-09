@@ -2,8 +2,10 @@ package com.dominest.dominestbackend.api.category.controller;
 
 import com.dominest.dominestbackend.api.category.request.CategoryCreateRequest;
 import com.dominest.dominestbackend.api.category.request.CategoryUpdateRequest;
+import com.dominest.dominestbackend.api.category.response.CategoryListDto;
 import com.dominest.dominestbackend.api.common.ResTemplate;
 import com.dominest.dominestbackend.domain.category.Category;
+import com.dominest.dominestbackend.domain.category.repository.CategoryRepository;
 import com.dominest.dominestbackend.domain.category.service.CategoryService;
 import com.dominest.dominestbackend.domain.user.User;
 import com.dominest.dominestbackend.domain.user.service.UserService;
@@ -22,11 +24,19 @@ import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/category")
+@RequestMapping("/categories")
 public class CategoryController {
     private final CategoryService categoryService;
-
+    private final CategoryRepository categoryRepository;
     private final UserService userService;
+
+    @GetMapping // 카테고리 조회
+    public ResTemplate<CategoryListDto> handleGetCategoryList() {
+        List<Category> categories = categoryRepository.findAll();
+        CategoryListDto categoryDtoList = CategoryListDto.from(categories);
+        return new ResTemplate<>(HttpStatus.OK, "카테고리 조회 성공", categoryDtoList);
+    }
+
 
     @PostMapping // 카테고리 생성
     public ResponseEntity<ResTemplate<?>> createCategory(@RequestBody @Valid final CategoryCreateRequest request, Authentication authentication) {
@@ -39,7 +49,6 @@ public class CategoryController {
             categoryService.createCategory(request.getCategoryName(), request.getCategoryType(), request.getExplanation(), creator.get().getName());
 
             return ResponseEntity.status(HttpStatus.OK).build();
-            // return new ResponseEntity<>("카테고리가 성공적으로 생성되었습니다.", HttpStatus.CREATED);
         } catch (Exception e) {
             throw new BusinessException(ErrorCode.ERROR_CATEGORY_CREATE);
         }
