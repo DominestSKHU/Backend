@@ -144,10 +144,11 @@ public class ResidentService {
             residentRepository.delete(existingResident);
 
         try {
-            residentRepository.save(resident);
+            // Sequence 방식의 기본 키 생성 전략을 사용할 땐 쓰기지연이 발생하여 트랜잭션이 끝날 때 insert 쿼리가 실행됨.
+            // 따라서 메서드 끝(트랜잭션 커밋) 에서 insert 쿼리가 실행되는데, 이 때 catch 블록의 예외처리 범위를 벗어나므로 saveAndFlush()를 사용한다.
+            residentRepository.saveAndFlush(resident);
         } catch (DataIntegrityViolationException e) {
-            throw new BusinessException("학생 저장 실패, 잘못된 입력값입니다. 데이터 누락 혹은 중복을 확인해주세요. 오류 메시지: " +
-                    e.getMessage(), HttpStatus.BAD_REQUEST);
+            throw new BusinessException("입사생 저장 실패, 잘못된 입력값입니다. 데이터 누락 혹은 중복을 확인해주세요.", HttpStatus.BAD_REQUEST);
         }
     }
 
