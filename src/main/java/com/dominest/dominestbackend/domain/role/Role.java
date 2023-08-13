@@ -3,21 +3,21 @@ package com.dominest.dominestbackend.domain.role;
 import org.springframework.security.core.GrantedAuthority;
 
 public enum Role implements GrantedAuthority {
-    ROLE_USER("ROLE_USER"),
-    ROLE_ADMIN("ROLE_ADMIN");
+    ROLE_USER("User"),
+    ROLE_ADMIN("Admin");
 
-    private final String role;
+    private final String description;
 
-    Role(String role) {
-        this.role = role;
+    Role(String description) {
+        this.description = description;
     }
 
-    public String getRole() {
-        return role;
+    public String getDescription() {
+        return description;
     }
 
     @Override
     public String getAuthority() {
-        return role;
+        return description;
     }
 }

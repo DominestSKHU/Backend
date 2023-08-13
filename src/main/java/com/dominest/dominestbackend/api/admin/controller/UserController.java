@@ -5,9 +5,6 @@ import com.dominest.dominestbackend.api.admin.request.JoinRequest;
 import com.dominest.dominestbackend.api.admin.request.LoginRequest;
 import com.dominest.dominestbackend.api.admin.response.JoinResponse;
 import com.dominest.dominestbackend.domain.email.service.EmailVerificationService;
-import com.dominest.dominestbackend.domain.user.User;
-import com.dominest.dominestbackend.domain.user.repository.UserRepository;
-import com.dominest.dominestbackend.api.admin.request.LoginRequest;
 import com.dominest.dominestbackend.domain.jwt.dto.TokenDto;
 import com.dominest.dominestbackend.domain.jwt.service.TokenManager;
 import com.dominest.dominestbackend.domain.user.User;
@@ -19,6 +16,7 @@ import com.dominest.dominestbackend.global.apiResponse.SuccessStatus;
 import com.dominest.dominestbackend.global.exception.ErrorCode;
 import com.dominest.dominestbackend.global.exception.exceptions.BusinessException;
 import com.dominest.dominestbackend.global.exception.exceptions.auth.NotValidTokenException;
+import com.dominest.dominestbackend.global.util.EntityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -52,21 +50,23 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponseDto.error(ErrorStatus.EMAIL_NOT_VERIFIED));
         }
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseDto.success(SuccessStatus.JOIN_SUCCESS, userService.create(request)));
+        JoinResponse joinResponse = userService.create(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseDto.success(SuccessStatus.JOIN_SUCCESS, joinResponse));
     }
 
     @PostMapping("/login") // 로그인
     public ResponseEntity<ApiResponseDto<TokenDto>> login(@RequestBody @Valid final LoginRequest request) {
-        Optional<User> user = userRepository.findByEmail(request.getEmail());
+        Optional<User> optionalUser = userRepository.findByEmail(request.getEmail());
+        User user = EntityUtil.checkNotFound(optionalUser, ErrorCode.RESIDENT_NOT_FOUND);
 
-        if (user.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponseDto.error(ErrorStatus.USER_CERTIFICATION_FAILED)); // 401 Unauthorized 상태로 실패 응답 반환
-        }
-        if (!passwordEncoder.matches(request.getPassword(), user.get().getPassword())) {
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponseDto.error(ErrorStatus.USER_NOT_JOIN)); // 401 Unauthorized 상태로 실패 응답 반환
         }
 
-        return ResponseEntity.ok(ApiResponseDto.success(SuccessStatus.LOGIN_SUCCESS, userService.login(request.getEmail(), request.getPassword())));
+        TokenDto tokenDto = userService.login(request.getEmail(), request.getPassword());
+        tokenDto.setUsername(user.getName());
+        tokenDto.setRole(user.getRole().getDescription());
+        return ResponseEntity.ok(ApiResponseDto.success(SuccessStatus.LOGIN_SUCCESS, tokenDto));
     }
 
     @GetMapping("/login-test") // accesstoken으로 유저정보 가져오기

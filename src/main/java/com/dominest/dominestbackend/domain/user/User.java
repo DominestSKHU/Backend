@@ -40,11 +40,12 @@ public class User implements UserDetails {
     private Role role;
 
     @Builder
-    public User(String email, String password, String name, String phoneNumber) {
+    private User(String email, String password, String name, String phoneNumber, Role role) {
         this.email = email;
         this.password = password;
         this.name = name;
         this.phoneNumber = phoneNumber;
+        this.role = role;
     }
 
     public User(String email, String password, Collection<? extends GrantedAuthority> authorities) {
