@@ -11,9 +11,11 @@ import com.dominest.dominestbackend.domain.resident.Resident;
 import com.dominest.dominestbackend.domain.resident.ResidentService;
 import com.dominest.dominestbackend.domain.resident.component.ResidenceSemester;
 import com.dominest.dominestbackend.global.exception.ErrorCode;
+import com.dominest.dominestbackend.global.exception.exceptions.BusinessException;
 import com.dominest.dominestbackend.global.exception.exceptions.file.FileIOException;
 import com.dominest.dominestbackend.global.util.FileService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -67,7 +69,12 @@ public class ResidentController {
     // 입사생 수정
     @PatchMapping("/residents/{id}")
     public ResponseEntity<ResTemplate<?>> handleUpdateResident(@PathVariable Long id, @RequestBody @Valid SaveResidentDto.Req reqDto){
-        residentService.updateResident(id, reqDto.toEntity());
+        try {
+            residentService.updateResident(id, reqDto.toEntity());
+        }catch (DataIntegrityViolationException e) {
+            throw new BusinessException("입사생 정보 변경 실패, 잘못된 입력값입니다. 데이터 누락 혹은 중복을 확인해주세요.", HttpStatus.BAD_REQUEST);
+        }
+
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
