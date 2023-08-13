@@ -22,7 +22,7 @@ public class GlobalExceptionHandler {
 
     /**
      * @ModelAttribute 으로 binding error 발생시 BindException 발생한다.
-     * @RequestBody 바인딩 오류(HttpMessageConverter binding) 시 발생하는 MethodArgumentNotValidException 도 BindException 을 확장한다.
+     * @RequestBody @Valid 바인딩 오류(HttpMessageConverter binding) 시 발생하는 MethodArgumentNotValidException 도 BindException 을 확장한다.
      */
     @ExceptionHandler(BindException.class)
     public ResponseEntity<ErrorResponseDto> handleBindException(BindException e, HttpServletRequest request) {

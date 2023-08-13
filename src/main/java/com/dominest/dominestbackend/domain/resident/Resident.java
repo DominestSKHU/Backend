@@ -1,6 +1,6 @@
 package com.dominest.dominestbackend.domain.resident;
 
-import com.dominest.dominestbackend.domain.common.BaseTimeEntity;
+import com.dominest.dominestbackend.domain.common.BaseEntity;
 import com.dominest.dominestbackend.domain.resident.component.ResidenceSemester;
 import com.dominest.dominestbackend.global.util.TimeUtil;
 import lombok.*;
@@ -14,7 +14,11 @@ import java.util.List;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class Resident extends BaseTimeEntity {
+@Table(uniqueConstraints = {
+        @UniqueConstraint(name = "unique_resident_Info_for_semester",
+                                            columnNames = { "studentId", "residenceSemester" })
+})
+public class Resident extends BaseEntity {
     @Id
     //한 번에 많은 데이터가 insert 될 수 있으므로 SEQUENCE 사용. 근데 300개 삽입으로는 별 차이가 없네
     @SequenceGenerator(
@@ -28,11 +32,11 @@ public class Resident extends BaseTimeEntity {
     private Long id;
 
     /** 학생 개인정보 */
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String name;
     @Column(nullable = false)
     private String gender; // 현재 'M' or 'F' 인데 확장성을 위해 String 쓰기로 함
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String studentId;
     @Column(nullable = false)
     private String major; // 전공. 매학년 바뀔 수도 있으니 enum 사용하지 않는 걸로

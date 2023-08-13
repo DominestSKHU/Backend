@@ -29,8 +29,18 @@ public class InitDB {
                 .name("name")
                 .phoneNumber("010-1234-5678")
                 .build();
+        User user2 = User.builder()
+                .email("eeee1@email.com")
+                .password(passwordEncoder.encode("pppp"))
+                .build();
+        User user3 = User.builder()
+                .email("eeee2@email.com")
+                .password(passwordEncoder.encode("pppp"))
+                .build();
         userRepository.save(user);
-
+        userRepository.save(user2);
+        userRepository.save(user3);
+      
         Category category = Category.builder()
                 .categoryName("categoryName")
                 .categoryType(Type.WRITE_POST)
