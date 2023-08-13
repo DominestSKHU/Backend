@@ -1,4 +1,4 @@
-package com.dominest.dominestbackend.global.config;
+package com.dominest.dominestbackend.global.config.jpa;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;

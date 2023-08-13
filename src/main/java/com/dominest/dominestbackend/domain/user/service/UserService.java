@@ -3,18 +3,15 @@ package com.dominest.dominestbackend.domain.user.service;
 
 import com.dominest.dominestbackend.api.admin.request.JoinRequest;
 import com.dominest.dominestbackend.api.admin.response.JoinResponse;
-import com.dominest.dominestbackend.domain.user.User;
-import com.dominest.dominestbackend.domain.user.repository.UserRepository;
 import com.dominest.dominestbackend.domain.jwt.dto.TokenDto;
 import com.dominest.dominestbackend.domain.jwt.service.TokenManager;
+import com.dominest.dominestbackend.domain.user.User;
+import com.dominest.dominestbackend.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 
 @Service
@@ -41,7 +38,7 @@ public class UserService {
 
     public TokenDto login(String email, String password){
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(email, password);
-        TokenDto tokenDto = tokenManager.createTokenDto(String.valueOf(authenticationToken));
+        TokenDto tokenDto = tokenManager.createTokenDto(email);
 
         return tokenDto;
     }
