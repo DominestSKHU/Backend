@@ -9,9 +9,9 @@ import javax.persistence.Column;
 import javax.persistence.EntityListeners;
 import javax.persistence.MappedSuperclass;
 
+@Getter
 @EntityListeners(value = {AuditingEntityListener.class})
 @MappedSuperclass
-@Getter
 public abstract class BaseEntity extends BaseTimeEntity {
 
     @CreatedBy
