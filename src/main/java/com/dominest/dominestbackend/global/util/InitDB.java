@@ -1,9 +1,9 @@
 package com.dominest.dominestbackend.global.util;
 
 
-import com.dominest.dominestbackend.domain.category.Category;
-import com.dominest.dominestbackend.domain.category.repository.CategoryRepository;
-import com.dominest.dominestbackend.domain.categorytype.Type;
+import com.dominest.dominestbackend.domain.post.component.category.Category;
+import com.dominest.dominestbackend.domain.post.component.category.repository.CategoryRepository;
+import com.dominest.dominestbackend.domain.post.component.category.component.categorytype.Type;
 import com.dominest.dominestbackend.domain.role.Role;
 import com.dominest.dominestbackend.domain.user.User;
 import com.dominest.dominestbackend.domain.user.repository.UserRepository;
