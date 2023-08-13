@@ -11,9 +11,12 @@ import lombok.NoArgsConstructor;
 public class JoinResponse {
     private String email;
 
-    private String password;
+    private String name;
 
-    public static JoinResponse of(String email, String password){
-        return new JoinResponse(email, password);
+    private String phoneNumber;
+
+    public static JoinResponse of(String email, String name, String phoneNumber){
+        return new JoinResponse(email, name, phoneNumber);
     }
+
 }

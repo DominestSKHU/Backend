@@ -29,11 +29,13 @@ public class UserService {
         User user = User.builder()
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
+                .name(request.getName())
+                .phoneNumber(request.getPhoneNumber())
                 .build();
 
         userRepository.save(user);
 
-        return JoinResponse.of(user.getEmail(), user.getPassword());
+        return JoinResponse.of(user.getEmail(), user.getName(), user.getPhoneNumber());
     }
 
     public TokenDto login(String email, String password){
@@ -50,5 +52,9 @@ public class UserService {
 
     public boolean validateUserPassword(String currentPassword, String loggedInUserPassword) {
         return passwordEncoder.matches(currentPassword, loggedInUserPassword);
+    }
+
+    public Optional<User> getUserByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 }

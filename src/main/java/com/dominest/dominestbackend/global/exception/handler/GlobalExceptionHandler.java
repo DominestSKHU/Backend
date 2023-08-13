@@ -36,11 +36,12 @@ public class GlobalExceptionHandler {
 
         return createErrorResponse(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST, sb.toString());
     }
-    /** @RequestParam 파라미터 없을 때*/
+    /** @RequestParam 파라미터 누락*/
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<ErrorResponseDto> handleMissingServletRequestParameterException(MissingServletRequestParameterException e, HttpServletRequest request) {
         printLog(e, request);
-        return createErrorResponse(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST, e.getMessage());
+        String message = "파라미터 '" + e.getParameterName() + "'이 누락되었습니다.";
+        return createErrorResponse(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST, message);
     }
 
     // BusinessException 을 상속한 다른 Custom Exception 에도 적용된다.
