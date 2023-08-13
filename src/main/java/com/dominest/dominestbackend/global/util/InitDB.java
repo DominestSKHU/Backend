@@ -4,6 +4,7 @@ package com.dominest.dominestbackend.global.util;
 import com.dominest.dominestbackend.domain.category.Category;
 import com.dominest.dominestbackend.domain.category.repository.CategoryRepository;
 import com.dominest.dominestbackend.domain.categorytype.Type;
+import com.dominest.dominestbackend.domain.role.Role;
 import com.dominest.dominestbackend.domain.user.User;
 import com.dominest.dominestbackend.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,18 +29,21 @@ public class InitDB {
                 .password(passwordEncoder.encode("pppp"))
                 .name("name1")
                 .phoneNumber("010-1234-5678")
+                .role(Role.ROLE_ADMIN)
                 .build();
         User user2 = User.builder()
                 .email("eeee1@email.com")
                 .password(passwordEncoder.encode("pppp"))
                 .name("name2")
                 .phoneNumber("010-1235-5678")
+                .role(Role.ROLE_ADMIN)
                 .build();
         User user3 = User.builder()
                 .email("eeee2@email.com")
                 .password(passwordEncoder.encode("pppp"))
                 .name("name3")
                 .phoneNumber("010-1236-5678")
+                .role(Role.ROLE_ADMIN)
                 .build();
         userRepository.save(user);
         userRepository.save(user2);
