@@ -1,6 +1,7 @@
 package com.dominest.dominestbackend.domain.post.common;
 
 import com.dominest.dominestbackend.domain.common.BaseEntity;
+import com.dominest.dominestbackend.domain.user.User;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,10 +23,14 @@ public abstract class Post extends BaseEntity {
 
     @Column(nullable = false)
     private String title;
-    @Column(nullable = false)
-    private String writer;
+    /*작성자의 이름이다. String으로 작성자이름만 넣을까 했으나,
+      토큰 인증방식이라 '상태'를 서버에서 관리할 수 없어, 삭제된 사용자의 정보가 들어갈 가능성이 있으므로
+      User 객체를 넣어 외래키 연관관계를 맺도록 함.*/
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false, name = "writer_id")
+    private User writer;
 
-    public Post(String title, String writer) {
+    public Post(String title, User writer) {
         this.title = title;
         this.writer = writer;
     }
