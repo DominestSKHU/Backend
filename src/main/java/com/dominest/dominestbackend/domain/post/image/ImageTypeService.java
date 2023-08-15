@@ -23,10 +23,10 @@ public class ImageTypeService {
     private final UserService userService;
 
     @Transactional
-    public void createImageType(SaveImageTypeDto.Req reqDto, List<String> imageUrls, String uploaderEmail) {
+    public ImageType createImageType(SaveImageTypeDto.Req reqDto, List<String> imageUrls, String uploaderEmail) {
         User user = userService.getUserByEmail(uploaderEmail);
         ImageType imageType = reqDto.toEntity(imageUrls, user);
-        imageTypeRepository.save(imageType);
+        return imageTypeRepository.save(imageType);
     }
 
     public ImageTypeDetailDto.Res getImageTypeById(Long imageTypeId) {
