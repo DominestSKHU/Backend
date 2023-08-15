@@ -4,6 +4,7 @@ import com.dominest.dominestbackend.api.common.ResTemplate;
 import com.dominest.dominestbackend.api.post.image.dto.ImageTypeDetailDto;
 import com.dominest.dominestbackend.api.post.image.dto.ImageTypeListDto;
 import com.dominest.dominestbackend.api.post.image.dto.SaveImageTypeDto;
+import com.dominest.dominestbackend.domain.post.image.ImageType;
 import com.dominest.dominestbackend.domain.post.image.ImageTypeService;
 import com.dominest.dominestbackend.global.util.FileService;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.net.URI;
 import java.security.Principal;
 import java.util.List;
 
@@ -30,28 +32,36 @@ public class ImageTypeController {
 //  3. url 리스트
     // 이미지 게시물 작성
     @PostMapping("/posts/image-types")
-    public ResponseEntity<String> handleCreateImageType(@ModelAttribute @Valid SaveImageTypeDto.Req reqDto, Principal principal) {
+    public ResponseEntity<ResTemplate<?>> handleCreateImageType(@ModelAttribute @Valid SaveImageTypeDto.Req reqDto, Principal principal) {
         // 이미지 저장
         List<String> savedImgUrls = fileService.save(FileService.FilePrefix.POST_IMAGE_TYPE, reqDto.getPostImages());
         String email = principal.getName();
-        imageTypeService.createImageType(reqDto, savedImgUrls, email);
+        ImageType imageType = imageTypeService.createImageType(reqDto, savedImgUrls, email);
+        ResTemplate<?> resTemplate = new ResTemplate<>(HttpStatus.CREATED, imageType.getId() + "번 게시글 작성");
 
-        return ResponseEntity.ok(email);
+        return ResponseEntity.
+                created(URI.create("/posts/image-types/" + imageType.getId()))
+                .body(resTemplate);
     }
     // 이미지타입 게시물 단건 조회
     @GetMapping("/posts/image-types/{imageTypeId}")
     public ResTemplate<ImageTypeDetailDto.Res> handleGetImageType(@PathVariable Long imageTypeId) {
 
         ImageTypeDetailDto.Res resDto = imageTypeService.getImageTypeById(imageTypeId);
-        return new ResTemplate<>(HttpStatus.OK, imageTypeId+"번 게시물  조회 성공", resDto);
+        return new ResTemplate<>(HttpStatus.OK
+                , imageTypeId+"번 게시물  조회 성공"
+                , resDto);
     }
 
     // 이미지타입 게시물 목록을 조회한다. 페이지네이션 적용 필요.
     @GetMapping("/posts/image-types")
     public ResTemplate<ImageTypeListDto.Res> handleGetImageTypes(@RequestParam(defaultValue = "0") int page) {
+
         Pageable pageable = PageRequest.of(page, IMAGE_TYPE_PAGE_SIZE);
         ImageTypeListDto.Res resDto = imageTypeService.getImageTypes(pageable);
-        return new ResTemplate<>(HttpStatus.OK, "게시물 목록 조회 성공,", resDto);
+        return new ResTemplate<>(HttpStatus.OK
+                , "페이지 게시글 목록 조회 - " + resDto.getPage().getCurrentPage() + "페이지"
+                , resDto);
     }
 }
 

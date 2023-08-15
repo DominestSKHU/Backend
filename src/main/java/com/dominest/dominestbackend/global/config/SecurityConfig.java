@@ -41,7 +41,6 @@ public class SecurityConfig {
                 .antMatchers("/email/send").permitAll()
                 .antMatchers("/email/verify/code").permitAll()
                 .antMatchers("/email/change/password").permitAll()
-                .antMatchers("/category/create").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
