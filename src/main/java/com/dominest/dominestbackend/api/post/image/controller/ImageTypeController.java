@@ -5,7 +5,6 @@ import com.dominest.dominestbackend.api.post.image.dto.ImageTypeDetailDto;
 import com.dominest.dominestbackend.api.post.image.dto.ImageTypeListDto;
 import com.dominest.dominestbackend.api.post.image.dto.SaveImageTypeDto;
 import com.dominest.dominestbackend.domain.post.image.ImageTypeService;
-import com.dominest.dominestbackend.domain.user.service.UserService;
 import com.dominest.dominestbackend.global.util.FileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -23,7 +22,6 @@ import java.util.List;
 public class ImageTypeController {
 
     private final ImageTypeService imageTypeService;
-    private final UserService userService;
     private final FileService fileService;
     private final int IMAGE_TYPE_PAGE_SIZE = 6;
 

@@ -38,7 +38,7 @@ public class CategoryController {
 
 
     @PostMapping // 카테고리 생성
-    public ResponseEntity<ResTemplate<?>> createCategory(@RequestBody @Valid final CategoryCreateRequest request, Authentication authentication) {
+    public ResponseEntity<ResTemplate<?>> createCategory(@RequestBody @Valid final CategoryCreateRequest request) {
         try {
             String logInUserEmail = SecurityContextHolder.getContext().getAuthentication()
                     .getPrincipal().toString().split(",")[0].split("=")[1]; // email 주소 가져오기
@@ -54,8 +54,7 @@ public class CategoryController {
     }
 
     @PutMapping // 카테고리 수정
-    public ResponseEntity<String> updateCategories(@RequestBody @Valid final List<CategoryUpdateRequest> requests,
-                                                   Authentication authentication) {
+    public ResponseEntity<String> updateCategories(@RequestBody @Valid final List<CategoryUpdateRequest> requests) {
         try {
             // 로그인한 사용자의 이름 문자열 가져오기
             String logInUserName = SecurityContextHolder.getContext().getAuthentication()
