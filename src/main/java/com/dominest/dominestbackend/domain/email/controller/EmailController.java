@@ -41,7 +41,7 @@ public class EmailController {
         if (emailVerificationService.verifyCode(emailRequest.getEmail(), emailRequest.getCode())) { // 인증 성공
             return ResponseEntity.ok(ApiResponseDto.success(SuccessStatus.VERIFY_EMAIL_SUCCESS)); // 이메일과 함께 성공 응답 반환
         } else { // 인증 실패
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponseDto.error(ErrorStatus.VERIFY_EMAIL_FAILED)); // 400 Bad Request 상태로 실패 응답 반환
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponseDto.error(ErrorStatus.VERIFY_EMAIL_FAILED)); // 400 Bad Req 상태로 실패 응답 반환
         }
     }
 }

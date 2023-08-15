@@ -45,6 +45,9 @@ public enum ErrorCode {
     ERROR_CATEGORY_CREATE(500, "카테고리 생성 중 오류가 발생했습니다."),
     ERROR_UPDATE_CATEGORY(500, "카테고리 업데이트 중 오류가 발생했습니다."),
     ERROR_DELETE_CATEGORY(500, "카테고리 삭제 중 오류가 발생했습니다."),
+
+    // 게시글 공통
+    POST_NOT_FOUND(404, "해당 게시글이 존재하지 않습니다."),
     
 
     

@@ -14,13 +14,13 @@ import java.util.List;
 public class SaveImageTypeDto {
     @AllArgsConstructor
     @Getter
-    public static class Request {
+    public static class Req {
         @NotBlank(message = "제목은 비어있을 수 없습니다")
-        private String title;
+        String title;
         @NotBlank(message = "내용은 비어있을 수 없습니다")
-        private String content;
+        String writer;
         @NotNull(message = "이미지는 비어있을 수 없습니다")
-        private List<MultipartFile> postImages;
+        List<MultipartFile> postImages;
 
         public ImageType toEntity(List<String> imageUrlList, User user){
             return ImageType.builder()
