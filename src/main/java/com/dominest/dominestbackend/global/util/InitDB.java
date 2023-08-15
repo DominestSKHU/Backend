@@ -4,6 +4,8 @@ package com.dominest.dominestbackend.global.util;
 import com.dominest.dominestbackend.domain.post.component.category.Category;
 import com.dominest.dominestbackend.domain.post.component.category.repository.CategoryRepository;
 import com.dominest.dominestbackend.domain.post.component.category.component.categorytype.Type;
+import com.dominest.dominestbackend.domain.post.image.ImageType;
+import com.dominest.dominestbackend.domain.post.image.ImageTypeRepository;
 import com.dominest.dominestbackend.domain.role.Role;
 import com.dominest.dominestbackend.domain.user.User;
 import com.dominest.dominestbackend.domain.user.repository.UserRepository;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
+import java.util.ArrayList;
 
 @RequiredArgsConstructor
 @Component
@@ -20,6 +23,7 @@ public class InitDB {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
+    private final ImageTypeRepository imageTypeRepository;
 
     @Transactional
     @PostConstruct
@@ -56,5 +60,16 @@ public class InitDB {
                 .name("name")
                 .build();
         categoryRepository.save(category);
+
+        ArrayList<ImageType> imageTypes = new ArrayList<>();
+        int postCount = 100;
+        for (int i = 1; i <= postCount; i++) {
+            ImageType imageType = ImageType.builder()
+                    .title("title")
+                    .writer(user)
+                    .build();
+            imageTypes.add(imageType);
+        }
+        imageTypeRepository.saveAll(imageTypes);
     }
 }
