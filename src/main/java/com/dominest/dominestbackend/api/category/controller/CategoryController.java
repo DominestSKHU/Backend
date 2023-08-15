@@ -4,9 +4,9 @@ import com.dominest.dominestbackend.api.category.request.CategoryCreateRequest;
 import com.dominest.dominestbackend.api.category.request.CategoryUpdateRequest;
 import com.dominest.dominestbackend.api.category.response.CategoryListDto;
 import com.dominest.dominestbackend.api.common.ResTemplate;
-import com.dominest.dominestbackend.domain.category.Category;
-import com.dominest.dominestbackend.domain.category.repository.CategoryRepository;
-import com.dominest.dominestbackend.domain.category.service.CategoryService;
+import com.dominest.dominestbackend.domain.post.component.category.Category;
+import com.dominest.dominestbackend.domain.post.component.category.repository.CategoryRepository;
+import com.dominest.dominestbackend.domain.post.component.category.service.CategoryService;
 import com.dominest.dominestbackend.domain.user.User;
 import com.dominest.dominestbackend.domain.user.service.UserService;
 import com.dominest.dominestbackend.global.exception.ErrorCode;
@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -39,14 +38,14 @@ public class CategoryController {
 
 
     @PostMapping // 카테고리 생성
-    public ResponseEntity<ResTemplate<?>> createCategory(@RequestBody @Valid final CategoryCreateRequest request, Authentication authentication) {
+    public ResponseEntity<ResTemplate<?>> createCategory(@RequestBody @Valid final CategoryCreateRequest request) {
         try {
             String logInUserEmail = SecurityContextHolder.getContext().getAuthentication()
                     .getPrincipal().toString().split(",")[0].split("=")[1]; // email 주소 가져오기
 
-            Optional<User> creator = userService.getUserByEmail(logInUserEmail);
+            User creator = userService.getUserByEmail(logInUserEmail);
 
-            categoryService.createCategory(request.getCategoryName(), request.getCategoryType(), request.getExplanation(), creator.get().getName());
+            categoryService.createCategory(request.getCategoryName(), request.getCategoryType(), request.getExplanation(), creator.getName());
 
             return ResponseEntity.status(HttpStatus.OK).build();
         } catch (Exception e) {
@@ -55,20 +54,22 @@ public class CategoryController {
     }
 
     @PutMapping // 카테고리 수정
-    public ResponseEntity<String> updateCategories(@RequestBody @Valid final List<CategoryUpdateRequest> requests,
-                                                   Authentication authentication) {
+    public ResponseEntity<String> updateCategories(@RequestBody @Valid final List<CategoryUpdateRequest> requests) {
         try {
             // 로그인한 사용자의 이름 문자열 가져오기
             String logInUserName = SecurityContextHolder.getContext().getAuthentication()
                     .getPrincipal().toString().split(",")[0].split("=")[1];
 
-            Optional<User> creator = userService.getUserByEmail(logInUserName);
+
+//            Optional<User> creator = userService.getUserByEmail(logInUserName);
+            User creator = userService.getUserByEmail(logInUserName);
 
             for (CategoryUpdateRequest request : requests) {
                 Category category = categoryService.getCategoryById(request.getId());
 
                 categoryService.updateCategory(request.getId(), request.getCategoryName());
-                category.updateEditUser(creator.get().getName());
+//                category.updateEditUser(creator.get().getName());
+                category.updateEditUser(creator.getName());
             }
 
             return new ResponseEntity<>("카테고리 업데이트 성공~~", HttpStatus.OK);

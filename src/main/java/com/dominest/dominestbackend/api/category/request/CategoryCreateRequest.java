@@ -1,6 +1,6 @@
 package com.dominest.dominestbackend.api.category.request;
 
-import com.dominest.dominestbackend.domain.categorytype.Type;
+import com.dominest.dominestbackend.domain.post.component.category.component.categorytype.Type;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

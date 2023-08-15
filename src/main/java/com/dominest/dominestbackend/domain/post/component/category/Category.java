@@ -1,14 +1,12 @@
-package com.dominest.dominestbackend.domain.category;
+package com.dominest.dominestbackend.domain.post.component.category;
 
-import com.dominest.dominestbackend.domain.categorytype.Type;
-import com.dominest.dominestbackend.domain.user.User;
+import com.dominest.dominestbackend.domain.post.component.category.component.categorytype.Type;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.Optional;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

@@ -11,9 +11,9 @@ import javax.persistence.MappedSuperclass;
 import java.time.LocalDateTime;
 
 // 등록 시간 저장용
+@Getter
 @EntityListeners(value = {AuditingEntityListener.class})
 @MappedSuperclass
-@Getter
 public abstract class BaseTimeEntity {
 
     @CreatedDate
@@ -22,5 +22,4 @@ public abstract class BaseTimeEntity {
 
     @LastModifiedDate
     private LocalDateTime updateTime;
-
 }

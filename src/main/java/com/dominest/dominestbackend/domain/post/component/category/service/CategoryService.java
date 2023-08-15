@@ -1,10 +1,8 @@
-package com.dominest.dominestbackend.domain.category.service;
+package com.dominest.dominestbackend.domain.post.component.category.service;
 
-import com.dominest.dominestbackend.api.category.request.CategoryUpdateRequest;
-import com.dominest.dominestbackend.domain.category.Category;
-import com.dominest.dominestbackend.domain.category.repository.CategoryRepository;
-import com.dominest.dominestbackend.domain.categorytype.Type;
-import com.dominest.dominestbackend.domain.user.User;
+import com.dominest.dominestbackend.domain.post.component.category.Category;
+import com.dominest.dominestbackend.domain.post.component.category.repository.CategoryRepository;
+import com.dominest.dominestbackend.domain.post.component.category.component.categorytype.Type;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

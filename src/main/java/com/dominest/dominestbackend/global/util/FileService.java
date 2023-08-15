@@ -127,6 +127,7 @@ public class FileService {
     public enum FilePrefix {
         RESIDENT_ADMISSION("resident/admission/"),
         RESIDENT_DEPARTURE("resident/departure/"),
+        POST_IMAGE_TYPE("post/image_type/"),
         NONE(""),
         ;
 

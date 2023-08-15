@@ -1,7 +1,6 @@
 package com.dominest.dominestbackend.global.exception;
 
 import lombok.Getter;
-import org.springframework.http.HttpStatus;
 
 @Getter
 public enum ErrorCode {
@@ -25,6 +24,9 @@ public enum ErrorCode {
     NOT_VALID_TOKEN(401, "유효하지 않은 토큰입니다."),
     NO_ACCESS_USER(403, "권한이 없습니다."),
 
+    // 사용자
+    USER_NOT_FOUND(404, "해당 사용자가 존재하지 않습니다."),
+
     // 엑셀 업로드
     COLUMN_COUNT_MISMATCHED(400, "컬럼의 개수가 일치하지 않습니다."),
     INVALID_FILE_EXTENSION(400, "파일 확장자가 유효하지 않습니다."),
@@ -40,17 +42,18 @@ public enum ErrorCode {
 
     // 입사자
     RESIDENT_NOT_FOUND(404, "해당 입사자가 존재하지 않습니다."),
-
-
     ERROR_CATEGORY_CREATE(500, "카테고리 생성 중 오류가 발생했습니다."),
     ERROR_UPDATE_CATEGORY(500, "카테고리 업데이트 중 오류가 발생했습니다."),
     ERROR_DELETE_CATEGORY(500, "카테고리 삭제 중 오류가 발생했습니다."),
+
+    // 게시글 공통
+    POST_NOT_FOUND(404, "해당 게시글이 존재하지 않습니다."),
     
 
     
 ;
-    private int statusCode;
-    private String message;
+    private final int statusCode;
+    private final String message;
 
     ErrorCode(int status, String message) {
         this.statusCode = status;

@@ -8,13 +8,12 @@ import com.dominest.dominestbackend.domain.jwt.service.TokenManager;
 import com.dominest.dominestbackend.domain.role.Role;
 import com.dominest.dominestbackend.domain.user.User;
 import com.dominest.dominestbackend.domain.user.repository.UserRepository;
+import com.dominest.dominestbackend.global.exception.ErrorCode;
+import com.dominest.dominestbackend.global.util.EntityUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 
 @Service
@@ -43,10 +42,9 @@ public class UserService {
     }
 
     public TokenDto login(String email, String password){
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(email, password);
-        TokenDto tokenDto = tokenManager.createTokenDto(email);
-
-        return tokenDto;
+        // 현재 credential과 Authentication 객체를 토큰 생성 시 사용하지 않아 주석 처리함
+//        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(email, password);
+        return tokenManager.createTokenDto(email);
     }
 
 
@@ -58,7 +56,10 @@ public class UserService {
         return passwordEncoder.matches(currentPassword, loggedInUserPassword);
     }
 
-    public Optional<User> getUserByEmail(String email) {
-        return userRepository.findByEmail(email);
+//    public Optional<User> getUserByEmail(String email) {
+//        return userRepository.findByEmail(email);
+//    }
+    public User getUserByEmail(String email) {
+        return EntityUtil.checkNotFound(userRepository.findByEmail(email), ErrorCode.USER_NOT_FOUND);
     }
 }

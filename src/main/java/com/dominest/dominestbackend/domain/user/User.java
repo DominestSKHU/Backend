@@ -61,6 +61,7 @@ public class User implements UserDetails {
                 .collect(Collectors.toList());
     }
 
+    // principal이 UserDetails 타입일 경우, principal.getName()의 반환값.
     @Override
     public String getUsername() {
         return email;

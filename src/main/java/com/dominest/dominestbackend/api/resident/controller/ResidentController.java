@@ -47,9 +47,9 @@ public class ResidentController {
     // 전체조회
     @GetMapping("/residents")
     public ResTemplate<ResidentListDto.Res> handleGetAllResident(@RequestParam(required = true) ResidenceSemester residenceSemester){
-        ResidentListDto.Res residents = residentService.getAllResidentByResidenceSemester(residenceSemester);
+        ResidentListDto.Res residentListDto = residentService.getAllResidentByResidenceSemester(residenceSemester);
         
-        return new ResTemplate<>(HttpStatus.OK, "입사생 목록 조회 성공", residents);
+        return new ResTemplate<>(HttpStatus.OK, "입사생 목록 조회 성공", residentListDto);
     }
 
     // (테스트용) 입사생 데이터 전체삭제
@@ -117,7 +117,9 @@ public class ResidentController {
 
         residentService.uploadPdf(id, filePrefix, pdf);
         ResTemplate<String> resTemplate = new ResTemplate<>(HttpStatus.CREATED, "pdf 업로드 완료");
-        return ResponseEntity.created(URI.create("/residents/"+id+"/pdf")).body(resTemplate);
+        return ResponseEntity
+                .created(URI.create("/residents/"+id+"/pdf"))
+                .body(resTemplate);
     }
 
     // PDF 전체 업로드
@@ -126,18 +128,22 @@ public class ResidentController {
                                                                                                                     , @RequestParam(required = true) ResidenceSemester residenceSemester
                                                                                                                     , @RequestParam(required = true) PdfType pdfType){
         FileService.FilePrefix filePrefix = pdfType.toFilePrefix();
-        PdfBulkUploadDto.Res res = residentService.uploadPdfs(filePrefix, pdfs, residenceSemester);
+        PdfBulkUploadDto.Res resDto = residentService.uploadPdfs(filePrefix, pdfs, residenceSemester);
 
         ResTemplate<PdfBulkUploadDto.Res> resTemplate = new ResTemplate<>(HttpStatus.CREATED,
-                "pdf 업로드 완료. 저장된 파일 수: " + res.getSuccessCount() + "개", res);
-        return ResponseEntity.created(URI.create("/residents/pdf")).body(resTemplate);
+                "pdf 업로드 완료. 저장된 파일 수: " + resDto.getSuccessCount() + "개", resDto);
+        return ResponseEntity
+                .created(URI.create("/residents/pdf"))
+                .body(resTemplate);
     }
 
     // 해당차수 입사생 전체 PDF 조회
     @GetMapping("/residents/pdf")
     public ResTemplate<ResidentPdfListDto.Res> handleGetAllPdfs(@RequestParam(required = true) ResidenceSemester residenceSemester){
-        ResidentPdfListDto.Res res = residentService.getAllPdfs(residenceSemester);
-        return new ResTemplate<>(HttpStatus.OK, "pdf url 조회 성공", res);
+        ResidentPdfListDto.Res resDto = residentService.getAllPdfs(residenceSemester);
+        return new ResTemplate<>(HttpStatus.OK
+                , "pdf url 조회 성공"
+                , resDto);
     }
 }
 
