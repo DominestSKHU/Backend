@@ -6,6 +6,8 @@ import com.dominest.dominestbackend.api.post.image.dto.ImageTypeListDto;
 import com.dominest.dominestbackend.api.post.image.dto.SaveImageTypeDto;
 import com.dominest.dominestbackend.domain.post.image.ImageType;
 import com.dominest.dominestbackend.domain.post.image.ImageTypeService;
+import com.dominest.dominestbackend.global.exception.ErrorCode;
+import com.dominest.dominestbackend.global.exception.exceptions.file.FileIOException;
 import com.dominest.dominestbackend.global.util.FileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -14,7 +16,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.net.URI;
 import java.security.Principal;
 import java.util.List;
@@ -43,7 +47,22 @@ public class ImageTypeController {
                 created(URI.create("/posts/image-types/" + imageType.getId()))
                 .body(resTemplate);
     }
-    // 이미지타입 게시물 단건 조회
+
+    // 게시물 이미지 조회
+    @GetMapping("/posts/image-types/images")
+    public void getImage(HttpServletResponse response, @RequestParam(required = true) String filename) {
+        byte[] bytes = fileService.getByteArr(FileService.FilePrefix.POST_IMAGE_TYPE, filename);
+
+        response.setContentType("image/*");
+        try {
+            response.getOutputStream().write(bytes);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new FileIOException(ErrorCode.FILE_CANNOT_BE_SENT);
+        }
+    }
+
+    // 게시물 단건 조회
     @GetMapping("/posts/image-types/{imageTypeId}")
     public ResTemplate<ImageTypeDetailDto.Res> handleGetImageType(@PathVariable Long imageTypeId) {
 
@@ -53,7 +72,7 @@ public class ImageTypeController {
                 , resDto);
     }
 
-    // 이미지타입 게시물 목록을 조회한다. 페이지네이션 적용 필요.
+    // 게시물 목록을 조회한다.
     @GetMapping("/posts/image-types")
     public ResTemplate<ImageTypeListDto.Res> handleGetImageTypes(@RequestParam(defaultValue = "0") int page) {
 
