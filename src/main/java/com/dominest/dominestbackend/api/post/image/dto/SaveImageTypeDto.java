@@ -17,8 +17,6 @@ public class SaveImageTypeDto {
     public static class Req {
         @NotBlank(message = "제목은 비어있을 수 없습니다")
         String title;
-        @NotBlank(message = "내용은 비어있을 수 없습니다")
-        String writer;
         @NotNull(message = "이미지는 비어있을 수 없습니다")
         List<MultipartFile> postImages;
 

@@ -30,7 +30,7 @@ public class ImageTypeService {
     }
 
     public ImageTypeDetailDto.Res getImageTypeById(Long imageTypeId) {
-        ImageType imageType = EntityUtil.checkNotFound(imageTypeRepository.findByIdFetchWriter(imageTypeId), ErrorCode.POST_NOT_FOUND);
+        ImageType imageType = EntityUtil.checkNotFound(imageTypeRepository.findByIdFetchWriterAndImageUrls(imageTypeId), ErrorCode.POST_NOT_FOUND);
         return ImageTypeDetailDto.Res.from(imageType);
     }
 
