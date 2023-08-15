@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -44,9 +43,9 @@ public class CategoryController {
             String logInUserEmail = SecurityContextHolder.getContext().getAuthentication()
                     .getPrincipal().toString().split(",")[0].split("=")[1]; // email 주소 가져오기
 
-            Optional<User> creator = userService.getUserByEmail(logInUserEmail);
+            User creator = userService.getUserByEmail(logInUserEmail);
 
-            categoryService.createCategory(request.getCategoryName(), request.getCategoryType(), request.getExplanation(), creator.get().getName());
+            categoryService.createCategory(request.getCategoryName(), request.getCategoryType(), request.getExplanation(), creator.getName());
 
             return ResponseEntity.status(HttpStatus.OK).build();
         } catch (Exception e) {
@@ -62,13 +61,16 @@ public class CategoryController {
             String logInUserName = SecurityContextHolder.getContext().getAuthentication()
                     .getPrincipal().toString().split(",")[0].split("=")[1];
 
-            Optional<User> creator = userService.getUserByEmail(logInUserName);
+
+//            Optional<User> creator = userService.getUserByEmail(logInUserName);
+            User creator = userService.getUserByEmail(logInUserName);
 
             for (CategoryUpdateRequest request : requests) {
                 Category category = categoryService.getCategoryById(request.getId());
 
                 categoryService.updateCategory(request.getId(), request.getCategoryName());
-                category.updateEditUser(creator.get().getName());
+//                category.updateEditUser(creator.get().getName());
+                category.updateEditUser(creator.getName());
             }
 
             return new ResponseEntity<>("카테고리 업데이트 성공~~", HttpStatus.OK);
