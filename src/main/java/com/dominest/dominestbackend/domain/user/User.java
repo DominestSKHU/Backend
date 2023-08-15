@@ -51,7 +51,7 @@ public class User implements UserDetails {
     public User(String email, String password, Collection<? extends GrantedAuthority> authorities) {
     }
 
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection(fetch = FetchType.LAZY)
     private List<String> roles = new ArrayList<>();
 
     @Override
