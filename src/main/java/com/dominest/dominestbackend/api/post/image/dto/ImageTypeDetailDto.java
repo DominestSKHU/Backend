@@ -27,7 +27,7 @@ public class ImageTypeDetailDto {
 
         @Getter
         @Builder
-        static class ImageTypeDto {
+        private static class ImageTypeDto {
             LocalDateTime createTime;
             LocalDateTime updateTime;
             String title;
