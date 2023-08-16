@@ -74,9 +74,12 @@ public class ImageTypeController {
 
     // 게시물 목록을 조회한다.
     @GetMapping("/posts/image-types")
-    public ResTemplate<ImageTypeListDto.Res> handleGetImageTypes(@RequestParam(defaultValue = "0") int page) {
+    public ResTemplate<ImageTypeListDto.Res> handleGetImageTypes(@RequestParam(defaultValue = "1") int page) {
+        if (page < 1)
+            throw new IllegalArgumentException("page는 1 이상이어야 합니다.");
 
-        Pageable pageable = PageRequest.of(page, IMAGE_TYPE_PAGE_SIZE);
+        // 0-base인 페이지를 클라이언트단에서 1-based인 것처럼 사용할 수 있게 함
+        Pageable pageable = PageRequest.of(page - 1 , IMAGE_TYPE_PAGE_SIZE);
         ImageTypeListDto.Res resDto = imageTypeService.getImageTypes(pageable);
         return new ResTemplate<>(HttpStatus.OK
                 , "페이지 게시글 목록 조회 - " + resDto.getPage().getCurrentPage() + "페이지"

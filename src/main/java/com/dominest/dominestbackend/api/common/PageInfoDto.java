@@ -9,7 +9,7 @@ import org.springframework.data.domain.Page;
 @Builder(access = AccessLevel.PRIVATE)
 public class PageInfoDto {
 
-    int currentPage; // 0부터 시작. 현재 페이지 번호
+    int currentPage; // 현재 페이지 번호
     int size;               // 페이지당 기본 사이즈
     boolean hasNext;    // 다음 페이지 존재 여부
     boolean hasPrevious;   // 이전 페이지 존재 여부
