@@ -6,10 +6,7 @@ import com.dominest.dominestbackend.domain.jwt.constant.TokenType;
 import com.dominest.dominestbackend.domain.jwt.dto.TokenDto;
 import com.dominest.dominestbackend.global.exception.ErrorCode;
 import com.dominest.dominestbackend.global.exception.exceptions.auth.NotValidTokenException;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
@@ -106,8 +103,18 @@ public class TokenManager {
     }
 
     public boolean validateToken(String token) {
-        getTokenClaims(token);
-        return true;
+        try {
+            Jws<Claims> claims = Jwts.parserBuilder()
+                    .setSigningKey(key).build()
+                    .parseClaimsJws(token);
+            return true;
+            /* 검증 여부를 boolean 반환해야 하므로 예외상황에서 로그만 출력함.*/
+        } catch (MalformedJwtException e) {
+            log.info("잘못된 jwt token", e);
+        } catch (JwtException e) {
+            log.info("jwt token 검증 중 에러 발생", e);
+        }
+        return false;
     }
 
     public boolean isTokenExpired(Date tokenExpiredTime) {
