@@ -1,6 +1,7 @@
 package com.dominest.dominestbackend.api.post.image.dto;
 
 import com.dominest.dominestbackend.domain.post.image.ImageType;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,7 +29,9 @@ public class ImageTypeDetailDto {
         @Getter
         @Builder
         private static class ImageTypeDto {
+            @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
             LocalDateTime createTime;
+            @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
             LocalDateTime updateTime;
             String title;
             String writer;

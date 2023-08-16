@@ -45,6 +45,13 @@ public class GlobalExceptionHandler {
     }
 
     // BusinessException 을 상속한 다른 Custom Exception 에도 적용된다.
+    @ExceptionHandler({IllegalArgumentException.class})
+    public ResponseEntity<ErrorResponseDto> handleBusinessException(IllegalArgumentException e, HttpServletRequest request){
+        printLog(e, request);
+        return createErrorResponse(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+
+    // BusinessException 을 상속한 다른 Custom Exception 에도 적용된다.
     @ExceptionHandler({BusinessException.class})
     public ResponseEntity<ErrorResponseDto> handleBusinessException(BusinessException e, HttpServletRequest request){
         printLog(e, request);

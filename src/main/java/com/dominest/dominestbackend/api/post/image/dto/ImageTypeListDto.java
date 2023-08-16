@@ -2,6 +2,7 @@ package com.dominest.dominestbackend.api.post.image.dto;
 
 import com.dominest.dominestbackend.api.common.PageInfoDto;
 import com.dominest.dominestbackend.domain.post.image.ImageType;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.data.domain.Page;
@@ -14,8 +15,9 @@ public class ImageTypeListDto {
 
     @Getter
     public static class Res {
-        PageInfoDto page;
-        List<ImageTypeDto> posts;
+        PageInfoDto page; // 페이징 정보
+        List<ImageTypeDto> posts; // 게시글 목록
+
         public static Res from(Page<ImageType> imageTypes){
             PageInfoDto pageInfoDto = PageInfoDto.from(imageTypes);
 
@@ -34,6 +36,7 @@ public class ImageTypeListDto {
         @Builder
         private static class ImageTypeDto {
             long id;
+            @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
             LocalDateTime createTime;
             String title;
             String writer;
