@@ -90,7 +90,7 @@ public class UserController {
 
     // 실패를 위에 성공을 아래에... 통일하기...
     @PostMapping("/myPage/password") // 비밀번호 변경
-    public ResponseEntity<ApiResponseDto> changePassword(@RequestBody ChangePasswordRequest request) {
+    public ResponseEntity<ApiResponseDto<?>> changePassword(@RequestBody ChangePasswordRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String logInUserEmail = authentication.getPrincipal().toString().split(",")[0].split("=")[1]; // email주소만 가져오기
 
