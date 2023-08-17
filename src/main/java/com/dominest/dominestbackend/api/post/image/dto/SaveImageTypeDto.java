@@ -1,6 +1,7 @@
 package com.dominest.dominestbackend.api.post.image.dto;
 
 
+import com.dominest.dominestbackend.domain.post.component.category.Category;
 import com.dominest.dominestbackend.domain.post.image.ImageType;
 import com.dominest.dominestbackend.domain.user.User;
 import lombok.AllArgsConstructor;
@@ -20,10 +21,11 @@ public class SaveImageTypeDto {
         @NotNull(message = "이미지는 비어있을 수 없습니다")
         List<MultipartFile> postImages;
 
-        public ImageType toEntity(List<String> imageUrlList, User user){
+        public ImageType toEntity(List<String> imageUrlList, User writer, Category category){
             return ImageType.builder()
                     .title(title)
-                    .writer(user)
+                    .writer(writer)
+                    .category(category)
                     .imageUrls(imageUrlList)
                     .build();
         }

@@ -1,8 +1,10 @@
 package com.dominest.dominestbackend.domain.post.component.category.service;
 
 import com.dominest.dominestbackend.domain.post.component.category.Category;
-import com.dominest.dominestbackend.domain.post.component.category.repository.CategoryRepository;
 import com.dominest.dominestbackend.domain.post.component.category.component.categorytype.Type;
+import com.dominest.dominestbackend.domain.post.component.category.repository.CategoryRepository;
+import com.dominest.dominestbackend.global.exception.ErrorCode;
+import com.dominest.dominestbackend.global.util.EntityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -70,8 +72,7 @@ public class CategoryService {
     }
 
     public Category getCategoryById(Long categoryId) {
-        return categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new IllegalStateException("해당 카테고리가 존재하지 않습니다."));
+        return EntityUtil.checkNotFound(categoryRepository.findById(categoryId), ErrorCode.CATEGORY_NOT_FOUND);
     }
 
     @Transactional

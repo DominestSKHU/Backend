@@ -1,6 +1,7 @@
 package com.dominest.dominestbackend.domain.post.common;
 
 import com.dominest.dominestbackend.domain.common.BaseEntity;
+import com.dominest.dominestbackend.domain.post.component.category.Category;
 import com.dominest.dominestbackend.domain.user.User;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -30,8 +31,13 @@ public abstract class Post extends BaseEntity {
     @JoinColumn(nullable = false, name = "writer_id")
     private User writer;
 
-    public Post(String title, User writer) {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false, name = "category_id")
+    private Category category;
+
+    public Post(String title, User writer, Category category) {
         this.title = title;
         this.writer = writer;
+        this.category = category;
     }
 }

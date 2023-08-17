@@ -47,6 +47,9 @@ public enum ErrorCode {
     ERROR_UPDATE_CATEGORY(500, "카테고리 업데이트 중 오류가 발생했습니다."),
     ERROR_DELETE_CATEGORY(500, "카테고리 삭제 중 오류가 발생했습니다."),
 
+    // 카테고리
+    CATEGORY_NOT_FOUND(404, "해당 카테고리가 존재하지 않습니다."),
+    CATEGORY_TYPE_MISMATCHED(400, "해당 카테고리의 타입이 일치하지 않습니다."),
     // 게시글 공통
     POST_NOT_FOUND(404, "해당 게시글이 존재하지 않습니다."),
     
