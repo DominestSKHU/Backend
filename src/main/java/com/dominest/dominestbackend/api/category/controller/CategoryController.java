@@ -7,18 +7,13 @@ import com.dominest.dominestbackend.api.common.ResTemplate;
 import com.dominest.dominestbackend.domain.post.component.category.Category;
 import com.dominest.dominestbackend.domain.post.component.category.repository.CategoryRepository;
 import com.dominest.dominestbackend.domain.post.component.category.service.CategoryService;
-import com.dominest.dominestbackend.domain.user.User;
-import com.dominest.dominestbackend.domain.user.service.UserService;
-import com.dominest.dominestbackend.global.exception.ErrorCode;
-import com.dominest.dominestbackend.global.exception.exceptions.BusinessException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -27,69 +22,38 @@ import java.util.List;
 public class CategoryController {
     private final CategoryService categoryService;
     private final CategoryRepository categoryRepository;
-    private final UserService userService;
 
     @GetMapping // 카테고리 조회
     public ResTemplate<CategoryListDto> handleGetCategoryList() {
+
         List<Category> categories = categoryRepository.findAll();
         CategoryListDto categoryDtoList = CategoryListDto.from(categories);
         return new ResTemplate<>(HttpStatus.OK, "카테고리 조회 성공", categoryDtoList);
     }
 
-
     @PostMapping // 카테고리 생성
     public ResponseEntity<ResTemplate<?>> createCategory(@RequestBody @Valid final CategoryCreateRequest request) {
-        try {
-            String logInUserEmail = SecurityContextHolder.getContext().getAuthentication()
-                    .getPrincipal().toString().split(",")[0].split("=")[1]; // email 주소 가져오기
 
-            User creator = userService.getUserByEmail(logInUserEmail);
-
-            categoryService.createCategory(request.getCategoryName(), request.getCategoryType(), request.getExplanation(), creator.getName());
-
-            return ResponseEntity.status(HttpStatus.OK).build();
-        } catch (Exception e) {
-            throw new BusinessException(ErrorCode.ERROR_CATEGORY_CREATE);
-        }
+        Category category = categoryService.createCategory(request.getCategoryName(), request.getCategoryType(), request.getExplanation());
+        ResTemplate<?> resTemplate = new ResTemplate<>(HttpStatus.CREATED, "카테고리 생성 성공");
+        return ResponseEntity
+                .created(URI.create("/categories/" + category.getId()))
+                .body(resTemplate);
     }
 
     @PutMapping // 카테고리 수정
-    public ResponseEntity<String> updateCategories(@RequestBody @Valid final List<CategoryUpdateRequest> requests) {
-        try {
-            // 로그인한 사용자의 이름 문자열 가져오기
-            String logInUserName = SecurityContextHolder.getContext().getAuthentication()
-                    .getPrincipal().toString().split(",")[0].split("=")[1];
+    public ResTemplate<String> updateCategories(@RequestBody @Valid final List<CategoryUpdateRequest> requests) throws Exception {
 
-
-//            Optional<User> creator = userService.getUserByEmail(logInUserName);
-            User creator = userService.getUserByEmail(logInUserName);
-
-            for (CategoryUpdateRequest request : requests) {
-                Category category = categoryService.getCategoryById(request.getId());
-
-                categoryService.updateCategory(request.getId(), request.getCategoryName());
-//                category.updateEditUser(creator.get().getName());
-                category.updateEditUser(creator.getName());
-            }
-
-            return new ResponseEntity<>("카테고리 업데이트 성공~~", HttpStatus.OK);
-        } catch (Exception e) {
-            throw new BusinessException(ErrorCode.ERROR_UPDATE_CATEGORY);
+        for (CategoryUpdateRequest request : requests) {
+            categoryService.updateCategory(request.getId(), request.getCategoryName());
         }
+        return new ResTemplate<>(HttpStatus.OK, "카테고리 수정 성공");
     }
 
     @DeleteMapping("/{id}") // 카테고리 삭제
-    public ResponseEntity<String> deleteCategory(@PathVariable Long id, Authentication authentication) {
-        try {
-            if (authentication != null && authentication.isAuthenticated()) {
-                categoryService.deleteCategoryById(id);
-                return new ResponseEntity<>("카테고리가 성공적으로 삭제되었습니다.", HttpStatus.OK);
-            } else {
-                throw new BusinessException(ErrorCode.NO_ACCESS_USER);
-            }
-        } catch (Exception e) {
-            throw new BusinessException(ErrorCode.ERROR_DELETE_CATEGORY);
-        }
-    }
+    public ResTemplate<String> deleteCategory(@PathVariable Long id) {
 
+        categoryService.deleteCategoryById(id);
+        return new ResTemplate<>(HttpStatus.OK, id +"번 카테고리 삭제 성공");
+    }
 }

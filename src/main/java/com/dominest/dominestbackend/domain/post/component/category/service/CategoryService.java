@@ -35,12 +35,11 @@ public class CategoryService {
 //    }
 
     @Transactional
-    public Category createCategory(String categoryName, Type categoryType, String explanation, String name) {
+    public Category createCategory(String categoryName, Type categoryType, String explanation) {
         Category category = Category.builder()
                 .categoryName(categoryName)
                 .categoryType(categoryType)
                 .explanation(explanation)
-                .name(name)
                 .build();
 
         return categoryRepository.save(category);

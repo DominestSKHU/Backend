@@ -1,5 +1,6 @@
 package com.dominest.dominestbackend.domain.post.component.category;
 
+import com.dominest.dominestbackend.domain.common.BaseEntity;
 import com.dominest.dominestbackend.domain.post.component.category.component.categorytype.Type;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -12,7 +13,7 @@ import javax.persistence.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "Category")
-public class Category {
+public class Category extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,27 +25,17 @@ public class Category {
     @Enumerated(EnumType.STRING)
     private Type categoryType;
 
-    @Column(length = 10000, nullable = false)
+    @Column(length = 255, nullable = false)
     private String explanation; // 카테고리 상세설명
 
-    private String name; // 유저 이름 저장
-
-//    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<Post> posts = new ArrayList<>(); // 카테고리 내 글들
-
     @Builder
-    public Category(String categoryName, Type categoryType, String explanation, String name) {
+    public Category(String categoryName, Type categoryType, String explanation) {
         this.categoryName = categoryName;
         this.categoryType = categoryType;
         this.explanation = explanation;
-        this.name = name;
     }
 
     public void updateCategory(String updatedCategoryName) {
         this.categoryName = updatedCategoryName;
-    }
-
-    public void updateEditUser(String name){
-        this.name = name;
     }
 }
