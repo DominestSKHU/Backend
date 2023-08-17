@@ -23,33 +23,35 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        // 토큰 정보 가져오기
-        String token = resolveToken(request);
+        // 토큰 유효성을 검사한다. 메서드 내부에서 예외상황시 바로 return으로 빠져나오고 다음 필터를 동작시킨다.
+        filter(request);
 
-        if (StringUtils.hasText(token) && tokenManager.validateToken(token)) { // 토큰이 존재하고 유효한 경우
-            Claims claims = tokenManager.getTokenClaims(token);
-
-            String email = tokenManager.getMemberEmail(token);
-//                String tokenType = tokenManager.getTokenType(token);
-
-            // 토큰 유형별로 부여할 권한 설정
-            // List<GrantedAuthority> authorities;
-            // if (tokenType.equalsIgnoreCase("ACCESS")) {
-            //     authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
-            // } else {
-            //     authorities = Collections.emptyList();
-            // }
-
-            if (! tokenManager.isTokenExpired(claims.getExpiration())) {
-                // 인증 정보 저장
-                Authentication authentication = new UsernamePasswordAuthenticationToken(email, null, null);
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-            }
-        }
-
-        // 다음 필터로 전달
         filterChain.doFilter(request, response);
     }
+
+    private void filter(HttpServletRequest request){
+        String token = resolveToken(request);
+        // 1. 토큰이 존재하고 유효한 경우에만 토큰 파싱
+        if (! StringUtils.hasText(token)) {
+            return;
+        }
+
+        // 2. 토큰 유효성(변조) 검사
+        if (! tokenManager.validateToken(token)) {
+            return;
+        }
+
+        Claims claims = tokenManager.getTokenClaims(token);
+        // 3. 토큰 만료 검사
+        if (tokenManager.isTokenExpired(claims.getExpiration())) {
+            return;
+        }
+
+        String email = claims.getAudience();
+        // 마지막으로 인증 정보로 Audience  저장
+        Authentication authentication = new UsernamePasswordAuthenticationToken(email, null, null);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+   }
 
     private String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
@@ -58,4 +60,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         return "";
     }
+
+    // 아래 코드는 토큰타입과 권한이 필요할 경우 doFilter() 로직에 추가
+    //            String tokenType = tokenManager.getTokenType(token);
+    // 토큰 유형별로 부여할 권한 설정
+    // List<GrantedAuthority> authorities;
+    // if (tokenType.equalsIgnoreCase("ACCESS")) {
+    //     authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
+    // } else {
+    //     authorities = Collections.emptyList();
+    // }
 }
