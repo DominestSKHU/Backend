@@ -1,4 +1,4 @@
-package com.dominest.dominestbackend.global.config;
+package com.dominest.dominestbackend.global.config.security;
 
 import com.dominest.dominestbackend.domain.jwt.service.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +19,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final Custom401AuthEntryPoint custom401AuthEntryPoint;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -29,10 +31,11 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.httpBasic().disable()
                 .csrf().disable()
+                .formLogin().disable() // 폼 로그인 비활성화. JWT 필터로 대체
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .formLogin().disable() // 폼 로그인 비활성화. JWT 필터로 대체
+
                 .authorizeRequests()
                 .antMatchers(HttpMethod.GET).permitAll() // GET 요청은 토큰 검증 예외
                 .antMatchers(HttpMethod.OPTIONS).permitAll() // OPTIONS 요청은 토큰 검증 예외
@@ -43,7 +46,13 @@ public class SecurityConfig {
                 .antMatchers("/email/change/password").permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling()
+                .authenticationEntryPoint(custom401AuthEntryPoint)
+                .accessDeniedHandler(customAccessDeniedHandler)
+
+        ; // 인증 예외
         return http.build();
     }
 }
