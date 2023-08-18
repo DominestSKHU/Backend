@@ -4,6 +4,5 @@ import lombok.Getter;
 
 @Getter
 public enum Type {
-    PHOTO_UPLOAD,
-    WRITE_POST
+    IMAGE, TEXT_AND_IMAGE
 }

@@ -12,7 +12,8 @@ public interface ImageTypeRepository extends JpaRepository<ImageType, Long> {
 
     @Query(value = "SELECT i FROM ImageType i" +
             " JOIN FETCH i.writer" +
+            " WHERE i.category.id = :categoryId" +
             " ORDER BY i.id DESC"
             , countQuery = "SELECT count(i) FROM ImageType i")
-    Page<ImageType> findAllFetchWriter(Pageable pageable);
+    Page<ImageType> findAllFetchWriter(@Param("categoryId") Long categoryId, Pageable pageable);
 }

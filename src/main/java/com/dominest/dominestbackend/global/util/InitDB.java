@@ -55,11 +55,16 @@ public class InitDB {
 
         Category category = Category.builder()
                 .categoryName("categoryName")
-                .categoryType(Type.WRITE_POST)
+                .categoryType(Type.IMAGE)
                 .explanation("explanation")
-                .name("name")
                 .build();
         categoryRepository.save(category);
+        Category category2 = Category.builder()
+                .categoryName("categoryName2")
+                .categoryType(Type.TEXT_AND_IMAGE)
+                .explanation("explanation")
+                .build();
+        categoryRepository.save(category2);
 
         ArrayList<ImageType> imageTypes = new ArrayList<>();
         int postCount = 100;
@@ -67,6 +72,7 @@ public class InitDB {
             ImageType imageType = ImageType.builder()
                     .title("title")
                     .writer(user)
+                    .category(category)
                     .build();
             imageTypes.add(imageType);
         }

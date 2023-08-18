@@ -1,17 +1,20 @@
 package com.dominest.dominestbackend.api.category.request;
 
 import com.dominest.dominestbackend.domain.post.component.category.component.categorytype.Type;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
 
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
+@NoArgsConstructor
 @Getter
 public class CategoryCreateRequest {
+    @NotBlank(message = "카테고리 이름은 필수 입력 값입니다.")
+    @Length(max = 255, message = "카테고리 이름은 255자 이내로 입력해주세요.")
     private String categoryName;
+    @NotNull(message = "카테고리 타입은 필수 입력 값입니다.")
     private Type categoryType;
     private String explanation;
-    private String email;
 }

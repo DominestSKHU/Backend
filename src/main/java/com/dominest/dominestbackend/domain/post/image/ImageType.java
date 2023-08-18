@@ -1,6 +1,7 @@
 package com.dominest.dominestbackend.domain.post.image;
 
 import com.dominest.dominestbackend.domain.post.common.Post;
+import com.dominest.dominestbackend.domain.post.component.category.Category;
 import com.dominest.dominestbackend.domain.user.User;
 import lombok.*;
 
@@ -21,8 +22,8 @@ public class ImageType extends Post {
     private List<String> imageUrls;
 
     @Builder
-    private ImageType(String title, User writer, List<String> imageUrls) {
-        super(title, writer);
+    private ImageType(String title, User writer, Category category, List<String> imageUrls) {
+        super(title, writer, category);
         this.imageUrls = imageUrls;
     }
 }

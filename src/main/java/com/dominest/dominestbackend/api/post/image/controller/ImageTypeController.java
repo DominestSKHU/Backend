@@ -21,7 +21,6 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.net.URI;
 import java.security.Principal;
-import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -29,22 +28,21 @@ public class ImageTypeController {
 
     private final ImageTypeService imageTypeService;
     private final FileService fileService;
-    private final int IMAGE_TYPE_PAGE_SIZE = 6;
 
-//    1. 제목
-//  2. 작성자(user) - 외래키
-//  3. url 리스트
+    //    1. 제목
+    //  2. 작성자(user) - 외래키
+    //  3. url 리스트
     // 이미지 게시물 작성
-    @PostMapping("/posts/image-types")
-    public ResponseEntity<ResTemplate<?>> handleCreateImageType(@ModelAttribute @Valid SaveImageTypeDto.Req reqDto, Principal principal) {
+    @PostMapping("/categories/{categoryId}/posts/image-types")
+    public ResponseEntity<ResTemplate<?>> handleCreateImageType(@Valid SaveImageTypeDto.Req reqDto
+                                                                                , @PathVariable Long categoryId, Principal principal) {
         // 이미지 저장
-        List<String> savedImgUrls = fileService.save(FileService.FilePrefix.POST_IMAGE_TYPE, reqDto.getPostImages());
         String email = principal.getName();
-        ImageType imageType = imageTypeService.createImageType(reqDto, savedImgUrls, email);
+        ImageType imageType = imageTypeService.createImageType(reqDto, categoryId, email);
         ResTemplate<?> resTemplate = new ResTemplate<>(HttpStatus.CREATED, imageType.getId() + "번 게시글 작성");
 
-        return ResponseEntity.
-                created(URI.create("/posts/image-types/" + imageType.getId()))
+        return ResponseEntity
+                .created(URI.create("/posts/image-types/" + imageType.getId()))
                 .body(resTemplate);
     }
 
@@ -65,7 +63,6 @@ public class ImageTypeController {
     // 게시물 단건 조회
     @GetMapping("/posts/image-types/{imageTypeId}")
     public ResTemplate<ImageTypeDetailDto.Res> handleGetImageType(@PathVariable Long imageTypeId) {
-
         ImageTypeDetailDto.Res resDto = imageTypeService.getImageTypeById(imageTypeId);
         return new ResTemplate<>(HttpStatus.OK
                 , imageTypeId+"번 게시물  조회 성공"
@@ -73,14 +70,17 @@ public class ImageTypeController {
     }
 
     // 게시물 목록을 조회한다.
-    @GetMapping("/posts/image-types")
-    public ResTemplate<ImageTypeListDto.Res> handleGetImageTypes(@RequestParam(defaultValue = "1") int page) {
+    @GetMapping("/categories/{categoryId}/posts/image-types")
+    public ResTemplate<ImageTypeListDto.Res> handleGetImageTypes(@PathVariable Long categoryId, @RequestParam(defaultValue = "1") int page) {
+
         if (page < 1)
             throw new IllegalArgumentException("page는 1 이상이어야 합니다.");
+        int IMAGE_TYPE_PAGE_SIZE = 6;
 
         // 0-base인 페이지를 클라이언트단에서 1-based인 것처럼 사용할 수 있게 함
         Pageable pageable = PageRequest.of(page - 1 , IMAGE_TYPE_PAGE_SIZE);
-        ImageTypeListDto.Res resDto = imageTypeService.getImageTypes(pageable);
+        ImageTypeListDto.Res resDto = imageTypeService.getImageTypes(categoryId, pageable);
+
         return new ResTemplate<>(HttpStatus.OK
                 , "페이지 게시글 목록 조회 - " + resDto.getPage().getCurrentPage() + "페이지"
                 , resDto);
