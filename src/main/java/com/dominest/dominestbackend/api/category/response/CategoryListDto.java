@@ -26,15 +26,15 @@ public class CategoryListDto {
     @Getter
     private static class CategoryDto{
         private Long id;
-        private String categoryName; // 카테고리 이름
-        private Type categoryType;
+        private String name; // 카테고리 이름
+        private Type type;
         private String explanation; // 카테고리 상세설명
 
         public static CategoryDto from(Category category) {
             return CategoryDto.builder()
                     .id(category.getId())
-                    .categoryName(category.getCategoryName())
-                    .categoryType(category.getCategoryType())
+                    .name(category.getName())
+                    .type(category.getType())
                     .explanation(category.getExplanation())
                     .build();
         }

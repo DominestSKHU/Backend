@@ -4,5 +4,11 @@ import lombok.Getter;
 
 @Getter
 public enum Type {
-    IMAGE, TEXT_AND_IMAGE
+    IMAGE("image-types"), TEXT_IMAGE("text-image-types");
+
+    private final String url;
+
+    Type(String url) {
+        this.url = url;
+    }
 }

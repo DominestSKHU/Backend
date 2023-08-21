@@ -33,7 +33,7 @@ public class ImageTypeService {
     public ImageType createImageType(SaveImageTypeDto.Req reqDto
                                     , Long categoryId, String uploaderEmail) {
         Category category = categoryService.getCategoryById(categoryId);
-        if (! Type.IMAGE.equals(category.getCategoryType())) // 이미지 게시물이 작성될 카테고리의 타입 검사
+        if (! Type.IMAGE.equals(category.getType())) // 이미지 게시물이 작성될 카테고리의 타입 검사
             throw new BusinessException(ErrorCode.CATEGORY_TYPE_MISMATCHED);
 
         User writer = userService.getUserByEmail(uploaderEmail);

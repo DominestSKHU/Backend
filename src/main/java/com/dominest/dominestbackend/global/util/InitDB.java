@@ -1,13 +1,15 @@
 package com.dominest.dominestbackend.global.util;
 
 
+import com.dominest.dominestbackend.domain.favorite.Favorite;
+import com.dominest.dominestbackend.domain.favorite.FavoriteRepository;
 import com.dominest.dominestbackend.domain.post.component.category.Category;
-import com.dominest.dominestbackend.domain.post.component.category.repository.CategoryRepository;
 import com.dominest.dominestbackend.domain.post.component.category.component.Type;
+import com.dominest.dominestbackend.domain.post.component.category.repository.CategoryRepository;
 import com.dominest.dominestbackend.domain.post.image.ImageType;
 import com.dominest.dominestbackend.domain.post.image.ImageTypeRepository;
-import com.dominest.dominestbackend.domain.user.component.Role;
 import com.dominest.dominestbackend.domain.user.User;
+import com.dominest.dominestbackend.domain.user.component.Role;
 import com.dominest.dominestbackend.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,6 +26,7 @@ public class InitDB {
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final ImageTypeRepository imageTypeRepository;
+    private final FavoriteRepository favoriteRepository;
 
     @Transactional
     @PostConstruct
@@ -53,15 +56,22 @@ public class InitDB {
         userRepository.save(user2);
         userRepository.save(user3);
 
-        Category category = Category.builder()
-                .categoryName("categoryName")
-                .categoryType(Type.IMAGE)
-                .explanation("explanation")
-                .build();
-        categoryRepository.save(category);
+
+        ArrayList<Category> categories = new ArrayList<>();
+        int categoryCount = 7;
+        for (int i = 1; i <= categoryCount; i++) {
+            Category category = Category.builder()
+                    .name("categoryName" + i)
+                    .type(Type.IMAGE)
+                    .explanation("explanation")
+                    .build();
+            categories.add(category);
+        }
+        categoryRepository.saveAll(categories);
+
         Category category2 = Category.builder()
-                .categoryName("categoryName2")
-                .categoryType(Type.TEXT_AND_IMAGE)
+                .name("categoryName-1")
+                .type(Type.IMAGE)
                 .explanation("explanation")
                 .build();
         categoryRepository.save(category2);
@@ -72,10 +82,20 @@ public class InitDB {
             ImageType imageType = ImageType.builder()
                     .title("title")
                     .writer(user)
-                    .category(category)
+                    .category(category2)
                     .build();
             imageTypes.add(imageType);
         }
         imageTypeRepository.saveAll(imageTypes);
+
+        ArrayList<Favorite> favorites = new ArrayList<>();
+        for (int i = 1; i <= categoryCount; i++) {
+            Favorite favorite = Favorite.builder()
+                    .user(user)
+                    .category(categories.get(i - 1))
+                    .build();
+            favorites.add(favorite);
+        }
+        favoriteRepository.saveAll(favorites);
     }
 }
