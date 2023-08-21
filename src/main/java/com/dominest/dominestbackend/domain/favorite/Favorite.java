@@ -27,9 +27,18 @@ public class Favorite extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @Column(nullable = false)
+    private boolean onOff;  // 즐겨찾기 상태
+
+    public boolean switchOnOff() {
+        this.onOff = !this.onOff;
+        return this.onOff;
+    }
+
     @Builder
     public Favorite(Category category, User user) {
         this.category = category;
         this.user = user;
+        this.onOff = true;
     }
 }

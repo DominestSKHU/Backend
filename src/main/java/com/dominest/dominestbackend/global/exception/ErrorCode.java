@@ -52,6 +52,9 @@ public enum ErrorCode {
     CATEGORY_TYPE_MISMATCHED(400, "해당 카테고리의 타입이 일치하지 않습니다."),
     // 게시글 공통
     POST_NOT_FOUND(404, "해당 게시글이 존재하지 않습니다."),
+
+    // 즐겨찾기
+    FAVORITE_NOT_FOUND(404, "해당 즐겨찾기가 존재하지 않습니다."),
     
 
     
