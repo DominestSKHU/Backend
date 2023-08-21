@@ -3,10 +3,10 @@ package com.dominest.dominestbackend.global.util;
 
 import com.dominest.dominestbackend.domain.post.component.category.Category;
 import com.dominest.dominestbackend.domain.post.component.category.repository.CategoryRepository;
-import com.dominest.dominestbackend.domain.post.component.category.component.categorytype.Type;
+import com.dominest.dominestbackend.domain.post.component.category.component.Type;
 import com.dominest.dominestbackend.domain.post.image.ImageType;
 import com.dominest.dominestbackend.domain.post.image.ImageTypeRepository;
-import com.dominest.dominestbackend.domain.role.Role;
+import com.dominest.dominestbackend.domain.user.component.Role;
 import com.dominest.dominestbackend.domain.user.User;
 import com.dominest.dominestbackend.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

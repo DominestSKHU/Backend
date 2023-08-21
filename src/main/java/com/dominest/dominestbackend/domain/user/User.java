@@ -1,6 +1,6 @@
 package com.dominest.dominestbackend.domain.user;
 
-import com.dominest.dominestbackend.domain.role.Role;
+import com.dominest.dominestbackend.domain.user.component.Role;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -34,7 +34,6 @@ public class User implements UserDetails {
 
     @Column(nullable = false, unique = true)
     private String phoneNumber;
-
 
     @Enumerated(EnumType.STRING)
     private Role role;

@@ -1,7 +1,7 @@
 package com.dominest.dominestbackend.domain.post.component.category.service;
 
 import com.dominest.dominestbackend.domain.post.component.category.Category;
-import com.dominest.dominestbackend.domain.post.component.category.component.categorytype.Type;
+import com.dominest.dominestbackend.domain.post.component.category.component.Type;
 import com.dominest.dominestbackend.domain.post.component.category.repository.CategoryRepository;
 import com.dominest.dominestbackend.global.exception.ErrorCode;
 import com.dominest.dominestbackend.global.util.EntityUtil;

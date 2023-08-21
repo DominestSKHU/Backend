@@ -1,7 +1,7 @@
 package com.dominest.dominestbackend.domain.post.component.category;
 
 import com.dominest.dominestbackend.domain.common.BaseEntity;
-import com.dominest.dominestbackend.domain.post.component.category.component.categorytype.Type;
+import com.dominest.dominestbackend.domain.post.component.category.component.Type;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
