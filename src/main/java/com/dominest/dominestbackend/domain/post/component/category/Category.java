@@ -20,22 +20,26 @@ public class Category extends BaseEntity {
     private Long id;
 
     @Column(unique = true)
-    private String categoryName; // 카테고리 이름
+    private String name; // 카테고리 이름
 
     @Enumerated(EnumType.STRING)
-    private Type categoryType;
+    private Type type;
 
     @Column(length = 255, nullable = false)
     private String explanation; // 카테고리 상세설명
 
     @Builder
-    public Category(String categoryName, Type categoryType, String explanation) {
-        this.categoryName = categoryName;
-        this.categoryType = categoryType;
+    public Category(String name, Type type, String explanation) {
+        this.name = name;
+        this.type = type;
         this.explanation = explanation;
     }
 
+    public String getPostsLink(){
+        return  "/categories/" + getId() + "/posts/" + getType().getUrl();
+    }
+
     public void updateCategory(String updatedCategoryName) {
-        this.categoryName = updatedCategoryName;
+        this.name = updatedCategoryName;
     }
 }
