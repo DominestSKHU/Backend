@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.constraints.NotNull;
 import java.security.Principal;
 
 @RequiredArgsConstructor
@@ -27,7 +28,7 @@ public class FavoriteController {
 
     // 토큰을 소유한 유저의 즐찾목록 전체 조회
     @GetMapping("/favorites")
-    public ResTemplate<?> handleGetAllFavorites(Principal principal) {
+    public ResTemplate<?> handleGetAllFavorites(@NotNull(message = "인증 정보가 없습니다.") Principal principal) {
         FavoriteListDto.Res resDto = favoriteService.getAllByUserEmail(principal.getName());
         return new ResTemplate<>(HttpStatus.OK, "즐겨찾기 목록 조회"
                 , resDto);

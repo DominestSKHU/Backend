@@ -37,7 +37,11 @@ public class SecurityConfig {
                 .and()
 
                 .authorizeRequests()
-                .antMatchers(HttpMethod.GET).permitAll() // GET 요청은 토큰 검증 예외
+                /*
+                permitAll()은 필터링 예외가 아니라, 필터링을 모두 거치고 나서 Auth 객체가 없어도 접근을 허용하는 것이다.
+                그래서 GET 요청에서도 SecurityContext의 Authentication 객체를 활용 가능하다. 물론 해당 객체는 null일 수도 있다.
+                */
+                .antMatchers(HttpMethod.GET).permitAll() // GET 요청은 핕터링
                 .antMatchers(HttpMethod.OPTIONS).permitAll() // OPTIONS 요청은 토큰 검증 예외
                 .antMatchers("/user/join").permitAll() // 회원가입 요청은 토큰 검증 예외
                 .antMatchers("/user/login").permitAll()

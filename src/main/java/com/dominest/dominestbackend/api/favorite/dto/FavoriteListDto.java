@@ -16,7 +16,7 @@ public class FavoriteListDto {
             return new Res(FavoriteDto.from(favorites));
         }
 
-        public Res(List<FavoriteDto> favorites) {
+        Res(List<FavoriteDto> favorites) {
             this.favorites = favorites;
         }
 
