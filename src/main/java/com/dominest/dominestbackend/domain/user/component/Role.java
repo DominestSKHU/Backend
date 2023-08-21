@@ -1,4 +1,4 @@
-package com.dominest.dominestbackend.domain.role;
+package com.dominest.dominestbackend.domain.user.component;
 
 import org.springframework.security.core.GrantedAuthority;
 

@@ -1,7 +1,7 @@
 package com.dominest.dominestbackend.domain.post.component.category.service;
 
 import com.dominest.dominestbackend.domain.post.component.category.Category;
-import com.dominest.dominestbackend.domain.post.component.category.component.categorytype.Type;
+import com.dominest.dominestbackend.domain.post.component.category.component.Type;
 import com.dominest.dominestbackend.domain.post.component.category.repository.CategoryRepository;
 import com.dominest.dominestbackend.global.exception.ErrorCode;
 import com.dominest.dominestbackend.global.util.EntityUtil;
@@ -18,10 +18,10 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
 
 //    @Transactional
-//    public void createCategoryByType(String categoryName, String categoryType, Optional<User> creator) {
+//    public void createCategoryByType(String categoryName, String type, Optional<User> creator) {
 //        // 카테고리 종류 생성
 //        CategoryType type = CategoryType.builder()
-//                .type(categoryType)
+//                .type(type)
 //                .build();
 //
 //        // 카테고리 생성
@@ -39,8 +39,8 @@ public class CategoryService {
     @Transactional
     public Category createCategory(String categoryName, Type categoryType, String explanation) {
         Category category = Category.builder()
-                .categoryName(categoryName)
-                .categoryType(categoryType)
+                .name(categoryName)
+                .type(categoryType)
                 .explanation(explanation)
                 .build();
 

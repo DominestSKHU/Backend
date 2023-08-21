@@ -4,7 +4,7 @@ import com.dominest.dominestbackend.api.post.image.dto.ImageTypeDetailDto;
 import com.dominest.dominestbackend.api.post.image.dto.ImageTypeListDto;
 import com.dominest.dominestbackend.api.post.image.dto.SaveImageTypeDto;
 import com.dominest.dominestbackend.domain.post.component.category.Category;
-import com.dominest.dominestbackend.domain.post.component.category.component.categorytype.Type;
+import com.dominest.dominestbackend.domain.post.component.category.component.Type;
 import com.dominest.dominestbackend.domain.post.component.category.service.CategoryService;
 import com.dominest.dominestbackend.domain.user.User;
 import com.dominest.dominestbackend.domain.user.service.UserService;
@@ -33,7 +33,7 @@ public class ImageTypeService {
     public ImageType createImageType(SaveImageTypeDto.Req reqDto
                                     , Long categoryId, String uploaderEmail) {
         Category category = categoryService.getCategoryById(categoryId);
-        if (! Type.IMAGE.equals(category.getCategoryType())) // 이미지 게시물이 작성될 카테고리의 타입 검사
+        if (! Type.IMAGE.equals(category.getType())) // 이미지 게시물이 작성될 카테고리의 타입 검사
             throw new BusinessException(ErrorCode.CATEGORY_TYPE_MISMATCHED);
 
         User writer = userService.getUserByEmail(uploaderEmail);
