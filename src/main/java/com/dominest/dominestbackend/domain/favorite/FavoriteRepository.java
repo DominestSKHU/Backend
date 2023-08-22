@@ -16,7 +16,7 @@ public interface FavoriteRepository extends JpaRepository<Favorite, Long> {
     @Query("SELECT f FROM Favorite f" +
             " JOIN FETCH f.category c" +
             " JOIN f.user u" +
-            " WHERE u.email = :email")
+            " WHERE u.email = :email AND f.onOff = true")
     // userEmail은 조회결과가 아니라 조건이므로 Fetch하지 않아도 될 듯?
     List<Favorite> findAllByUserEmailFetchCategory(@Param("email") String email);
 }

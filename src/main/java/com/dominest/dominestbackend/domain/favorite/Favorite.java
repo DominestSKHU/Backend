@@ -27,6 +27,12 @@ public class Favorite extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
+    /*
+    * 즐겨찾기 상태를 boolean으로 표현한다.
+    * Favorite 객체가 있으면 TRUE, 없으면 FALSE 취급할 수도 있겠으나,
+    * 잦은 즐겨찾기 추가/취소에 대한 DB 부하를 줄이기 위해 boolean으로 표현한다.
+    * 이로써 FavoriteService.addOrUndo() 메서드에서 즐겨찾기 객체가 없으면 새로 생성하고, 있으면 상태를 바꿀 수 있다.
+    * */
     @Column(nullable = false)
     private boolean onOff;  // 즐겨찾기 상태
 
