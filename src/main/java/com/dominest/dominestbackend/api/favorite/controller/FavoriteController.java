@@ -3,6 +3,8 @@ package com.dominest.dominestbackend.api.favorite.controller;
 import com.dominest.dominestbackend.api.common.ResTemplate;
 import com.dominest.dominestbackend.api.favorite.dto.FavoriteListDto;
 import com.dominest.dominestbackend.domain.favorite.FavoriteService;
+import com.dominest.dominestbackend.domain.post.component.category.repository.CategoryRepository;
+import com.dominest.dominestbackend.domain.post.component.category.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +19,8 @@ import java.security.Principal;
 @RestController
 public class FavoriteController {
     private final FavoriteService favoriteService;
+    private final CategoryService categoryService;
+    private final CategoryRepository categoryRepository;
 
     // 즐겨찾기 추가 / 취소
     @PostMapping("/categories/{categoryId}/favorites")
@@ -34,3 +38,23 @@ public class FavoriteController {
                 , resDto);
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -75,8 +76,34 @@ public class CategoryService {
         return EntityUtil.checkNotFound(categoryRepository.findById(categoryId), ErrorCode.CATEGORY_NOT_FOUND);
     }
 
+    public List<Long> getIdAllByUserEmail(String email) {
+        // Favorite 되어있는 카테고리 ID 전체 조회
+        return categoryRepository.findIdAllByUserEmailFetchCategory(email);
+    }
+
     @Transactional
     public void deleteCategoryById(Long categoryId) {
         categoryRepository.deleteById(categoryId);
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
