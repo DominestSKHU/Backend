@@ -20,10 +20,7 @@ public class ImageTypeListDto {
 
         public static Res from(Page<ImageType> imageTypes){
             PageInfoDto pageInfoDto = PageInfoDto.from(imageTypes);
-
-            List<ImageTypeDto> imageTypeDtos = imageTypes.stream()
-                    .map(ImageTypeDto::from)
-                    .collect(Collectors.toList());
+            List<ImageTypeDto> imageTypeDtos = ImageTypeDto.from(imageTypes);
             return new Res(pageInfoDto, imageTypeDtos);
         }
 
@@ -48,6 +45,12 @@ public class ImageTypeListDto {
                         .title(imageType.getTitle())
                         .writer(imageType.getWriter().getName())
                         .build();
+            }
+
+            static List<ImageTypeDto> from(Page<ImageType> imageTypes){
+                return imageTypes.stream()
+                        .map(ImageTypeDto::from)
+                        .collect(Collectors.toList());
             }
         }
     }

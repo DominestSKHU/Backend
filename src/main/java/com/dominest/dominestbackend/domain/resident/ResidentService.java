@@ -124,9 +124,8 @@ public class ResidentService {
         }
     }
 
-    public ResidentListDto.Res getAllResidentByResidenceSemester(ResidenceSemester residenceSemester) {
-        List<Resident> residents = residentRepository.findAllByResidenceSemester(residenceSemester);
-        return ResidentListDto.Res.from(residents);
+    public List<Resident> getAllResidentByResidenceSemester(ResidenceSemester residenceSemester) {
+        return residentRepository.findAllByResidenceSemester(residenceSemester);
     }
 
     // 테스트용 전체삭제 API
@@ -169,9 +168,8 @@ public class ResidentService {
         residentRepository.delete(resident);
     }
 
-    public ResidentPdfListDto.Res getAllPdfs(ResidenceSemester semester) {
-        List<Resident> residents = residentRepository.findAllByResidenceSemester(semester);
-        return ResidentPdfListDto.Res.from(residents);
+    public List<Resident> getAllPdfs(ResidenceSemester semester) {
+        return residentRepository.findAllByResidenceSemester(semester);
     }
 
 //    @Transactional

@@ -1,7 +1,5 @@
 package com.dominest.dominestbackend.domain.post.image;
 
-import com.dominest.dominestbackend.api.post.image.dto.ImageTypeDetailDto;
-import com.dominest.dominestbackend.api.post.image.dto.ImageTypeListDto;
 import com.dominest.dominestbackend.api.post.image.dto.SaveImageTypeDto;
 import com.dominest.dominestbackend.domain.post.component.category.Category;
 import com.dominest.dominestbackend.domain.post.component.category.component.Type;
@@ -43,13 +41,29 @@ public class ImageTypeService {
         return imageTypeRepository.save(imageType);
     }
 
-    public ImageTypeDetailDto.Res getImageTypeById(Long imageTypeId) {
-        ImageType imageType = EntityUtil.checkNotFound(imageTypeRepository.findByIdFetchWriterAndImageUrls(imageTypeId), ErrorCode.POST_NOT_FOUND);
-        return ImageTypeDetailDto.Res.from(imageType);
+    public ImageType getImageTypeById(Long imageTypeId) {
+        return EntityUtil.checkNotFound(imageTypeRepository.findByIdFetchWriterAndImageUrls(imageTypeId), ErrorCode.POST_NOT_FOUND);
     }
 
-    public ImageTypeListDto.Res getImageTypes(Long categoryId, Pageable pageable) {
-        Page<ImageType> imageTypes = imageTypeRepository.findAllFetchWriter(categoryId, pageable);
-        return ImageTypeListDto.Res.from(imageTypes);
+    public Page<ImageType> getImageTypes(Long categoryId, Pageable pageable) {
+        return imageTypeRepository.findAllFetchWriter(categoryId, pageable);
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

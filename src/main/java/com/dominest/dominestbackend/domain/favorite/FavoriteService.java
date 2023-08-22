@@ -1,6 +1,5 @@
 package com.dominest.dominestbackend.domain.favorite;
 
-import com.dominest.dominestbackend.api.favorite.dto.FavoriteListDto;
 import com.dominest.dominestbackend.domain.post.component.category.Category;
 import com.dominest.dominestbackend.domain.post.component.category.service.CategoryService;
 import com.dominest.dominestbackend.domain.user.User;
@@ -38,10 +37,9 @@ public class FavoriteService {
         return favorite.switchOnOff();
     }
 
-    public FavoriteListDto.Res getAllByUserEmail(String email) {
+    public List<Favorite> getAllByUserEmail(String email) {
         // Favorite을  User, Category와 JOIN 한다.
-        List<Favorite> favorites = favoriteRepository.findAllByUserEmailFetchCategory(email);
-        return FavoriteListDto.Res.from(favorites);
+        return favoriteRepository.findAllByUserEmailFetchCategory(email);
     }
 }
 
