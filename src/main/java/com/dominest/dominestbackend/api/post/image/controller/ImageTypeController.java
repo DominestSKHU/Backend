@@ -9,8 +9,9 @@ import com.dominest.dominestbackend.domain.post.image.ImageTypeService;
 import com.dominest.dominestbackend.global.exception.ErrorCode;
 import com.dominest.dominestbackend.global.exception.exceptions.file.FileIOException;
 import com.dominest.dominestbackend.global.util.FileService;
+import com.dominest.dominestbackend.global.util.PageableUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -63,7 +64,10 @@ public class ImageTypeController {
     // 게시물 단건 조회
     @GetMapping("/posts/image-types/{imageTypeId}")
     public ResTemplate<ImageTypeDetailDto.Res> handleGetImageType(@PathVariable Long imageTypeId) {
-        ImageTypeDetailDto.Res resDto = imageTypeService.getImageTypeById(imageTypeId);
+
+        ImageType imageType = imageTypeService.getImageTypeById(imageTypeId);
+
+        ImageTypeDetailDto.Res resDto = ImageTypeDetailDto.Res.from(imageType);
         return new ResTemplate<>(HttpStatus.OK
                 , imageTypeId+"번 게시물  조회 성공"
                 , resDto);
@@ -73,14 +77,12 @@ public class ImageTypeController {
     @GetMapping("/categories/{categoryId}/posts/image-types")
     public ResTemplate<ImageTypeListDto.Res> handleGetImageTypes(@PathVariable Long categoryId, @RequestParam(defaultValue = "1") int page) {
 
-        if (page < 1)
-            throw new IllegalArgumentException("page는 1 이상이어야 합니다.");
         int IMAGE_TYPE_PAGE_SIZE = 6;
+        Pageable pageable = PageableUtil.of(page, IMAGE_TYPE_PAGE_SIZE);
 
-        // 0-base인 페이지를 클라이언트단에서 1-based인 것처럼 사용할 수 있게 함
-        Pageable pageable = PageRequest.of(page - 1 , IMAGE_TYPE_PAGE_SIZE);
-        ImageTypeListDto.Res resDto = imageTypeService.getImageTypes(categoryId, pageable);
+        Page<ImageType> imageTypes = imageTypeService.getImageTypes(categoryId, pageable);
 
+        ImageTypeListDto.Res resDto = ImageTypeListDto.Res.from(imageTypes);
         return new ResTemplate<>(HttpStatus.OK
                 , "페이지 게시글 목록 조회 - " + resDto.getPage().getCurrentPage() + "페이지"
                 , resDto);

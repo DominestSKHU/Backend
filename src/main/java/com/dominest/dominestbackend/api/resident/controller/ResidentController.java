@@ -47,15 +47,18 @@ public class ResidentController {
     // 전체조회
     @GetMapping("/residents")
     public ResTemplate<ResidentListDto.Res> handleGetAllResident(@RequestParam(required = true) ResidenceSemester residenceSemester){
-        ResidentListDto.Res residentListDto = residentService.getAllResidentByResidenceSemester(residenceSemester);
-        
-        return new ResTemplate<>(HttpStatus.OK, "입사생 목록 조회 성공", residentListDto);
+
+        List<Resident> residents = residentService.getAllResidentByResidenceSemester(residenceSemester);
+
+        ResidentListDto.Res resDto = ResidentListDto.Res.from(residents);
+        return new ResTemplate<>(HttpStatus.OK, "입사생 목록 조회 성공", resDto);
     }
 
     // (테스트용) 입사생 데이터 전체삭제
     @DeleteMapping("/residents")
     public ResponseEntity<ResTemplate<?>> handleDeleteAllResident(){
         residentService.deleteAllResident();
+
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
@@ -63,6 +66,7 @@ public class ResidentController {
     @PostMapping("/residents")
     public ResponseEntity<ResTemplate<?>> handleSaveResident(@RequestBody @Valid SaveResidentDto.Req reqDto){
         residentService.saveResident(reqDto.toEntity());
+
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -140,7 +144,10 @@ public class ResidentController {
     // 해당차수 입사생 전체 PDF 조회
     @GetMapping("/residents/pdf")
     public ResTemplate<ResidentPdfListDto.Res> handleGetAllPdfs(@RequestParam(required = true) ResidenceSemester residenceSemester){
-        ResidentPdfListDto.Res resDto = residentService.getAllPdfs(residenceSemester);
+
+        List<Resident> residents = residentService.getAllPdfs(residenceSemester);
+
+        ResidentPdfListDto.Res resDto = ResidentPdfListDto.Res.from(residents);
         return new ResTemplate<>(HttpStatus.OK
                 , "pdf url 조회 성공"
                 , resDto);
