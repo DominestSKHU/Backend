@@ -20,12 +20,11 @@ import com.dominest.dominestbackend.global.util.EntityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.security.Principal;
 import java.util.Optional;
 
 @RestController
@@ -90,27 +89,18 @@ public class UserController {
 
     // 실패를 위에 성공을 아래에... 통일하기...
     @PostMapping("/myPage/password") // 비밀번호 변경
-    public ResponseEntity<ApiResponseDto<?>> changePassword(@RequestBody ChangePasswordRequest request) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String logInUserEmail = authentication.getPrincipal().toString().split(",")[0].split("=")[1]; // email주소만 가져오기
+    public ResponseEntity<ApiResponseDto<?>> changePassword(@RequestBody ChangePasswordRequest request
+                                                                                                                , Principal principal) {
+        String logInUserEmail = principal.getName();
+        User user = EntityUtil.checkNotFound(userRepository.findByEmail(logInUserEmail), ErrorCode.USER_NOT_FOUND);
 
-        Optional<User> userOptional = userRepository.findByEmail(logInUserEmail);
-
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-
-            // 현재 비밀번호와 입력한 비밀번호가 일치하는지 확인
-            if (userService.validateUserPassword(request.getPassword(), user.getPassword())) {
-                user.changePassword(passwordEncoder.encode(request.getNewPassword())); // 비밀번호 변경
-                userRepository.save(user);
-                return ResponseEntity.ok(ApiResponseDto.success(SuccessStatus.CHANGE_PASSWORD_SUCCESS));
-            } else {
-                throw new BusinessException(ErrorCode.EMAIL_VERIFICATION_CODE_MISMATCHED);
-                //return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponseDto.error(ErrorStatus.INCORRECT_PASSWORD_ERROR));
-
-            }
+        // 현재 비밀번호와 입력한 비밀번호가 일치하는지 확인
+        if (userService.validateUserPassword(request.getPassword(), user.getPassword())) {
+            user.changePassword(passwordEncoder.encode(request.getNewPassword())); // 비밀번호 변경
+            userRepository.save(user);
+            return ResponseEntity.ok(ApiResponseDto.success(SuccessStatus.CHANGE_PASSWORD_SUCCESS));
         } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponseDto.error(ErrorStatus.USER_CERTIFICATION_FAILED));
+            throw new BusinessException(ErrorCode.EMAIL_VERIFICATION_CODE_MISMATCHED);
         }
     }
 }
