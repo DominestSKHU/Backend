@@ -4,6 +4,8 @@ import com.dominest.dominestbackend.api.common.ResTemplate;
 import com.dominest.dominestbackend.api.post.image.dto.ImageTypeDetailDto;
 import com.dominest.dominestbackend.api.post.image.dto.ImageTypeListDto;
 import com.dominest.dominestbackend.api.post.image.dto.SaveImageTypeDto;
+import com.dominest.dominestbackend.domain.post.component.category.Category;
+import com.dominest.dominestbackend.domain.post.component.category.service.CategoryService;
 import com.dominest.dominestbackend.domain.post.image.ImageType;
 import com.dominest.dominestbackend.domain.post.image.ImageTypeService;
 import com.dominest.dominestbackend.global.exception.ErrorCode;
@@ -29,6 +31,7 @@ public class ImageTypeController {
 
     private final ImageTypeService imageTypeService;
     private final FileService fileService;
+    private final CategoryService categoryService;
 
     //    1. 제목
     //  2. 작성자(user) - 외래키
@@ -81,8 +84,9 @@ public class ImageTypeController {
         Pageable pageable = PageableUtil.of(page, IMAGE_TYPE_PAGE_SIZE);
 
         Page<ImageType> imageTypes = imageTypeService.getImageTypes(categoryId, pageable);
+        Category category = categoryService.getCategoryById(categoryId);
 
-        ImageTypeListDto.Res resDto = ImageTypeListDto.Res.from(imageTypes);
+        ImageTypeListDto.Res resDto = ImageTypeListDto.Res.from(imageTypes, category);
         return new ResTemplate<>(HttpStatus.OK
                 , "페이지 게시글 목록 조회 - " + resDto.getPage().getCurrentPage() + "페이지"
                 , resDto);
