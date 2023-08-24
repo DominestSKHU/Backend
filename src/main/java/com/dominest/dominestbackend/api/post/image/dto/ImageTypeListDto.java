@@ -63,11 +63,13 @@ public class ImageTypeListDto {
         @Getter
         @Builder
         private static class CategoryDto {
+            long id;
             String categoryName;
             Type type;
 
             static CategoryDto from(Category category){
                 return CategoryDto.builder()
+                        .id(category.getId())
                         .categoryName(category.getName())
                         .type(category.getType())
                         .build();
