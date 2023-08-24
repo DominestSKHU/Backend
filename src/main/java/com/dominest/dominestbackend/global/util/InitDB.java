@@ -57,6 +57,13 @@ public class InitDB {
         userRepository.save(user3);
 
 
+        Category category1 = Category.builder()
+                .name("categoryName-1")
+                .type(Type.IMAGE)
+                .explanation("explanation")
+                .build();
+        categoryRepository.save(category1);
+
         ArrayList<Category> categories = new ArrayList<>();
         int categoryCount = 7;
         for (int i = 1; i <= categoryCount; i++) {
@@ -69,20 +76,15 @@ public class InitDB {
         }
         categoryRepository.saveAll(categories);
 
-        Category category2 = Category.builder()
-                .name("categoryName-1")
-                .type(Type.IMAGE)
-                .explanation("explanation")
-                .build();
-        categoryRepository.save(category2);
+
 
         ArrayList<ImageType> imageTypes = new ArrayList<>();
         int postCount = 100;
         for (int i = 1; i <= postCount; i++) {
             ImageType imageType = ImageType.builder()
-                    .title("title")
+                    .title("title" + i)
                     .writer(user)
-                    .category(category2)
+                    .category(category1)
                     .build();
             imageTypes.add(imageType);
         }
