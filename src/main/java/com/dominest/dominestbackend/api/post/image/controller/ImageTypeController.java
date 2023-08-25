@@ -42,12 +42,24 @@ public class ImageTypeController {
                                                                                 , @PathVariable Long categoryId, Principal principal) {
         // 이미지 저장
         String email = principal.getName();
-        ImageType imageType = imageTypeService.createImageType(reqDto, categoryId, email);
-        ResTemplate<?> resTemplate = new ResTemplate<>(HttpStatus.CREATED, imageType.getId() + "번 게시글 작성");
+        long imageTypeId = imageTypeService.createImageType(reqDto, categoryId, email);
+        ResTemplate<?> resTemplate = new ResTemplate<>(HttpStatus.CREATED, imageTypeId + "번 게시글 작성");
 
         return ResponseEntity
-                .created(URI.create("/posts/image-types/" + imageType.getId()))
+                .created(URI.create("/posts/image-types/" + imageTypeId))
                 .body(resTemplate);
+    }
+
+    /**
+     *  게시글 수정
+     *  원본 게시글 데이터를 받아서 업데이트.
+     *  최초 생성자 이름은 유지하지만, 수정 시 권한을 체크하지 않고 수정자 이름만 변경한다.
+     */
+    @PatchMapping("/posts/image-types/{imageTypeId}")
+    public ResTemplate<?> handleUpdateImageType(@PathVariable Long imageTypeId
+                                                                                        , @Valid SaveImageTypeDto.Req reqDto) {
+        long updatedImageTypeId = imageTypeService.updateImageType(reqDto, imageTypeId);
+        return new ResTemplate<>(HttpStatus.CREATED, updatedImageTypeId + "번 게시글 작성");
     }
 
     // 게시물 이미지 조회
