@@ -4,12 +4,12 @@ import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 @Getter
-public class ErrorResponseDto {
+public class ErrorResponseDto<T> {
     private int statusCode;
     private String httpStatus;
-    private String errorMessage;
+    private T errorMessage;
 
-    public ErrorResponseDto(int statusCode, HttpStatus httpStatus, String errorMessage) {
+    public ErrorResponseDto(int statusCode, HttpStatus httpStatus, T errorMessage) {
         this.statusCode = statusCode;
         this.httpStatus = httpStatus.getReasonPhrase();
         this.errorMessage = errorMessage;

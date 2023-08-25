@@ -19,7 +19,7 @@ public class Custom401AuthEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
         // Custom error response.
-        ErrorResponseDto errDto = new ErrorResponseDto(HttpStatus.UNAUTHORIZED.value()
+        ErrorResponseDto<String> errDto = new ErrorResponseDto<>(HttpStatus.UNAUTHORIZED.value()
                 , HttpStatus.UNAUTHORIZED
                 , "인증되지 않은 사용자입니다.");
         response.setStatus(HttpStatus.UNAUTHORIZED.value());

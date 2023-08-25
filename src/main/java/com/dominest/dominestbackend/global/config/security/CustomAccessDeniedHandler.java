@@ -20,7 +20,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
         // Custom error response.
-        ErrorResponseDto errDto = new ErrorResponseDto(HttpStatus.FORBIDDEN.value()
+        ErrorResponseDto<String> errDto = new ErrorResponseDto<>(HttpStatus.FORBIDDEN.value()
                 , HttpStatus.FORBIDDEN
                 , "인가되지 않은 사용자입니다.");
         response.setStatus(HttpStatus.FORBIDDEN.value());
