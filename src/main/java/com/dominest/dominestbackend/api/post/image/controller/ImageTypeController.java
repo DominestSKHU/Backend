@@ -42,7 +42,7 @@ public class ImageTypeController {
                                                                                 , @PathVariable Long categoryId, Principal principal) {
         // 이미지 저장
         String email = principal.getName();
-        long imageTypeId = imageTypeService.createImageType(reqDto, categoryId, email);
+        long imageTypeId = imageTypeService.create(reqDto, categoryId, email);
         ResTemplate<?> resTemplate = new ResTemplate<>(HttpStatus.CREATED, imageTypeId + "번 게시글 작성");
 
         return ResponseEntity
@@ -58,7 +58,16 @@ public class ImageTypeController {
     @PatchMapping("/posts/image-types/{imageTypeId}")
     public ResTemplate<?> handleUpdateImageType(@PathVariable Long imageTypeId
                                                                                         , @Valid SaveImageTypeDto.Req reqDto) {
-        long updatedImageTypeId = imageTypeService.updateImageType(reqDto, imageTypeId);
+        long updatedImageTypeId = imageTypeService.update(reqDto, imageTypeId);
+        return new ResTemplate<>(HttpStatus.CREATED, updatedImageTypeId + "번 게시글 작성");
+    }
+
+    /**
+     *  게시글 삭제. 권한을 체크하지 않는다.
+     */
+    @PatchMapping("/posts/image-types/{imageTypeId}")
+    public ResTemplate<?> handleUpdateImageType(@PathVariable Long imageTypeId) {
+        long updatedImageTypeId = imageTypeService.deleteImageType(reqDto, imageTypeId);
         return new ResTemplate<>(HttpStatus.CREATED, updatedImageTypeId + "번 게시글 작성");
     }
 
@@ -80,7 +89,7 @@ public class ImageTypeController {
     @GetMapping("/posts/image-types/{imageTypeId}")
     public ResTemplate<ImageTypeDetailDto.Res> handleGetImageType(@PathVariable Long imageTypeId) {
 
-        ImageType imageType = imageTypeService.getImageTypeById(imageTypeId);
+        ImageType imageType = imageTypeService.getById(imageTypeId);
 
         ImageTypeDetailDto.Res resDto = ImageTypeDetailDto.Res.from(imageType);
         return new ResTemplate<>(HttpStatus.OK
@@ -95,7 +104,7 @@ public class ImageTypeController {
         int IMAGE_TYPE_PAGE_SIZE = 6;
         Pageable pageable = PageableUtil.of(page, IMAGE_TYPE_PAGE_SIZE);
 
-        Page<ImageType> imageTypes = imageTypeService.getImageTypes(categoryId, pageable);
+        Page<ImageType> imageTypes = imageTypeService.getPage(categoryId, pageable);
         Category category = categoryService.getCategoryById(categoryId);
 
         ImageTypeListDto.Res resDto = ImageTypeListDto.Res.from(imageTypes, category);

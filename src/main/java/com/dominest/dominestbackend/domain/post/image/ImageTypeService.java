@@ -28,7 +28,7 @@ public class ImageTypeService {
     private final FileService fileService;
 
     @Transactional
-    public Long createImageType(SaveImageTypeDto.Req reqDto
+    public Long create(SaveImageTypeDto.Req reqDto
                                     , Long categoryId, String uploaderEmail) {
         Category category = categoryService.getCategoryById(categoryId);
         if (! Type.IMAGE.equals(category.getType())) // 이미지 게시물이 작성될 카테고리의 타입 검사
@@ -41,16 +41,16 @@ public class ImageTypeService {
         return imageTypeRepository.save(imageType).getId();
     }
 
-    public ImageType getImageTypeById(Long imageTypeId) {
+    public ImageType getById(Long imageTypeId) {
         return EntityUtil.checkNotFound(imageTypeRepository.findByIdFetchWriterAndImageUrls(imageTypeId), ErrorCode.POST_NOT_FOUND);
     }
 
-    public Page<ImageType> getImageTypes(Long categoryId, Pageable pageable) {
+    public Page<ImageType> getPage(Long categoryId, Pageable pageable) {
         return imageTypeRepository.findAllFetchWriter(categoryId, pageable);
     }
 
     @Transactional
-    public long updateImageType(SaveImageTypeDto.Req reqDto, Long imageTypeId) {
+    public long update(SaveImageTypeDto.Req reqDto, Long imageTypeId) {
         ImageType imageType = EntityUtil.checkNotFound(imageTypeRepository.findById(imageTypeId), ErrorCode.POST_NOT_FOUND);
 
         List<String> savedImgUrls = fileService.save(FileService.FilePrefix.POST_IMAGE_TYPE, reqDto.getPostImages());
