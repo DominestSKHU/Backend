@@ -57,14 +57,15 @@ public class ImageTypeService {
         imageType.setImageUrls(savedImgUrls);
         return imageType.getId();
     }
+
+    @Transactional
+    public ImageType deleteById(Long imageTypeId) {
+        ImageType imageType = EntityUtil.checkNotFound(imageTypeRepository.findByIdFetchImageUrls(imageTypeId), ErrorCode.POST_NOT_FOUND);
+        imageTypeRepository.delete(imageType);
+
+        return imageType;
+    }
 }
-
-
-
-
-
-
-
 
 
 

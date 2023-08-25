@@ -11,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.constraints.NotNull;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -94,8 +93,8 @@ public class FileService {
         }
     }
 
-    public void deleteFile(FilePrefix filePrefix, @NotNull String prevFileName) {
-        String filePathToDelete = fileUploadPath + filePrefix.getPrefix() + prevFileName;
+    public void deleteFile(FilePrefix filePrefix, String fileName) {
+        String filePathToDelete = fileUploadPath + filePrefix.getPrefix() + fileName;
         Path pathToDelete = Paths.get(filePathToDelete);
 
         // NotNull 이므로 예외를 발생시키지 않고 바로 빠져나온다.
@@ -108,6 +107,10 @@ public class FileService {
         } catch (IOException e) {
             throw new FileIOException(ErrorCode.FILE_CANNOT_BE_DELETED);
         }
+    }
+
+    public void deleteFile(FilePrefix filePrefix, List<String> fileNames) {
+        fileNames.forEach(fileName -> deleteFile(filePrefix, fileName));
     }
 
     // zipInputStream을 받아서 Path에 저장한다.

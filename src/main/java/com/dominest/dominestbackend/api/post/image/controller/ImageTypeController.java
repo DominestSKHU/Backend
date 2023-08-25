@@ -24,6 +24,7 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.net.URI;
 import java.security.Principal;
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -59,16 +60,20 @@ public class ImageTypeController {
     public ResTemplate<?> handleUpdateImageType(@PathVariable Long imageTypeId
                                                                                         , @Valid SaveImageTypeDto.Req reqDto) {
         long updatedImageTypeId = imageTypeService.update(reqDto, imageTypeId);
-        return new ResTemplate<>(HttpStatus.CREATED, updatedImageTypeId + "번 게시글 작성");
+        return new ResTemplate<>(HttpStatus.OK, updatedImageTypeId + "번 게시글 수정");
     }
 
     /**
      *  게시글 삭제. 권한을 체크하지 않는다.
      */
-    @PatchMapping("/posts/image-types/{imageTypeId}")
+    @DeleteMapping("/posts/image-types/{imageTypeId}")
     public ResTemplate<?> handleUpdateImageType(@PathVariable Long imageTypeId) {
-        long updatedImageTypeId = imageTypeService.deleteImageType(reqDto, imageTypeId);
-        return new ResTemplate<>(HttpStatus.CREATED, updatedImageTypeId + "번 게시글 작성");
+        ImageType imageType = imageTypeService.deleteById(imageTypeId);
+
+        List<String> imageUrlsToDelete = imageType.getImageUrls();
+        fileService.deleteFile(FileService.FilePrefix.POST_IMAGE_TYPE, imageUrlsToDelete);
+
+        return new ResTemplate<>(HttpStatus.OK, imageType.getId() + "번 게시글 삭제");
     }
 
     // 게시물 이미지 조회
@@ -88,7 +93,6 @@ public class ImageTypeController {
     // 게시물 단건 조회
     @GetMapping("/posts/image-types/{imageTypeId}")
     public ResTemplate<ImageTypeDetailDto.Res> handleGetImageType(@PathVariable Long imageTypeId) {
-
         ImageType imageType = imageTypeService.getById(imageTypeId);
 
         ImageTypeDetailDto.Res resDto = ImageTypeDetailDto.Res.from(imageType);
@@ -100,7 +104,6 @@ public class ImageTypeController {
     // 게시물 목록을 조회한다.
     @GetMapping("/categories/{categoryId}/posts/image-types")
     public ResTemplate<ImageTypeListDto.Res> handleGetImageTypes(@PathVariable Long categoryId, @RequestParam(defaultValue = "1") int page) {
-
         int IMAGE_TYPE_PAGE_SIZE = 6;
         Pageable pageable = PageableUtil.of(page, IMAGE_TYPE_PAGE_SIZE);
 
