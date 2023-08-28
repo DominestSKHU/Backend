@@ -5,6 +5,7 @@ import com.dominest.dominestbackend.domain.post.component.category.service.Categ
 import com.dominest.dominestbackend.domain.user.User;
 import com.dominest.dominestbackend.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,9 +40,9 @@ public class FavoriteService {
         return favorite.switchOnOff();
     }
 
-    public List<Favorite> getAllByUserEmail(String email) {
+    public List<Favorite> getAllByUserEmail(String email, Sort sort) {
         // Favorite을  User, Category와 JOIN 한다.
-        return favoriteRepository.findAllByUserEmailFetchCategory(email);
+        return favoriteRepository.findAllByUserEmailFetchCategoryOrderByUpdateTimeDesc(email, sort);
     }
 }
 

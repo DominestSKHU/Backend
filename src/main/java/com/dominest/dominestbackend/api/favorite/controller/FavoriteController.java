@@ -5,6 +5,7 @@ import com.dominest.dominestbackend.api.favorite.dto.FavoriteListDto;
 import com.dominest.dominestbackend.domain.favorite.Favorite;
 import com.dominest.dominestbackend.domain.favorite.FavoriteService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,7 +35,8 @@ public class FavoriteController {
     @GetMapping("/favorites")
     public ResTemplate<?> handleGetAllFavorites(@NotNull(message = "인증 정보가 없습니다.") Principal principal) {
 
-        List<Favorite> favorites = favoriteService.getAllByUserEmail(principal.getName());
+        Sort sort = Sort.by(Sort.Direction.DESC, "updateTime");
+        List<Favorite> favorites = favoriteService.getAllByUserEmail(principal.getName(), sort);
 
         FavoriteListDto.Res resDto = FavoriteListDto.Res.from(favorites);
         return new ResTemplate<>(HttpStatus.OK, "즐겨찾기 목록 조회"

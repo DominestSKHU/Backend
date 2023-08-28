@@ -1,5 +1,6 @@
 package com.dominest.dominestbackend.domain.favorite;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,5 +19,5 @@ public interface FavoriteRepository extends JpaRepository<Favorite, Long> {
             " JOIN f.user u" +
             " WHERE u.email = :email AND f.onOff = true")
     // userEmail은 조회결과가 아니라 조건이므로 Fetch하지 않아도 될 듯?
-    List<Favorite> findAllByUserEmailFetchCategory(@Param("email") String email);
+    List<Favorite> findAllByUserEmailFetchCategoryOrderByUpdateTimeDesc(@Param("email") String email, Sort sort);
 }
