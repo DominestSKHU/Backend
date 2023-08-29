@@ -1,6 +1,7 @@
 package com.dominest.dominestbackend.domain.post.component.category.service;
 
 import com.dominest.dominestbackend.domain.post.component.category.Category;
+import com.dominest.dominestbackend.domain.post.component.category.categorygenerator.CategoryPositionGenerator;
 import com.dominest.dominestbackend.domain.post.component.category.component.Type;
 import com.dominest.dominestbackend.domain.post.component.category.repository.CategoryRepository;
 import com.dominest.dominestbackend.global.exception.ErrorCode;
@@ -18,24 +19,7 @@ import java.util.Optional;
 public class CategoryService {
     private final CategoryRepository categoryRepository;
 
-//    @Transactional
-//    public void createCategoryByType(String categoryName, String type, Optional<User> creator) {
-//        // 카테고리 종류 생성
-//        CategoryType type = CategoryType.builder()
-//                .type(type)
-//                .build();
-//
-//        // 카테고리 생성
-//        Category category = Category.builder()
-//                .categoryName(categoryName)
-//                .createdBy(creator.orElse(null))
-//                .build();
-//
-//        // 카테고리 - 카테고리 타입 연결
-//        category.connectCategoryType(type);
-//
-//        categoryRepository.save(category);
-//    }
+    private final CategoryPositionGenerator positionGenerator;
 
     @Transactional
     public Category createCategory(String categoryName, Type categoryType, String explanation) {
@@ -43,6 +27,7 @@ public class CategoryService {
                 .name(categoryName)
                 .type(categoryType)
                 .explanation(explanation)
+                .position(positionGenerator.getNextPosition())
                 .build();
 
         return categoryRepository.save(category);
@@ -87,24 +72,3 @@ public class CategoryService {
         categoryRepository.deleteById(categoryId);
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
