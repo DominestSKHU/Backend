@@ -1,6 +1,5 @@
 package com.dominest.dominestbackend.global.config.security;
 
-import com.dominest.dominestbackend.domain.jwt.service.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

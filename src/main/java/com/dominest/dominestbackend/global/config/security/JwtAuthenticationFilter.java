@@ -1,5 +1,7 @@
-package com.dominest.dominestbackend.domain.jwt.service;
+package com.dominest.dominestbackend.global.config.security;
 
+import com.dominest.dominestbackend.domain.jwt.constant.TokenType;
+import com.dominest.dominestbackend.domain.jwt.service.TokenManager;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -47,6 +49,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
+        //  4. 토큰 타입 검증
+        String tokenType = tokenManager.getTokenType(token);
+        if(!TokenType.ACCESS.name().equals(tokenType)) { // ACCESS 토큰이 아니면
+            return;
+        }
+
         String email = claims.getAudience();
         // 마지막으로 인증 정보로 Audience  저장
         Authentication authentication = new UsernamePasswordAuthenticationToken(email, null, null);
@@ -61,13 +69,4 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         return "";
     }
 
-    // 아래 코드는 토큰타입과 권한이 필요할 경우 doFilter() 로직에 추가
-    //            String tokenType = tokenManager.getTokenType(token);
-    // 토큰 유형별로 부여할 권한 설정
-    // List<GrantedAuthority> authorities;
-    // if (tokenType.equalsIgnoreCase("ACCESS")) {
-    //     authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
-    // } else {
-    //     authorities = Collections.emptyList();
-    // }
 }
