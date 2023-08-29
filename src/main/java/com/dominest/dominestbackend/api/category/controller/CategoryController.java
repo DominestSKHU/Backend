@@ -46,7 +46,7 @@ public class CategoryController {
         return new ResTemplate<>(HttpStatus.OK, "카테고리 조회 성공", resDto);
     }
 
-    @PostMapping ("/categories")// 카테고리 생성
+    @PostMapping ("/categories") // 카테고리 생성
     public ResponseEntity<ResTemplate<?>> createCategory(@RequestBody @Valid final CategoryCreateRequest request) {
 
         Category category = categoryService.createCategory(request.getCategoryName(), request.getCategoryType(), request.getExplanation());
@@ -60,7 +60,7 @@ public class CategoryController {
     public ResTemplate<String> updateCategories(@RequestBody @Valid final List<CategoryUpdateRequest> requests) throws Exception {
 
         for (CategoryUpdateRequest request : requests) {
-            categoryService.updateCategory(request.getId(), request.getCategoryName());
+            categoryService.updateCategory(request.getId(), request.getCategoryName(), request.getPosition());
         }
         return new ResTemplate<>(HttpStatus.OK, "카테고리 수정 성공");
     }
