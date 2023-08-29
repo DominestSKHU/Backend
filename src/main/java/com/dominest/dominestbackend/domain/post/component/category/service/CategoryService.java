@@ -48,19 +48,20 @@ public class CategoryService {
         return categoryRepository.save(category);
     }
 
-    @Transactional
-    public void updateCategory(Long id, String categoryName) throws Exception {
+    @Transactional // 카테고리 업데이트
+    public void updateCategory(Long id, String categoryName, int position) throws Exception {
         Optional<Category> optionalCategory = categoryRepository.findById(id);
 
         if (optionalCategory.isEmpty()) {
-            throw new Exception("찾을 수 업서");
+            throw new Exception(id + "번 카테고리를 찾을 수 없습니다.");
         }
 
         Category category = optionalCategory.get();
         category.updateCategory(categoryName);
+        category.updatePosition(position);
     }
 
-    @Transactional
+    @Transactional // 카테고리 삭제
     public void deleteCategory(Long categoryId) throws Exception {
         Optional<Category> optionalCategory = categoryRepository.findById(categoryId);
 
