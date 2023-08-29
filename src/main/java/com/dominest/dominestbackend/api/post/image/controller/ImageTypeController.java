@@ -39,12 +39,12 @@ public class ImageTypeController {
     //  3. url 리스트
     // 이미지 게시물 작성
     @PostMapping("/categories/{categoryId}/posts/image-types")
-    public ResponseEntity<ResTemplate<?>> handleCreateImageType(@Valid SaveImageTypeDto.Req reqDto
+    public ResponseEntity<ResTemplate<Void>> handleCreateImageType(@Valid SaveImageTypeDto.Req reqDto
                                                                                 , @PathVariable Long categoryId, Principal principal) {
         // 이미지 저장
         String email = principal.getName();
         long imageTypeId = imageTypeService.create(reqDto, categoryId, email);
-        ResTemplate<?> resTemplate = new ResTemplate<>(HttpStatus.CREATED, imageTypeId + "번 게시글 작성");
+        ResTemplate<Void> resTemplate = new ResTemplate<>(HttpStatus.CREATED, imageTypeId + "번 게시글 작성");
 
         return ResponseEntity
                 .created(URI.create("/posts/image-types/" + imageTypeId))
@@ -57,7 +57,7 @@ public class ImageTypeController {
      *  최초 생성자 이름은 유지하지만, 수정 시 권한을 체크하지 않고 수정자 이름만 변경한다.
      */
     @PatchMapping("/posts/image-types/{imageTypeId}")
-    public ResTemplate<?> handleUpdateImageType(@PathVariable Long imageTypeId
+    public ResTemplate<Void> handleUpdateImageType(@PathVariable Long imageTypeId
                                                                                         , @Valid SaveImageTypeDto.Req reqDto) {
         long updatedImageTypeId = imageTypeService.update(reqDto, imageTypeId);
         return new ResTemplate<>(HttpStatus.OK, updatedImageTypeId + "번 게시글 수정");
@@ -67,7 +67,7 @@ public class ImageTypeController {
      *  게시글 삭제. 권한을 체크하지 않는다.
      */
     @DeleteMapping("/posts/image-types/{imageTypeId}")
-    public ResTemplate<?> handleUpdateImageType(@PathVariable Long imageTypeId) {
+    public ResTemplate<Void> handleUpdateImageType(@PathVariable Long imageTypeId) {
         ImageType imageType = imageTypeService.deleteById(imageTypeId);
 
         List<String> imageUrlsToDelete = imageType.getImageUrls();
@@ -104,7 +104,7 @@ public class ImageTypeController {
     // 게시물 목록을 조회한다.
     @GetMapping("/categories/{categoryId}/posts/image-types")
     public ResTemplate<ImageTypeListDto.Res> handleGetImageTypes(@PathVariable Long categoryId, @RequestParam(defaultValue = "1") int page) {
-        int IMAGE_TYPE_PAGE_SIZE = 6;
+        final int IMAGE_TYPE_PAGE_SIZE = 6;
         Pageable pageable = PageableUtil.of(page, IMAGE_TYPE_PAGE_SIZE);
 
         Page<ImageType> imageTypes = imageTypeService.getPage(categoryId, pageable);
