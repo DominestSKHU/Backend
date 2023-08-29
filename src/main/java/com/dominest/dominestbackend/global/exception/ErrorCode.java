@@ -15,7 +15,7 @@ public enum ErrorCode {
     MISMATCHED_SIGNIN_INFO(400, "잘못된 로그인 정보입니다."),
 
     // 인증 - 토큰
-    NOT_EXISTS_AUTHORIZATION(401, "Authorization Header가 빈 값입니다."),
+    NOT_EXISTS_AUTH_HEADER(401, "Authorization Header가 빈 값입니다."),
     NOT_VALID_BEARER_GRANT_TYPE(401, "인증 타입이 Bearer 타입이 아닙니다."),
     TOKEN_EXPIRED(401, "해당 token은 만료되었습니다."),
     ACCESS_TOKEN_EXPIRED(401, "해당 access token은 만료되었습니다."),

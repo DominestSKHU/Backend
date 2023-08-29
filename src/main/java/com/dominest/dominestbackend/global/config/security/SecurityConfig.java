@@ -18,6 +18,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtExceptionHandlerFilter jwtExceptionHandlerFilter;
     private final Custom401AuthEntryPoint custom401AuthEntryPoint;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
@@ -51,6 +52,8 @@ public class SecurityConfig {
                 .and()
 
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtExceptionHandlerFilter, JwtAuthenticationFilter.class)
+
                 .exceptionHandling()
                 .authenticationEntryPoint(custom401AuthEntryPoint)
                 .accessDeniedHandler(customAccessDeniedHandler)

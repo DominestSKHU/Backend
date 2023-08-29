@@ -67,7 +67,7 @@ public class TokenManager {
                 .setAudience(email)                                 // 토큰 대상자
                 .setIssuedAt(new Date())                         // 토큰 발급 시간
                 .setExpiration(expirationTime)                // 토큰 만료 시간
-        /**
+        /*
          *      Claim 에는 Standard Claims 들을 제외하고도
          *      key-value 로 여러 값 저장 가능.
          */
@@ -104,7 +104,7 @@ public class TokenManager {
 
     public boolean validateToken(String token) {
         try {
-            Jws<Claims> claims = Jwts.parserBuilder()
+            Jwts.parserBuilder()
                     .setSigningKey(key).build()
                     .parseClaimsJws(token);
             return true;
@@ -122,8 +122,8 @@ public class TokenManager {
         return now.after(tokenExpiredTime);
     }
 
-//    public String getTokenType(String token){
-//        Claims claims = getTokenClaims(token);
-//        return claims.getSubject();
-//    }
+    public String getTokenType(String token){
+        Claims claims = getTokenClaims(token);
+        return claims.getSubject();
+    }
 }
