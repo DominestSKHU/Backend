@@ -9,4 +9,6 @@ import lombok.NoArgsConstructor;
 public class CategoryUpdateRequest {
     private Long id;
     private String categoryName;
+
+    private int position;
 }
