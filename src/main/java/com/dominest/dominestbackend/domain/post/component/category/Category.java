@@ -22,6 +22,8 @@ public class Category extends BaseEntity {
     @Column(unique = true)
     private String name; // 카테고리 이름
 
+    private int position; // 순서
+
     @Enumerated(EnumType.STRING)
     private Type type;
 
@@ -29,10 +31,11 @@ public class Category extends BaseEntity {
     private String explanation; // 카테고리 상세설명
 
     @Builder
-    public Category(String name, Type type, String explanation) {
+    public Category(String name, Type type, String explanation, int position) {
         this.name = name;
         this.type = type;
         this.explanation = explanation;
+        this.position = position;
     }
 
     public String getPostsLink(){
@@ -41,5 +44,9 @@ public class Category extends BaseEntity {
 
     public void updateCategory(String updatedCategoryName) {
         this.name = updatedCategoryName;
+    }
+
+    public void updatePosition(int position) {
+        this.position = position;
     }
 }

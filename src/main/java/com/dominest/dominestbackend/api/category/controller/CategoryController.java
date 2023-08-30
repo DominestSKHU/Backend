@@ -21,12 +21,12 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping()
+@RequestMapping("/category")
 public class CategoryController {
     private final CategoryService categoryService;
     private final CategoryRepository categoryRepository;
 
-    @GetMapping("/categories") // 카테고리 조회
+    @GetMapping("/check") // 카테고리 조회
     public ResTemplate<CategoryListDto.Res> handleGetCategoryList() {
 
         List<Category> categories = categoryRepository.findAll();
@@ -46,7 +46,7 @@ public class CategoryController {
         return new ResTemplate<>(HttpStatus.OK, "카테고리 조회 성공", resDto);
     }
 
-    @PostMapping ("/categories")// 카테고리 생성
+    @PostMapping ("/create") // 카테고리 생성
     public ResponseEntity<ResTemplate<?>> createCategory(@RequestBody @Valid final CategoryCreateRequest request) {
 
         Category category = categoryService.createCategory(request.getCategoryName(), request.getCategoryType(), request.getExplanation());
@@ -56,16 +56,16 @@ public class CategoryController {
                 .body(resTemplate);
     }
 
-    @PutMapping("/categories") // 카테고리 수정
+    @PutMapping("/update") // 카테고리 수정
     public ResTemplate<String> updateCategories(@RequestBody @Valid final List<CategoryUpdateRequest> requests) throws Exception {
 
         for (CategoryUpdateRequest request : requests) {
-            categoryService.updateCategory(request.getId(), request.getCategoryName());
+            categoryService.updateCategory(request.getId(), request.getCategoryName(), request.getPosition());
         }
         return new ResTemplate<>(HttpStatus.OK, "카테고리 수정 성공");
     }
 
-    @DeleteMapping("/categories/{id}") // 카테고리 삭제
+    @DeleteMapping("/delete/{id}") // 카테고리 삭제
     public ResTemplate<String> deleteCategory(@PathVariable Long id) {
 
         categoryService.deleteCategoryById(id);
