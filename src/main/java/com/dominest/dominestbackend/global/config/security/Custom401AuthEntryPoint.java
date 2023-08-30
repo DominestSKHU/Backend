@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
 
 // 401 에러 핸들러를 구현.
 @Component
@@ -23,13 +22,9 @@ public class Custom401AuthEntryPoint implements AuthenticationEntryPoint {
                 , HttpStatus.UNAUTHORIZED
                 , "인증되지 않은 사용자입니다.");
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        String json = objectMapper.writeValueAsString(errDto);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
-        PrintWriter writer = response.getWriter();
-        writer.write(json);
-        writer.flush();
+
+        new ObjectMapper().writeValue(response.getWriter(), errDto);
     }
 }

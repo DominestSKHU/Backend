@@ -1,6 +1,10 @@
 package com.dominest.dominestbackend.domain.user;
 
+import com.dominest.dominestbackend.domain.common.BaseEntity;
 import com.dominest.dominestbackend.domain.user.component.Role;
+import com.dominest.dominestbackend.global.exception.ErrorCode;
+import com.dominest.dominestbackend.global.exception.exceptions.auth.JwtAuthException;
+import com.dominest.dominestbackend.global.util.DateTimeUtils;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -8,9 +12,12 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,7 +25,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "User")
-public class User implements UserDetails {
+public class User extends BaseEntity implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -38,6 +45,15 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @ElementCollection(fetch = FetchType.LAZY)
+    private List<String> roles = new ArrayList<>();
+
+    private String refreshToken;
+
+    private LocalDateTime tokenExp;
+
+
+
     @Builder
     private User(String email, String password, String name, String phoneNumber, Role role) {
         this.email = email;
@@ -47,11 +63,26 @@ public class User implements UserDetails {
         this.role = role;
     }
 
-    public User(String email, String password, Collection<? extends GrantedAuthority> authorities) {
+    public void updateRefreshTokenAndExp(String refreshToken, Date refreshTokenExp) {
+        this.refreshToken = refreshToken;
+        this.tokenExp = DateTimeUtils.convertToLocalDateTime(refreshTokenExp);
     }
 
-    @ElementCollection(fetch = FetchType.LAZY)
-    private List<String> roles = new ArrayList<>();
+    public void expireRefreshToken(LocalDateTime now){
+        this.tokenExp = now;
+    }
+
+    public void validateRefreshTokenExp() {
+        if(tokenExp.isBefore(LocalDateTime.now())){
+            throw new JwtAuthException(ErrorCode.REFRESH_TOKEN_EXPIRED);
+        }
+    }
+
+    public void changePassword(String newPassword) {
+        this.password = newPassword;
+    }
+
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -86,7 +117,4 @@ public class User implements UserDetails {
         return true;
     }
 
-    public void changePassword(String newPassword) {
-        this.password = newPassword;
-    }
 }

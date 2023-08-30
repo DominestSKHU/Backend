@@ -42,7 +42,7 @@ public class ImageTypeService {
     }
 
     public ImageType getById(Long imageTypeId) {
-        return EntityUtil.checkNotFound(imageTypeRepository.findByIdFetchWriterAndImageUrls(imageTypeId), ErrorCode.POST_NOT_FOUND);
+        return EntityUtil.mustNotNull(imageTypeRepository.findByIdFetchWriterAndImageUrls(imageTypeId), ErrorCode.POST_NOT_FOUND);
     }
 
     public Page<ImageType> getPage(Long categoryId, Pageable pageable) {
@@ -51,7 +51,7 @@ public class ImageTypeService {
 
     @Transactional
     public long update(SaveImageTypeDto.Req reqDto, Long imageTypeId) {
-        ImageType imageType = EntityUtil.checkNotFound(imageTypeRepository.findById(imageTypeId), ErrorCode.POST_NOT_FOUND);
+        ImageType imageType = EntityUtil.mustNotNull(imageTypeRepository.findById(imageTypeId), ErrorCode.POST_NOT_FOUND);
 
         List<String> savedImgUrls = fileService.save(FileService.FilePrefix.POST_IMAGE_TYPE, reqDto.getPostImages());
         imageType.setImageUrls(savedImgUrls);
@@ -60,7 +60,7 @@ public class ImageTypeService {
 
     @Transactional
     public ImageType deleteById(Long imageTypeId) {
-        ImageType imageType = EntityUtil.checkNotFound(imageTypeRepository.findByIdFetchImageUrls(imageTypeId), ErrorCode.POST_NOT_FOUND);
+        ImageType imageType = EntityUtil.mustNotNull(imageTypeRepository.findByIdFetchImageUrls(imageTypeId), ErrorCode.POST_NOT_FOUND);
         imageTypeRepository.delete(imageType);
 
         return imageType;

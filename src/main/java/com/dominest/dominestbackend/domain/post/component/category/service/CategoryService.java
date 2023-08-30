@@ -18,25 +18,6 @@ import java.util.Optional;
 public class CategoryService {
     private final CategoryRepository categoryRepository;
 
-//    @Transactional
-//    public void createCategoryByType(String categoryName, String type, Optional<User> creator) {
-//        // 카테고리 종류 생성
-//        CategoryType type = CategoryType.builder()
-//                .type(type)
-//                .build();
-//
-//        // 카테고리 생성
-//        Category category = Category.builder()
-//                .categoryName(categoryName)
-//                .createdBy(creator.orElse(null))
-//                .build();
-//
-//        // 카테고리 - 카테고리 타입 연결
-//        category.connectCategoryType(type);
-//
-//        categoryRepository.save(category);
-//    }
-
     @Transactional
     public Category createCategory(String categoryName, Type categoryType, String explanation) {
         Category category = Category.builder()
@@ -73,7 +54,7 @@ public class CategoryService {
     }
 
     public Category getCategoryById(Long categoryId) {
-        return EntityUtil.checkNotFound(categoryRepository.findById(categoryId), ErrorCode.CATEGORY_NOT_FOUND);
+        return EntityUtil.mustNotNull(categoryRepository.findById(categoryId), ErrorCode.CATEGORY_NOT_FOUND);
     }
 
     public List<Long> getIdAllByUserEmail(String email) {

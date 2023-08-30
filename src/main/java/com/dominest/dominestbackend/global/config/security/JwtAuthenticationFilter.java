@@ -1,7 +1,11 @@
-package com.dominest.dominestbackend.domain.jwt.service;
+package com.dominest.dominestbackend.global.config.security;
 
+import com.dominest.dominestbackend.domain.jwt.constant.AuthScheme;
+import com.dominest.dominestbackend.domain.jwt.constant.TokenType;
+import com.dominest.dominestbackend.domain.jwt.service.TokenManager;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,25 +28,38 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         // 토큰 유효성을 검사한다. 메서드 내부에서 예외상황시 바로 return으로 빠져나오고 다음 필터를 동작시킨다.
-        filter(request);
+        filter(request.getHeader(HttpHeaders.AUTHORIZATION));
 
         filterChain.doFilter(request, response);
     }
 
-    private void filter(HttpServletRequest request){
-        String token = resolveToken(request);
-        // 1. 토큰이 존재하고 유효한 경우에만 토큰 파싱
-        if (! StringUtils.hasText(token)) {
+    private void filter(String authHeader){
+        //  1. 토큰 유무 확인
+        if(!StringUtils.hasText(authHeader)){
             return;
         }
 
-        // 2. 토큰 유효성(변조) 검사
+        //  2. authorization Bearer 체크
+        String[] authorizations = authHeader.split(" ");
+        // AuthScheme.BEARER.getType() 은 "Bearer"문자열 반환
+        if(authorizations.length < 2 || (!AuthScheme.BEARER.getType().equals(authorizations[0]))){
+            return;
+        }
+
+        String token = authorizations[1]; // Bearer 뒤의 토큰 몸통 부분
+        // 3. 토큰 유효성(변조) 검사
         if (! tokenManager.validateToken(token)) {
             return;
         }
 
+        //  4. 토큰 타입 검증
+        String tokenType = tokenManager.getTokenType(token);
+        if(!TokenType.ACCESS.name().equals(tokenType)) { // ACCESS 토큰이 아니면
+            return;
+        }
+
         Claims claims = tokenManager.getTokenClaims(token);
-        // 3. 토큰 만료 검사
+        // 5. 토큰 만료 검사
         if (tokenManager.isTokenExpired(claims.getExpiration())) {
             return;
         }
@@ -51,23 +68,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // 마지막으로 인증 정보로 Audience  저장
         Authentication authentication = new UsernamePasswordAuthenticationToken(email, null, null);
         SecurityContextHolder.getContext().setAuthentication(authentication);
-   }
-
-    private String resolveToken(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);
-        }
-        return "";
     }
-
-    // 아래 코드는 토큰타입과 권한이 필요할 경우 doFilter() 로직에 추가
-    //            String tokenType = tokenManager.getTokenType(token);
-    // 토큰 유형별로 부여할 권한 설정
-    // List<GrantedAuthority> authorities;
-    // if (tokenType.equalsIgnoreCase("ACCESS")) {
-    //     authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
-    // } else {
-    //     authorities = Collections.emptyList();
-    // }
 }

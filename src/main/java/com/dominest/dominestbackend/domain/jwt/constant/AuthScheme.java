@@ -3,11 +3,11 @@ package com.dominest.dominestbackend.domain.jwt.constant;
 import lombok.Getter;
 
 @Getter
-public enum GrantType {
+public enum AuthScheme {
 
     BEARER("Bearer");
 
-    GrantType(String type) {
+    AuthScheme(String type) {
         this.type = type;
     }
 

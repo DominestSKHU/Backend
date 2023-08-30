@@ -1,11 +1,11 @@
 package com.dominest.dominestbackend.domain.jwt.service;
 
 
-import com.dominest.dominestbackend.domain.jwt.constant.GrantType;
+import com.dominest.dominestbackend.domain.jwt.constant.AuthScheme;
 import com.dominest.dominestbackend.domain.jwt.constant.TokenType;
 import com.dominest.dominestbackend.domain.jwt.dto.TokenDto;
 import com.dominest.dominestbackend.global.exception.ErrorCode;
-import com.dominest.dominestbackend.global.exception.exceptions.auth.NotValidTokenException;
+import com.dominest.dominestbackend.global.exception.exceptions.auth.JwtAuthException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -22,52 +22,65 @@ import java.util.Date;
 @Component
 public class TokenManager {
 
-    private final long accessTokenExpirationTime;
-    private final long refreshTokenExpirationTime;
+    private final long accessTokenExpMillis;
+    private final long refreshTokenExpMillis;
     private final Key key;
 
     @Autowired
     public TokenManager(
               @Value("${token.secret}") String tokenSecret
-            , @Value("${token.access-token-expiration-time}") long accessTokenExpirationTime
-            , @Value("${token.refresh-token-expiration-time}") long refreshTokenExpirationTime) {
+            , @Value("${token.access-token-expiration-time}") long accessTokenExpMillis
+            , @Value("${token.refresh-token-expiration-time}") long refreshTokenExpMillis) {
         // Base64 Decode. String to Bin
         byte[] keyBytes = Decoders.BASE64.decode(tokenSecret);
         this.key = Keys.hmacShaKeyFor(keyBytes);
-        this.accessTokenExpirationTime = accessTokenExpirationTime;
-        this.refreshTokenExpirationTime = refreshTokenExpirationTime;
+        this.accessTokenExpMillis = accessTokenExpMillis;
+        this.refreshTokenExpMillis = refreshTokenExpMillis;
     }
 
     public TokenDto createTokenDto(String email) {
-        Date accessTokenExpireTime = createAccessTokenExpireTime();
-        Date refreshTokenExpireTime = createRefreshTokenExpireTime();
+        Date accessTokenExp = createAccessTokenExp();
+        Date refreshTokenExp = createRefreshTokenExp();
 
-        String accessToken = createAccessToken(email, accessTokenExpireTime);
-        String refreshToken = createRefreshToken(email, refreshTokenExpireTime);
+        String accessToken = createAccessToken(email, accessTokenExp);
+        String refreshToken = createRefreshToken(email, refreshTokenExp);
         return TokenDto.builder()
-                .grantType(GrantType.BEARER.getType())
+                .authScheme(AuthScheme.BEARER.getType())
                 .accessToken(accessToken)
-                .accessTokenExpireTime(accessTokenExpireTime)
+                .accessTokenExp(accessTokenExp)
                 .refreshToken(refreshToken)
-                .refreshTokenExpireTime(refreshTokenExpireTime)
+                .refreshTokenExp(refreshTokenExp)
                 .build();
     }
 
-    private Date createAccessTokenExpireTime() {
-        return new Date(System.currentTimeMillis() + accessTokenExpirationTime);
+    // 테스트용 14일 유효 토큰 쌍 생성
+    public TokenDto createTokenDtoTemp(String email, Date tokenExp) {
+        String accessToken = createAccessToken(email, tokenExp);
+        String refreshToken = createRefreshToken(email, tokenExp);
+        return TokenDto.builder()
+                .authScheme(AuthScheme.BEARER.getType())
+                .accessToken(accessToken)
+                .accessTokenExp(tokenExp)
+                .refreshToken(refreshToken)
+                .refreshTokenExp(tokenExp)
+                .build();
     }
 
-    private Date createRefreshTokenExpireTime() {
-        return new Date(System.currentTimeMillis() + refreshTokenExpirationTime);
+    private Date createAccessTokenExp() {
+        return new Date(System.currentTimeMillis() + accessTokenExpMillis);
     }
 
-    private String createAccessToken(String email, Date expirationTime) {
+    private Date createRefreshTokenExp() {
+        return new Date(System.currentTimeMillis() + refreshTokenExpMillis);
+    }
+
+    private String createAccessToken(String email, Date exp) {
         return Jwts.builder()
                 .setSubject(TokenType.ACCESS.name())                // 토큰 제목
                 .setAudience(email)                                 // 토큰 대상자
                 .setIssuedAt(new Date())                         // 토큰 발급 시간
-                .setExpiration(expirationTime)                // 토큰 만료 시간
-        /**
+                .setExpiration(exp)                // 토큰 만료 시간
+        /*
          *      Claim 에는 Standard Claims 들을 제외하고도
          *      key-value 로 여러 값 저장 가능.
          */
@@ -76,12 +89,12 @@ public class TokenManager {
                 .compact();
     }
 
-    private String createRefreshToken(String email, Date expirationTime) {
+    private String createRefreshToken(String email, Date exp) {
         return Jwts.builder()
                 .setSubject(TokenType.REFRESH.name())               // 토큰 제목
                 .setAudience(email)                                 // 토큰 대상자
                 .setIssuedAt(new Date())                            // 토큰 발급 시간
-                .setExpiration(expirationTime)                      // 토큰 만료 시간
+                .setExpiration(exp)                      // 토큰 만료 시간
                 .signWith(key, SignatureAlgorithm.HS512)
                 .setHeaderParam("typ", "JWT")
                 .compact();
@@ -94,7 +107,7 @@ public class TokenManager {
                     .setSigningKey(key).build()
                     .parseClaimsJws(token).getBody();
         } catch (JwtException e) {
-            throw new NotValidTokenException(ErrorCode.NOT_VALID_TOKEN);
+            throw new JwtAuthException(ErrorCode.NOT_VALID_TOKEN);
         }
     }
 
@@ -104,7 +117,7 @@ public class TokenManager {
 
     public boolean validateToken(String token) {
         try {
-            Jws<Claims> claims = Jwts.parserBuilder()
+            Jwts.parserBuilder()
                     .setSigningKey(key).build()
                     .parseClaimsJws(token);
             return true;
@@ -117,13 +130,13 @@ public class TokenManager {
         return false;
     }
 
-    public boolean isTokenExpired(Date tokenExpiredTime) {
+    public boolean isTokenExpired(Date exp) {
         Date now = new Date();
-        return now.after(tokenExpiredTime);
+        return now.after(exp);
     }
 
-//    public String getTokenType(String token){
-//        Claims claims = getTokenClaims(token);
-//        return claims.getSubject();
-//    }
+    public String getTokenType(String token){
+        Claims claims = getTokenClaims(token);
+        return claims.getSubject();
+    }
 }

@@ -1,4 +1,4 @@
-package com.dominest.dominestbackend.domain.jwt.service;
+package com.dominest.dominestbackend.global.config.security;
 
 import com.dominest.dominestbackend.domain.user.User;
 import com.dominest.dominestbackend.domain.user.repository.UserRepository;
