@@ -53,6 +53,19 @@ public class TokenManager {
                 .build();
     }
 
+    // 테스트용 14일 유효 토큰 쌍 생성
+    public TokenDto createTokenDtoTemp(String email, Date tokenExp) {
+        String accessToken = createAccessToken(email, tokenExp);
+        String refreshToken = createRefreshToken(email, tokenExp);
+        return TokenDto.builder()
+                .authScheme(AuthScheme.BEARER.getType())
+                .accessToken(accessToken)
+                .accessTokenExp(tokenExp)
+                .refreshToken(refreshToken)
+                .refreshTokenExp(tokenExp)
+                .build();
+    }
+
     private Date createAccessTokenExp() {
         return new Date(System.currentTimeMillis() + accessTokenExpMillis);
     }

@@ -18,7 +18,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final JwtExceptionHandlerFilter jwtExceptionHandlerFilter;
     private final Custom401AuthEntryPoint custom401AuthEntryPoint;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
@@ -44,7 +43,9 @@ public class SecurityConfig {
                 .antMatchers(HttpMethod.GET).permitAll() // GET 요청은 핕터링
                 .antMatchers(HttpMethod.OPTIONS).permitAll() // OPTIONS 요청은 토큰 검증 예외
                 .antMatchers("/user/join").permitAll() // 회원가입 요청은 토큰 검증 예외
-                .antMatchers("/user/login").permitAll()
+                .antMatchers("/user/login/**").permitAll()
+                .antMatchers("/user/token/reassure").permitAll()
+
                 .antMatchers("/email/send").permitAll()
                 .antMatchers("/email/verify/code").permitAll()
                 .antMatchers("/email/change/password").permitAll()
@@ -52,7 +53,6 @@ public class SecurityConfig {
                 .and()
 
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(jwtExceptionHandlerFilter, JwtAuthenticationFilter.class)
 
                 .exceptionHandling()
                 .authenticationEntryPoint(custom401AuthEntryPoint)
@@ -61,4 +61,6 @@ public class SecurityConfig {
         ; // 인증 예외
         return http.build();
     }
+
+
 }
