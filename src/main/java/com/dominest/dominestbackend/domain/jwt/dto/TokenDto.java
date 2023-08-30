@@ -9,7 +9,7 @@ import java.util.Date;
 @Builder
 public class TokenDto {
 
-    private String grantType;
+    private String authScheme;
 
     private String accessToken;
     @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")

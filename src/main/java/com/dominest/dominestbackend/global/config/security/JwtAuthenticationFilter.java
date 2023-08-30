@@ -1,10 +1,10 @@
 package com.dominest.dominestbackend.global.config.security;
 
-import com.dominest.dominestbackend.domain.jwt.constant.GrantType;
+import com.dominest.dominestbackend.domain.jwt.constant.AuthScheme;
 import com.dominest.dominestbackend.domain.jwt.constant.TokenType;
 import com.dominest.dominestbackend.domain.jwt.service.TokenManager;
 import com.dominest.dominestbackend.global.exception.ErrorCode;
-import com.dominest.dominestbackend.global.exception.exceptions.auth.JwtException;
+import com.dominest.dominestbackend.global.exception.exceptions.auth.JwtAuthException;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -34,32 +34,32 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         //  1. 토큰 유무 확인
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         if(!StringUtils.hasText(authHeader)){
-            throw new JwtException(ErrorCode.NOT_EXISTS_AUTH_HEADER);
+            throw new JwtAuthException(ErrorCode.NOT_EXISTS_AUTH_HEADER);
         }
 
         //  2. authorization Bearer 체크
         String[] authorizations = authHeader.split(" ");
-        // GrantType.BEARER.getType() 은 "Bearer"문자열 반환
-        if(authorizations.length < 2 || (!GrantType.BEARER.getType().equals(authorizations[0]))){
-            throw new JwtException(ErrorCode.NOT_VALID_BEARER_GRANT_TYPE);
+        // AuthScheme.BEARER.getType() 은 "Bearer"문자열 반환
+        if(authorizations.length < 2 || (!AuthScheme.BEARER.getType().equals(authorizations[0]))){
+            throw new JwtAuthException(ErrorCode.NOT_VALID_BEARER_GRANT_TYPE);
         }
 
         String token = authorizations[1]; // Bearer 뒤의 토큰 몸통 부분
         // 3. 토큰 유효성(변조) 검사
         if (! tokenManager.validateToken(token)) {
-            throw new JwtException(ErrorCode.NOT_VALID_TOKEN);
+            throw new JwtAuthException(ErrorCode.NOT_VALID_TOKEN);
         }
 
         //  4. 토큰 타입 검증
         String tokenType = tokenManager.getTokenType(token);
         if(!TokenType.ACCESS.name().equals(tokenType)) { // ACCESS 토큰이 아니면
-            throw new JwtException(ErrorCode.NOT_ACCESS_TOKEN_TYPE);
+            throw new JwtAuthException(ErrorCode.NOT_ACCESS_TOKEN_TYPE);
         }
 
         Claims claims = tokenManager.getTokenClaims(token);
         // 5. 토큰 만료 검사
         if (tokenManager.isTokenExpired(claims.getExpiration())) {
-            throw new JwtException(ErrorCode.TOKEN_EXPIRED);
+            throw new JwtAuthException(ErrorCode.TOKEN_EXPIRED);
         }
 
         String email = claims.getAudience();

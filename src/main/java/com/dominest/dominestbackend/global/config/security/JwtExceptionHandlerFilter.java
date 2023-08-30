@@ -1,7 +1,7 @@
 package com.dominest.dominestbackend.global.config.security;
 
 import com.dominest.dominestbackend.global.exception.dto.ErrorResponseDto;
-import com.dominest.dominestbackend.global.exception.exceptions.auth.JwtException;
+import com.dominest.dominestbackend.global.exception.exceptions.auth.JwtAuthException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -23,7 +23,7 @@ public class JwtExceptionHandlerFilter extends OncePerRequestFilter {
 
         try{
             filterChain.doFilter(request, response);
-        } catch (JwtException e){
+        } catch (JwtAuthException e){
             // Custom error response.
             ErrorResponseDto<String> errDto = new ErrorResponseDto<>(HttpStatus.UNAUTHORIZED.value()
                     , HttpStatus.UNAUTHORIZED
