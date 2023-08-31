@@ -82,7 +82,7 @@ public class UserController {
     /**
      *   refresh 토큰을 이용, access 토큰을 재발급하는 메소드
      */
-    @PostMapping(value = "/token/reassure")
+    @PostMapping(value = "/token/reissue")
     public ResTemplate<TokenDto> accessToken(HttpServletRequest httpServletRequest){
 
         String authorizationHeader = httpServletRequest.getHeader("Authorization");
