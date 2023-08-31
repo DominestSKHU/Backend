@@ -64,10 +64,24 @@ public class UserService {
         return tokenDto;
     }
 
+    @Transactional
     // 테스트용 14일 유효기간 토큰 발급
-    public TokenDto loginTemp(String email, String password){
-        Date tokenExp = new Date(System.currentTimeMillis() + 1210500000L);
-        return tokenManager.createTokenDtoTemp(email, tokenExp);
+    public TokenDto loginTemp(String email, String rawPassword){
+        // loadUserByUsername() 을 사용하지 않는다.
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+        User user = EntityUtil.mustNotNull(optionalUser, ErrorCode.RESIDENT_NOT_FOUND);
+
+        if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
+            throw new BusinessException(ErrorCode.MISMATCHED_SIGNIN_INFO);
+        }
+
+        TokenDto tokenDto = tokenManager.createTokenDtoTemp(email, new Date(System.currentTimeMillis() + 1210500000L));
+        // refresh token은 관리를 위해 user DB에 저장.
+        user.updateRefreshTokenAndExp(tokenDto.getRefreshToken(), tokenDto.getRefreshTokenExp());
+
+        tokenDto.setUsername(user.getName());
+        tokenDto.setRole(user.getRole().getDescription());
+        return tokenDto;
     }
 
     @Transactional

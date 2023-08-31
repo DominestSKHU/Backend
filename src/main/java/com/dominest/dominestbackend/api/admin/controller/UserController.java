@@ -28,7 +28,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.Principal;
-import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -58,18 +57,17 @@ public class UserController {
     }
 
     @PostMapping("/login") // 로그인
-    public ResponseEntity<ApiResponseDto<TokenDto>> login(@RequestBody @Valid final LoginRequest request) {
-        Optional<User> optionalUser = userRepository.findByEmail(request.getEmail());
-        User user = EntityUtil.mustNotNull(optionalUser, ErrorCode.RESIDENT_NOT_FOUND);
-
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponseDto.error(ErrorStatus.USER_NOT_JOIN)); // 401 Unauthorized 상태로 실패 응답 반환
-        }
-
+    public ResTemplate<TokenDto> login(@RequestBody @Valid final LoginRequest request) {
         TokenDto tokenDto = userService.loginTemp(request.getEmail(), request.getPassword());
-        tokenDto.setUsername(user.getName());
-        tokenDto.setRole(user.getRole().getDescription());
-        return ResponseEntity.ok(ApiResponseDto.success(SuccessStatus.LOGIN_SUCCESS, tokenDto));
+
+        return new ResTemplate<>(HttpStatus.OK, "로그인 성공", tokenDto);
+    }
+
+    @PostMapping("/login/short-token-exp") // 로그인
+    public ResTemplate<TokenDto> loginV2(@RequestBody @Valid final LoginRequest request) {
+        TokenDto tokenDto = userService.login(request.getEmail(), request.getPassword());
+
+        return new ResTemplate<>(HttpStatus.OK, "로그인 성공", tokenDto);
     }
 
     // 로그아웃
@@ -81,12 +79,7 @@ public class UserController {
         return new ResTemplate<>(HttpStatus.OK, "로그아웃 성공");
     }
 
-    @PostMapping("/login/short-token-exp") // 로그인
-    public ResTemplate<TokenDto> loginV2(@RequestBody @Valid final LoginRequest request) {
-        TokenDto tokenDto = userService.login(request.getEmail(), request.getPassword());
 
-        return new ResTemplate<>(HttpStatus.OK, "로그인 성공", tokenDto);
-    }
 
     /**
      *   refresh 토큰을 이용, access 토큰을 재발급하는 메소드
