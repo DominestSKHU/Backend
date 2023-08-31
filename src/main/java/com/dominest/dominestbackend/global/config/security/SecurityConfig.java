@@ -44,7 +44,7 @@ public class SecurityConfig {
                 .antMatchers(HttpMethod.OPTIONS).permitAll() // OPTIONS 요청은 토큰 검증 예외
                 .antMatchers("/user/join").permitAll() // 회원가입 요청은 토큰 검증 예외
                 .antMatchers("/user/login/**").permitAll()
-                .antMatchers("/user/token/reassure").permitAll()
+                .antMatchers("/user/token/reissue").permitAll()
 
                 .antMatchers("/email/send").permitAll()
                 .antMatchers("/email/verify/code").permitAll()
