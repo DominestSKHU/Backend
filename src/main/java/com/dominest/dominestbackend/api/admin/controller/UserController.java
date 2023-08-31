@@ -72,6 +72,15 @@ public class UserController {
         return ResponseEntity.ok(ApiResponseDto.success(SuccessStatus.LOGIN_SUCCESS, tokenDto));
     }
 
+    // 로그아웃
+    @PostMapping("/logout")
+    public ResTemplate<Void> logout(Principal principal) {
+        // 액세스 토큰 검증은 필터에서 거치므로 바로 로그아웃 처리
+        userService.logout(principal.getName());
+
+        return new ResTemplate<>(HttpStatus.OK, "로그아웃 성공");
+    }
+
     @PostMapping("/login/short-token-exp") // 로그인
     public ResTemplate<TokenDto> loginV2(@RequestBody @Valid final LoginRequest request) {
         TokenDto tokenDto = userService.login(request.getEmail(), request.getPassword());

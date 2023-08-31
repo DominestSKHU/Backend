@@ -68,8 +68,9 @@ public class User extends BaseEntity implements UserDetails {
         this.tokenExp = DateTimeUtils.convertToLocalDateTime(refreshTokenExp);
     }
 
-    public void expireRefreshToken(LocalDateTime now){
-        this.tokenExp = now;
+    public void logout(){
+        this.refreshToken = "";
+        this.tokenExp = LocalDateTime.now();
     }
 
     public void validateRefreshTokenExp() {

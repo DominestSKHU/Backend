@@ -100,4 +100,23 @@ public class UserService {
     public User getUserByEmail(String email) {
         return EntityUtil.mustNotNull(userRepository.findByEmail(email), ErrorCode.USER_NOT_FOUND);
     }
+
+    @Transactional
+    public void logout(String email) {
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+        User user = EntityUtil.mustNotNull(optionalUser, ErrorCode.RESIDENT_NOT_FOUND);
+        user.logout();
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
