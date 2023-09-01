@@ -57,12 +57,22 @@ public class InitDB {
         userRepository.save(user3);
 
 
+
         Category category1 = Category.builder()
-                .name("categoryName-1")
+                .name("장기 미수령 택배 관리대장")
+                .type(Type.UNDELIVERED_PARCEL_REGISTER)
+                .explanation("장미택관")
+                .build();
+        categoryRepository.save(category1);
+
+        Category category2 = Category.builder()
+                .name("이미지타입1")
                 .type(Type.IMAGE)
                 .explanation("explanation")
                 .build();
-        categoryRepository.save(category1);
+        categoryRepository.save(category2);
+
+
 
         ArrayList<Category> categories = new ArrayList<>();
         int categoryCount = 7;
@@ -84,7 +94,7 @@ public class InitDB {
             ImageType imageType = ImageType.builder()
                     .title("title" + i)
                     .writer(user)
-                    .category(category1)
+                    .category(category2)
                     .build();
             imageTypes.add(imageType);
         }

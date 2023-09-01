@@ -12,6 +12,7 @@ import com.dominest.dominestbackend.global.exception.ErrorCode;
 import com.dominest.dominestbackend.global.exception.exceptions.file.FileIOException;
 import com.dominest.dominestbackend.global.util.FileService;
 import com.dominest.dominestbackend.global.util.PageableUtil;
+import com.dominest.dominestbackend.global.util.PrincipalUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -42,7 +43,7 @@ public class ImageTypeController {
     public ResponseEntity<ResTemplate<Void>> handleCreateImageType(@Valid SaveImageTypeDto.Req reqDto
                                                                                 , @PathVariable Long categoryId, Principal principal) {
         // 이미지 저장
-        String email = principal.getName();
+        String email = PrincipalUtil.getEmail(principal);
         long imageTypeId = imageTypeService.create(reqDto, categoryId, email);
         ResTemplate<Void> resTemplate = new ResTemplate<>(HttpStatus.CREATED, imageTypeId + "번 게시글 작성");
 

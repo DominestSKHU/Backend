@@ -19,6 +19,7 @@ import com.dominest.dominestbackend.global.exception.ErrorCode;
 import com.dominest.dominestbackend.global.exception.exceptions.BusinessException;
 import com.dominest.dominestbackend.global.exception.exceptions.auth.JwtAuthException;
 import com.dominest.dominestbackend.global.util.EntityUtil;
+import com.dominest.dominestbackend.global.util.PrincipalUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -74,7 +75,7 @@ public class UserController {
     @PostMapping("/logout")
     public ResTemplate<Void> logout(Principal principal) {
         // 액세스 토큰 검증은 필터에서 거치므로 바로 로그아웃 처리
-        userService.logout(principal.getName());
+        userService.logout(PrincipalUtil.getEmail(principal));
 
         return new ResTemplate<>(HttpStatus.OK, "로그아웃 성공");
     }
@@ -120,7 +121,7 @@ public class UserController {
     @PostMapping("/myPage/password") // 비밀번호 변경
     public ResponseEntity<ApiResponseDto<Void>> changePassword(@RequestBody ChangePasswordRequest request
                                                                                                                 , Principal principal) {
-        String logInUserEmail = principal.getName();
+        String logInUserEmail = PrincipalUtil.getEmail(principal);
         User user = EntityUtil.mustNotNull(userRepository.findByEmail(logInUserEmail), ErrorCode.USER_NOT_FOUND);
 
         // 현재 비밀번호와 입력한 비밀번호가 일치하는지 확인

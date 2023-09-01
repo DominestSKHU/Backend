@@ -64,9 +64,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        String email = claims.getAudience();
+        String audience = claims.getAudience();
         // 마지막으로 인증 정보로 Audience  저장
-        Authentication authentication = new UsernamePasswordAuthenticationToken(email, null, null);
+        Authentication authentication = new UsernamePasswordAuthenticationToken(audience, null, null);
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 }
