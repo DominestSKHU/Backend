@@ -104,7 +104,7 @@ public class ImageTypeController {
     // 게시물 목록을 조회한다.
     @GetMapping("/categories/{categoryId}/posts/image-types")
     public ResTemplate<ImageTypeListDto.Res> handleGetImageTypes(@PathVariable Long categoryId, @RequestParam(defaultValue = "1") int page) {
-        final int IMAGE_TYPE_PAGE_SIZE = 6;
+        final int IMAGE_TYPE_PAGE_SIZE = 20;
         Pageable pageable = PageableUtil.of(page, IMAGE_TYPE_PAGE_SIZE);
 
         Page<ImageType> imageTypes = imageTypeService.getPage(categoryId, pageable);
