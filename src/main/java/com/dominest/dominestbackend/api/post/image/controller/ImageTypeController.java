@@ -5,6 +5,7 @@ import com.dominest.dominestbackend.api.post.image.dto.ImageTypeDetailDto;
 import com.dominest.dominestbackend.api.post.image.dto.ImageTypeListDto;
 import com.dominest.dominestbackend.api.post.image.dto.SaveImageTypeDto;
 import com.dominest.dominestbackend.domain.post.component.category.Category;
+import com.dominest.dominestbackend.domain.post.component.category.component.Type;
 import com.dominest.dominestbackend.domain.post.component.category.service.CategoryService;
 import com.dominest.dominestbackend.domain.post.image.ImageType;
 import com.dominest.dominestbackend.domain.post.image.ImageTypeService;
@@ -93,7 +94,10 @@ public class ImageTypeController {
 
     // 게시물 단건 조회
     @GetMapping("/categories/{categoryId}/posts/image-types/{imageTypeId}")
-    public ResTemplate<ImageTypeDetailDto.Res> handleGetImageType(@PathVariable Long imageTypeId) {
+    public ResTemplate<ImageTypeDetailDto.Res> handleGetImageType(
+            @PathVariable Long categoryId, @PathVariable Long imageTypeId
+    ) {
+        categoryService.validateCategoryType(categoryId, Type.IMAGE);
         ImageType imageType = imageTypeService.getById(imageTypeId);
 
         ImageTypeDetailDto.Res resDto = ImageTypeDetailDto.Res.from(imageType);
@@ -110,7 +114,7 @@ public class ImageTypeController {
 
         Page<ImageType> imageTypes = imageTypeService.getPage(categoryId, pageable);
         // 카테고리 내 게시글이 1건도 없는 경우도 있으므로, 게시글과 함께 카테고리를 Join해서 데이터를 찾아오지 않는다.
-        Category category = categoryService.getCategoryById(categoryId);
+        Category category = categoryService.getById(categoryId);
 
         ImageTypeListDto.Res resDto = ImageTypeListDto.Res.from(imageTypes, category);
         return new ResTemplate<>(HttpStatus.OK

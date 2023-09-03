@@ -5,6 +5,7 @@ import com.dominest.dominestbackend.api.post.undeliveredparcel.dto.CreateUndeliv
 import com.dominest.dominestbackend.api.post.undeliveredparcel.dto.UndelivParcelPostDetailDto;
 import com.dominest.dominestbackend.api.post.undeliveredparcel.dto.UndelivParcelPostListDto;
 import com.dominest.dominestbackend.domain.post.component.category.Category;
+import com.dominest.dominestbackend.domain.post.component.category.component.Type;
 import com.dominest.dominestbackend.domain.post.component.category.service.CategoryService;
 import com.dominest.dominestbackend.domain.post.undeliveredparcel.UndeliveredParcelPost;
 import com.dominest.dominestbackend.domain.post.undeliveredparcel.UndeliveredParcelPostService;
@@ -51,9 +52,8 @@ public class UndeliveredParcelController {
         final int IMAGE_TYPE_PAGE_SIZE = 20;
         Pageable pageable = PageableUtil.of(page, IMAGE_TYPE_PAGE_SIZE);
 
+        Category category = categoryService.validateCategoryType(categoryId, Type.UNDELIVERED_PARCEL_REGISTER);
         Page<UndeliveredParcelPost> postsPage = undelivParcelPostService.getPage(categoryId, pageable);
-        // 카테고리 내 게시글이 1건도 없는 경우도 있으므로, 게시글과 함께 카테고리를 Join해서 데이터를 찾아오지 않는다.
-        Category category = categoryService.getCategoryById(categoryId);
 
         UndelivParcelPostListDto.Res resDto = UndelivParcelPostListDto.Res.from(postsPage, category);
         return new ResTemplate<>(HttpStatus.OK
@@ -66,7 +66,10 @@ public class UndeliveredParcelController {
     public ResponseEntity<ResTemplate<Void>> handleDeleteParcelPost(
             @PathVariable Long categoryId, @PathVariable Long undelivParcelPostId
     ) {
+        categoryService.validateCategoryType(categoryId, Type.UNDELIVERED_PARCEL_REGISTER);
+
         long deletedPostId = undelivParcelPostService.delete(undelivParcelPostId);
+
         ResTemplate<Void> resTemplate = new ResTemplate<>(HttpStatus.OK, deletedPostId + "번 게시글 삭제");
         return ResponseEntity.ok(resTemplate);
     }
@@ -77,10 +80,11 @@ public class UndeliveredParcelController {
             @PathVariable Long categoryId, @PathVariable Long undelivParcelPostId
             , @RequestBody CreateUndelivParcelDto.Req reqDto
             ) {
-        undeliveredParcelService.create(undelivParcelPostId, reqDto);
+        categoryService.validateCategoryType(categoryId, Type.UNDELIVERED_PARCEL_REGISTER);
+        Long undelivParcelId = undeliveredParcelService.create(undelivParcelPostId, reqDto);
 
         ResTemplate<Void> resTemplate = new ResTemplate<>(HttpStatus.CREATED,
-                "관리대장에 " + undelivParcelPostId + "번 관리물품 작성");
+                "관리대장에 " + undelivParcelId + "번 관리물품 작성");
         return ResponseEntity.status(HttpStatus.CREATED).body(resTemplate);
     }
 
@@ -89,6 +93,7 @@ public class UndeliveredParcelController {
     public ResTemplate<UndelivParcelPostDetailDto.Res> handleGetParcels(
             @PathVariable Long categoryId, @PathVariable Long undelivParcelPostId
     ) {
+        categoryService.validateCategoryType(categoryId, Type.UNDELIVERED_PARCEL_REGISTER);
         UndeliveredParcelPost undelivParcelPost = undelivParcelPostService.getByIdFetchParcels(undelivParcelPostId);
 
         UndelivParcelPostDetailDto.Res resDto = UndelivParcelPostDetailDto.Res.from(undelivParcelPost);

@@ -1,5 +1,7 @@
 package com.dominest.dominestbackend.domain.post.component.category.component;
 
+import com.dominest.dominestbackend.global.exception.ErrorCode;
+import com.dominest.dominestbackend.global.exception.exceptions.BusinessException;
 import lombok.Getter;
 
 @Getter
@@ -12,5 +14,11 @@ public enum Type {
 
     Type(String url) {
         this.url = url;
+    }
+
+    public void validateEqualTo(Type type){
+        if (! this.equals(type)){
+            throw new BusinessException(ErrorCode.CATEGORY_TYPE_MISMATCHED);
+        }
     }
 }

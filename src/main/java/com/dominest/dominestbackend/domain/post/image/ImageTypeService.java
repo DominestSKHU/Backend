@@ -7,7 +7,6 @@ import com.dominest.dominestbackend.domain.post.component.category.service.Categ
 import com.dominest.dominestbackend.domain.user.User;
 import com.dominest.dominestbackend.domain.user.service.UserService;
 import com.dominest.dominestbackend.global.exception.ErrorCode;
-import com.dominest.dominestbackend.global.exception.exceptions.BusinessException;
 import com.dominest.dominestbackend.global.util.EntityUtil;
 import com.dominest.dominestbackend.global.util.FileService;
 import lombok.RequiredArgsConstructor;
@@ -30,9 +29,9 @@ public class ImageTypeService {
     @Transactional
     public Long create(SaveImageTypeDto.Req reqDto
                                     , Long categoryId, String uploaderEmail) {
-        Category category = categoryService.getCategoryById(categoryId);
-        if (! Type.IMAGE.equals(category.getType())) // 이미지 게시물이 작성될 카테고리의 타입 검사
-            throw new BusinessException(ErrorCode.CATEGORY_TYPE_MISMATCHED);
+        Category category = categoryService.getById(categoryId);
+        // 이미지 게시물이 작성될 카테고리의 타입 검사
+        Type.IMAGE.validateEqualTo(category.getType());
 
         User writer = userService.getUserByEmail(uploaderEmail);
 
