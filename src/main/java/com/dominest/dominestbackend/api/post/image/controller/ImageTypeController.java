@@ -92,7 +92,7 @@ public class ImageTypeController {
     }
 
     // 게시물 단건 조회
-    @GetMapping("/posts/image-types/{imageTypeId}")
+    @GetMapping("/categories/{categoryId}/posts/image-types/{imageTypeId}")
     public ResTemplate<ImageTypeDetailDto.Res> handleGetImageType(@PathVariable Long imageTypeId) {
         ImageType imageType = imageTypeService.getById(imageTypeId);
 
