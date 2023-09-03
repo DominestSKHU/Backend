@@ -55,10 +55,11 @@ public enum ErrorCode {
 
     // 즐겨찾기
     FAVORITE_NOT_FOUND(404, "해당 즐겨찾기가 존재하지 않습니다."),
-    
 
-    
-;
+    // 미수령 택배
+    UNDELIVERED_PARCEL_NOT_FOUND(404, "해당 관리물품이 존재하지 않습니다."),
+
+    ;
     private final int statusCode;
     private final String message;
 
