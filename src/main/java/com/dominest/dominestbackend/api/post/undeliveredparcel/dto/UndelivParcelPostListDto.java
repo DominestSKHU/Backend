@@ -4,6 +4,7 @@ import com.dominest.dominestbackend.api.common.CategoryDto;
 import com.dominest.dominestbackend.api.common.PageInfoDto;
 import com.dominest.dominestbackend.domain.post.component.category.Category;
 import com.dominest.dominestbackend.domain.post.undeliveredparcel.UndeliveredParcelPost;
+import com.dominest.dominestbackend.global.util.PrincipalUtil;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -53,7 +54,7 @@ public class UndelivParcelPostListDto {
                 return UndelivParcelPostListDto.Res.UndelivParcelPostDto.builder()
                         .id(post.getId())
                         .title(post.getTitle())
-                        .lastModifiedBy(post.getLastModifiedBy())
+                        .lastModifiedBy(PrincipalUtil.strToName(post.getLastModifiedBy()))
                         .lastModifiedTime(post.getLastModifiedTime())
                         .build();
             }

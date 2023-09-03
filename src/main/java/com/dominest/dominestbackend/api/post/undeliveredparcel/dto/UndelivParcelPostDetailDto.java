@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -55,6 +56,10 @@ public class UndelivParcelPostDetailDto {
             String instruction;
             UndeliveredParcel.ProcessState processState;
 
+            String lastModifiedBy;
+            @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
+            LocalDateTime lastModifiedTime;
+
             static UndelivParcelDto from(UndeliveredParcel undelivParcel) {
                 return UndelivParcelDto.builder()
                         .id(undelivParcel.getId())
@@ -62,10 +67,13 @@ public class UndelivParcelPostDetailDto {
                         .recipientPhoneNum(undelivParcel.getRecipientPhoneNum())
                         .instruction(undelivParcel.getInstruction())
                         .processState(undelivParcel.getProcessState())
+                        .lastModifiedBy(PrincipalUtil.strToName(undelivParcel.getLastModifiedBy()))
+                        .lastModifiedTime(undelivParcel.getLastModifiedTime())
                         .build();
             }
             static List<UndelivParcelDto> from(List<UndeliveredParcel> undelivParcels) {
                 return undelivParcels.stream()
+                        .sorted(Comparator.comparing(UndeliveredParcel::getId).reversed())
                         .map(UndelivParcelDto::from)
                         .collect(Collectors.toList());
             }
