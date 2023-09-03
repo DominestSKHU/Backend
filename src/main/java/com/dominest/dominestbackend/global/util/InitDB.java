@@ -8,6 +8,10 @@ import com.dominest.dominestbackend.domain.post.component.category.component.Typ
 import com.dominest.dominestbackend.domain.post.component.category.repository.CategoryRepository;
 import com.dominest.dominestbackend.domain.post.image.ImageType;
 import com.dominest.dominestbackend.domain.post.image.ImageTypeRepository;
+import com.dominest.dominestbackend.domain.post.undeliveredparcel.UndeliveredParcelPost;
+import com.dominest.dominestbackend.domain.post.undeliveredparcel.UndeliveredParcelPostRepository;
+import com.dominest.dominestbackend.domain.post.undeliveredparcel.component.UndeliveredParcel;
+import com.dominest.dominestbackend.domain.post.undeliveredparcel.component.UndeliveredParcelRepository;
 import com.dominest.dominestbackend.domain.user.User;
 import com.dominest.dominestbackend.domain.user.component.Role;
 import com.dominest.dominestbackend.domain.user.repository.UserRepository;
@@ -17,6 +21,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 @RequiredArgsConstructor
@@ -27,6 +33,8 @@ public class InitDB {
     private final CategoryRepository categoryRepository;
     private final ImageTypeRepository imageTypeRepository;
     private final FavoriteRepository favoriteRepository;
+    private final UndeliveredParcelPostRepository undelivParcelPostRepository;
+    private final UndeliveredParcelRepository undelivParcelRepository;
 
     @Transactional
     @PostConstruct
@@ -57,13 +65,37 @@ public class InitDB {
         userRepository.save(user3);
 
 
-
         Category category1 = Category.builder()
                 .name("장기 미수령 택배 관리대장")
                 .type(Type.UNDELIVERED_PARCEL_REGISTER)
                 .explanation("장미택관")
                 .build();
         categoryRepository.save(category1);
+        
+        UndeliveredParcelPost unDeliParcelPost = UndeliveredParcelPost.builder()
+                .titleWithCurrentDate(createTitle())
+                .category(category1)
+                .writer(user)
+                .build();
+        undelivParcelPostRepository.save(unDeliParcelPost);
+
+        UndeliveredParcel parcel = UndeliveredParcel.builder()
+                .recipientName("받는사람")
+                .recipientPhoneNum("010-1234-5678")
+                .instruction("배송지시사항")
+                .processState(UndeliveredParcel.ProcessState.MESSAGE_SENT)
+                .post(unDeliParcelPost)
+                .build();
+        UndeliveredParcel parcel2 = UndeliveredParcel.builder()
+                .recipientName("받는사람")
+                .recipientPhoneNum("010-1234-5678")
+                .instruction("배송지시사항")
+                .processState(UndeliveredParcel.ProcessState.MESSAGE_SENT)
+                .post(unDeliParcelPost)
+                .build();
+        undelivParcelRepository.save(parcel);
+        undelivParcelRepository.save(parcel2);
+
 
         Category category2 = Category.builder()
                 .name("이미지타입1")
@@ -71,7 +103,6 @@ public class InitDB {
                 .explanation("explanation")
                 .build();
         categoryRepository.save(category2);
-
 
 
         ArrayList<Category> categories = new ArrayList<>();
@@ -85,7 +116,6 @@ public class InitDB {
             categories.add(category);
         }
         categoryRepository.saveAll(categories);
-
 
 
         ArrayList<ImageType> imageTypes = new ArrayList<>();
@@ -109,5 +139,11 @@ public class InitDB {
             favorites.add(favorite);
         }
         favoriteRepository.saveAll(favorites);
+    }
+    private String createTitle() {
+        // 원하는 형식의 문자열로 변환
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String formattedDate = LocalDateTime.now().format(formatter);
+        return formattedDate + " 장기미수령 택배";
     }
 }

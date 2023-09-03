@@ -19,7 +19,7 @@ public class AuditorAwareImpl implements AuditorAware<String> {
         // SecurityContext 에서 Authentication 객체를 꺼내서 email을 꺼내서 리턴
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String principal =
-                authentication == null ? "unknown"
+                authentication == null ? "unknown:unknown@un.known"
                 : authentication.getPrincipal().toString();
 
         return Optional.of(principal);
