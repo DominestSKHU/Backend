@@ -15,7 +15,7 @@ public interface UndeliveredParcelPostRepository extends JpaRepository<Undeliver
     Page<UndeliveredParcelPost> findAllByCategory(@Param("categoryId") Long categoryId, Pageable pageable);
 
     @Query("SELECT p FROM UndeliveredParcelPost p" +
-            " JOIN FETCH p.undelivParcels" +
+            " LEFT JOIN FETCH p.undelivParcels" +
             " WHERE p.id = :postId")
     UndeliveredParcelPost findByIdFetchParcels(@Param("postId") Long undelivParcelPostId);
 }

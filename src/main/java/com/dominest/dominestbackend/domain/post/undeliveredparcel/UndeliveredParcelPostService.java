@@ -1,6 +1,7 @@
 package com.dominest.dominestbackend.domain.post.undeliveredparcel;
 
 import com.dominest.dominestbackend.domain.post.component.category.Category;
+import com.dominest.dominestbackend.domain.post.component.category.component.Type;
 import com.dominest.dominestbackend.domain.post.component.category.service.CategoryService;
 import com.dominest.dominestbackend.domain.user.User;
 import com.dominest.dominestbackend.domain.user.service.UserService;
@@ -26,7 +27,8 @@ public class UndeliveredParcelPostService {
     public Long create(Long categoryId, String email) {
         // Undeli...의 연관 객체인 category, user 찾기
         User user = userService.getUserByEmail(email);
-        Category category = categoryService.getCategoryById(categoryId);
+        // Undeli...의 연관 객체인 category 찾기
+        Category category = categoryService.validateCategoryType(categoryId, Type.UNDELIVERED_PARCEL_REGISTER);
 
         // Undeli... 객체 생성 후 저장
         UndeliveredParcelPost unDeliParcelPost = UndeliveredParcelPost.builder()
@@ -60,6 +62,7 @@ public class UndeliveredParcelPostService {
     }
 
     public Page<UndeliveredParcelPost> getPage(Long categoryId, Pageable pageable) {
+        // 카테고리 내 게시글이 1건도 없는 경우도 있으므로, 게시글과 함께 카테고리를 Join해서 데이터를 찾아오지 않는다.
         return undelivParcelPostRepository.findAllByCategory(categoryId, pageable);
     }
 }
