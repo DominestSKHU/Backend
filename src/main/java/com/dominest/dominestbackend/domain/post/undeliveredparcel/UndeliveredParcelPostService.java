@@ -1,4 +1,4 @@
-package com.dominest.dominestbackend.domain.post.undeliveredparcelregister;
+package com.dominest.dominestbackend.domain.post.undeliveredparcel;
 
 import com.dominest.dominestbackend.domain.post.component.category.Category;
 import com.dominest.dominestbackend.domain.post.component.category.service.CategoryService;
@@ -14,8 +14,8 @@ import java.time.format.DateTimeFormatter;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Service
-public class UnDeliveredParcelRegisterPostService {
-    private final UnDeliveredParcelRegisterPostRepository unDeliParcelPostRepository;
+public class UndeliveredParcelPostService {
+    private final UndeliveredParcelPostRepository unDeliParcelPostRepository;
     private final UserService userService;
     private final CategoryService categoryService;
     @Transactional
@@ -25,7 +25,7 @@ public class UnDeliveredParcelRegisterPostService {
         Category category = categoryService.getCategoryById(categoryId);
 
         // Undeli... 객체 생성 후 저장
-        UnDeliveredParcelRegisterPost unDeliParcelPost = UnDeliveredParcelRegisterPost.builder()
+        UndeliveredParcelPost unDeliParcelPost = UndeliveredParcelPost.builder()
                 .titleWithCurrentDate(createTitle())
                 .category(category)
                 .writer(user)

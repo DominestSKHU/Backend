@@ -1,4 +1,4 @@
-package com.dominest.dominestbackend.domain.post.undeliveredparcelregister;
+package com.dominest.dominestbackend.domain.post.undeliveredparcel;
 
 import com.dominest.dominestbackend.domain.post.common.Post;
 import com.dominest.dominestbackend.domain.post.component.category.Category;
@@ -16,9 +16,9 @@ import javax.persistence.Entity;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class UnDeliveredParcelRegisterPost extends Post {
+public class UndeliveredParcelPost extends Post {
     @Builder
-    private UnDeliveredParcelRegisterPost(String titleWithCurrentDate, User writer, Category category) {
+    private UndeliveredParcelPost(String titleWithCurrentDate, User writer, Category category) {
         // currentDate는 "yyyy-MM-dd 장기미수령 택배" 형식의 문자열이다.
         super(titleWithCurrentDate, writer, category);
     }

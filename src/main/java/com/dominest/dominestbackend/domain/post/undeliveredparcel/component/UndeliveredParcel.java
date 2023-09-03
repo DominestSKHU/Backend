@@ -1,16 +1,21 @@
-package com.dominest.dominestbackend.domain.post.undeliveredparcelregister.component;
+package com.dominest.dominestbackend.domain.post.undeliveredparcel.component;
 
 import com.dominest.dominestbackend.domain.common.BaseEntity;
-import com.dominest.dominestbackend.domain.post.undeliveredparcelregister.UnDeliveredParcelRegisterPost;
+import com.dominest.dominestbackend.domain.post.undeliveredparcel.UndeliveredParcelPost;
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.*;
 
 import javax.persistence.*;
 
+/**
+ * 장기미수령 택배 관리대장 게시글 내부의 관리물품 데이터
+ * (이름, 연락처, 처리 내용)
+ * 작성자와 외래키 관계는 맺을 필요가 없으므로 제외하기로 함.
+ */
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class UnDeliveredParcelRegister extends BaseEntity {
+public class UndeliveredParcel extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,10 +32,10 @@ public class UnDeliveredParcelRegister extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, name = "post_id")
-    private UnDeliveredParcelRegisterPost post;
+    private UndeliveredParcelPost post;
 
     @Builder
-    private UnDeliveredParcelRegister(String recipientName, String recipientPhoneNum, String instruction, UnDeliveredParcelRegisterPost post) {
+    private UndeliveredParcel(String recipientName, String recipientPhoneNum, String instruction, UndeliveredParcelPost post) {
         this.recipientName = recipientName;
         this.recipientPhoneNum = recipientPhoneNum;
         this.instruction = instruction;
