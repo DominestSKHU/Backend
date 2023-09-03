@@ -46,7 +46,7 @@ public class ImageTypeService {
     }
 
     public Page<ImageType> getPage(Long categoryId, Pageable pageable) {
-        return imageTypeRepository.findAllFetchWriter(categoryId, pageable);
+        return imageTypeRepository.findAllByCategory(categoryId, pageable);
     }
 
     @Transactional
