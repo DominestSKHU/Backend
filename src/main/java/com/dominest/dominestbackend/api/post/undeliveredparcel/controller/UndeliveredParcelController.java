@@ -66,8 +66,6 @@ public class UndeliveredParcelController {
     public ResponseEntity<ResTemplate<Void>> handleDeleteParcelPost(
             @PathVariable Long categoryId, @PathVariable Long undelivParcelPostId
     ) {
-        categoryService.validateCategoryType(categoryId, Type.UNDELIVERED_PARCEL_REGISTER);
-
         long deletedPostId = undelivParcelPostService.delete(undelivParcelPostId);
 
         ResTemplate<Void> resTemplate = new ResTemplate<>(HttpStatus.OK, deletedPostId + "번 게시글 삭제");
@@ -80,7 +78,6 @@ public class UndeliveredParcelController {
             @PathVariable Long categoryId, @PathVariable Long undelivParcelPostId
             , @RequestBody CreateUndelivParcelDto.Req reqDto
             ) {
-        categoryService.validateCategoryType(categoryId, Type.UNDELIVERED_PARCEL_REGISTER);
         Long undelivParcelId = undeliveredParcelService.create(undelivParcelPostId, reqDto);
 
         ResTemplate<Void> resTemplate = new ResTemplate<>(HttpStatus.CREATED,
@@ -93,10 +90,26 @@ public class UndeliveredParcelController {
     public ResTemplate<UndelivParcelPostDetailDto.Res> handleGetParcels(
             @PathVariable Long categoryId, @PathVariable Long undelivParcelPostId
     ) {
-        categoryService.validateCategoryType(categoryId, Type.UNDELIVERED_PARCEL_REGISTER);
         UndeliveredParcelPost undelivParcelPost = undelivParcelPostService.getByIdFetchParcels(undelivParcelPostId);
 
         UndelivParcelPostDetailDto.Res resDto = UndelivParcelPostDetailDto.Res.from(undelivParcelPost);
         return new ResTemplate<>(HttpStatus.OK, "택배 관리대장 게시물 상세조회", resDto);
     }
+
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
