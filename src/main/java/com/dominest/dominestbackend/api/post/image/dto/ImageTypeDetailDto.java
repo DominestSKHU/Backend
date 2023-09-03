@@ -17,7 +17,7 @@ public class ImageTypeDetailDto {
         public static Res from(ImageType imageType) {
             ImageTypeDto imageTypeDto = ImageTypeDto.builder()
                     .createTime(imageType.getCreateTime())
-                    .updateTime(imageType.getUpdateTime())
+                    .updateTime(imageType.getLastModifiedTime())
                     .title(imageType.getTitle())
                     .writer(imageType.getWriter().getName())
                     .imageUrls(imageType.getImageUrls())

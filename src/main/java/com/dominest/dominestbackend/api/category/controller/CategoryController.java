@@ -50,7 +50,7 @@ public class CategoryController {
     @PostMapping ("/categories")// 카테고리 생성
     public ResponseEntity<ResTemplate<Void>> createCategory(@RequestBody @Valid final CategoryCreateRequest request) {
 
-        Category category = categoryService.createCategory(request.getCategoryName(), request.getCategoryType(), request.getExplanation());
+        Category category = categoryService.create(request.getCategoryName(), request.getCategoryType(), request.getExplanation());
         ResTemplate<Void> resTemplate = new ResTemplate<>(HttpStatus.CREATED, "카테고리 생성 성공");
         return ResponseEntity
                 .created(URI.create("/categories/" + category.getId()))
@@ -61,7 +61,7 @@ public class CategoryController {
     public ResTemplate<String> updateCategories(@RequestBody @Valid final List<CategoryUpdateRequest> requests) throws Exception {
 
         for (CategoryUpdateRequest request : requests) {
-            categoryService.updateCategory(request.getId(), request.getCategoryName());
+            categoryService.update(request.getId(), request.getCategoryName());
         }
         return new ResTemplate<>(HttpStatus.OK, "카테고리 수정 성공");
     }
@@ -69,7 +69,7 @@ public class CategoryController {
     @DeleteMapping("/categories/{id}") // 카테고리 삭제
     public ResTemplate<String> deleteCategory(@PathVariable Long id) {
 
-        categoryService.deleteCategoryById(id);
+        categoryService.deleteById(id);
         return new ResTemplate<>(HttpStatus.OK, id +"번 카테고리 삭제 성공");
     }
 }
