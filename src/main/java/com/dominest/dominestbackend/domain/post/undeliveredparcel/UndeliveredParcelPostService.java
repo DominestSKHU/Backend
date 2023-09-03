@@ -4,6 +4,8 @@ import com.dominest.dominestbackend.domain.post.component.category.Category;
 import com.dominest.dominestbackend.domain.post.component.category.service.CategoryService;
 import com.dominest.dominestbackend.domain.user.User;
 import com.dominest.dominestbackend.domain.user.service.UserService;
+import com.dominest.dominestbackend.global.exception.ErrorCode;
+import com.dominest.dominestbackend.global.util.EntityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +33,10 @@ public class UndeliveredParcelPostService {
                 .writer(user)
                 .build();
         return unDeliParcelPostRepository.save(unDeliParcelPost).getId();
+    }
+
+    public UndeliveredParcelPost getById(Long undelivParcelPostId) {
+        return EntityUtil.mustNotNull(unDeliParcelPostRepository.findById(undelivParcelPostId), ErrorCode.POST_NOT_FOUND);
     }
 
     private String createTitle() {

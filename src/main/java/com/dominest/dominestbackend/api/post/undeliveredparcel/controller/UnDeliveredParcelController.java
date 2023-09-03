@@ -1,6 +1,7 @@
 package com.dominest.dominestbackend.api.post.undeliveredparcel.controller;
 
 import com.dominest.dominestbackend.api.common.ResTemplate;
+import com.dominest.dominestbackend.api.post.undeliveredparcel.dto.CreateUndelivParcelDto;
 import com.dominest.dominestbackend.domain.post.undeliveredparcel.UndeliveredParcelPostService;
 import com.dominest.dominestbackend.domain.post.undeliveredparcel.component.UndeliveredParcelService;
 import com.dominest.dominestbackend.global.util.PrincipalUtil;
@@ -9,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
@@ -35,18 +37,17 @@ public class UnDeliveredParcelController {
                 .body(resTemplate);
     }
 
-//    // 게시글 내부 관리목록에 관리물품 등록
-//    @PostMapping("/categories/{categoryId}/posts/undelivered-parcel/{undelivParcelPostId}/register")
-//    public ResponseEntity<ResTemplate<Void>> handleCreateRegister(
-//            @PathVariable Long categoryId, @PathVariable Long undelivParcelPostId
-//            , @RequestBody
-//    ) {
-//        undeliveredParcelService.create(undelivParcelPostId);
-//        ResTemplate<Void> resTemplate = new ResTemplate<>(HttpStatus.CREATED, undelivParcelPostId + "번 게시글 작성");
-//
-//        return ResponseEntity
-//                .created(URI.create("/categories/"+categoryId+"/posts/undelivered-parcel/" + undelivParcelPostId))
-//                .body(resTemplate);
-//    }
+    // 게시글 내부 관리목록에 관리물품 등록
+    @PostMapping("/categories/{categoryId}/posts/undelivered-parcel/{undelivParcelPostId}/register")
+    public ResponseEntity<ResTemplate<Void>> handleCreateRegister(
+            @PathVariable Long categoryId, @PathVariable Long undelivParcelPostId
+            , @RequestBody CreateUndelivParcelDto.Req reqDto
+            ) {
+        undeliveredParcelService.create(undelivParcelPostId, reqDto);
+
+        ResTemplate<Void> resTemplate = new ResTemplate<>(HttpStatus.CREATED,
+                "관리대장에 " + undelivParcelPostId + "번 관리물품 작성");
+        return ResponseEntity.status(HttpStatus.CREATED).body(resTemplate);
+    }
 
 }

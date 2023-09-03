@@ -29,22 +29,25 @@ public class UndeliveredParcel extends BaseEntity {
     private String recipientPhoneNum;
     @Column(nullable = false)
     private String instruction;
+    @Enumerated(EnumType.STRING)
+    private ProcessState processState;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, name = "post_id")
     private UndeliveredParcelPost post;
 
     @Builder
-    private UndeliveredParcel(String recipientName, String recipientPhoneNum, String instruction, UndeliveredParcelPost post) {
+    private UndeliveredParcel(String recipientName, String recipientPhoneNum, String instruction, ProcessState processState, UndeliveredParcelPost post) {
         this.recipientName = recipientName;
         this.recipientPhoneNum = recipientPhoneNum;
         this.instruction = instruction;
+        this.processState = processState;
         this.post = post;
     }
 
     // 처리 결과는 (문자발송, 전화완료, 폐기예정, 폐기완료 중 하나)
     @RequiredArgsConstructor
-    enum ProcessState {
+    public enum ProcessState {
         MESSAGE_SENT("문자발송"), CALL_COMPLETED("전화완료"),
         DISCARD_SCHEDULED("폐기예정"), DISCARD_COMPLETED("폐기완료");
 
