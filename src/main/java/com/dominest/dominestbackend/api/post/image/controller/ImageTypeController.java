@@ -109,6 +109,7 @@ public class ImageTypeController {
         Pageable pageable = PageableUtil.of(page, IMAGE_TYPE_PAGE_SIZE);
 
         Page<ImageType> imageTypes = imageTypeService.getPage(categoryId, pageable);
+        // 카테고리 내 게시글이 1건도 없는 경우도 있으므로, 게시글과 함께 카테고리를 Join해서 데이터를 찾아오지 않는다.
         Category category = categoryService.getCategoryById(categoryId);
 
         ImageTypeListDto.Res resDto = ImageTypeListDto.Res.from(imageTypes, category);

@@ -7,6 +7,8 @@ import com.dominest.dominestbackend.domain.user.service.UserService;
 import com.dominest.dominestbackend.global.exception.ErrorCode;
 import com.dominest.dominestbackend.global.util.EntityUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,7 +19,7 @@ import java.time.format.DateTimeFormatter;
 @Transactional(readOnly = true)
 @Service
 public class UndeliveredParcelPostService {
-    private final UndeliveredParcelPostRepository unDeliParcelPostRepository;
+    private final UndeliveredParcelPostRepository undelivParcelPostRepository;
     private final UserService userService;
     private final CategoryService categoryService;
     @Transactional
@@ -32,11 +34,11 @@ public class UndeliveredParcelPostService {
                 .category(category)
                 .writer(user)
                 .build();
-        return unDeliParcelPostRepository.save(unDeliParcelPost).getId();
+        return undelivParcelPostRepository.save(unDeliParcelPost).getId();
     }
 
     public UndeliveredParcelPost getById(Long undelivParcelPostId) {
-        return EntityUtil.mustNotNull(unDeliParcelPostRepository.findById(undelivParcelPostId), ErrorCode.POST_NOT_FOUND);
+        return EntityUtil.mustNotNull(undelivParcelPostRepository.findById(undelivParcelPostId), ErrorCode.POST_NOT_FOUND);
     }
 
     private String createTitle() {
@@ -49,7 +51,11 @@ public class UndeliveredParcelPostService {
     @Transactional
     public long delete(Long undelivParcelPostId) {
         UndeliveredParcelPost post = getById(undelivParcelPostId);
-        unDeliParcelPostRepository.delete(post);
+        undelivParcelPostRepository.delete(post);
         return post.getId();
+    }
+
+    public Page<UndeliveredParcelPost> getPage(Long categoryId, Pageable pageable) {
+        return undelivParcelPostRepository.findAllByCategory(categoryId, pageable);
     }
 }

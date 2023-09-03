@@ -2,10 +2,17 @@ package com.dominest.dominestbackend.api.post.undeliveredparcel.controller;
 
 import com.dominest.dominestbackend.api.common.ResTemplate;
 import com.dominest.dominestbackend.api.post.undeliveredparcel.dto.CreateUndelivParcelDto;
+import com.dominest.dominestbackend.api.post.undeliveredparcel.dto.UndelivParcelPostListDto;
+import com.dominest.dominestbackend.domain.post.component.category.Category;
+import com.dominest.dominestbackend.domain.post.component.category.service.CategoryService;
+import com.dominest.dominestbackend.domain.post.undeliveredparcel.UndeliveredParcelPost;
 import com.dominest.dominestbackend.domain.post.undeliveredparcel.UndeliveredParcelPostService;
 import com.dominest.dominestbackend.domain.post.undeliveredparcel.component.UndeliveredParcelService;
+import com.dominest.dominestbackend.global.util.PageableUtil;
 import com.dominest.dominestbackend.global.util.PrincipalUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,9 +22,10 @@ import java.security.Principal;
 
 @RequiredArgsConstructor
 @RestController
-public class UnDeliveredParcelController {
+public class UndeliveredParcelController {
     private final UndeliveredParcelPostService undelivParcelPostService;
     private final UndeliveredParcelService undeliveredParcelService;
+    private final CategoryService categoryService;
 
     // 게시글 등록
     @PostMapping("/categories/{categoryId}/posts/undelivered-parcel")
@@ -25,7 +33,7 @@ public class UnDeliveredParcelController {
             @PathVariable Long categoryId, Principal principal
     ) {
         // 이미지 저장
-        String email = PrincipalUtil.getEmail(principal);
+        String email = PrincipalUtil.toEmail(principal);
         long unDeliParcelId = undelivParcelPostService.create(categoryId, email);
         ResTemplate<Void> resTemplate = new ResTemplate<>(HttpStatus.CREATED, unDeliParcelId + "번 게시글 작성");
 
@@ -34,15 +42,23 @@ public class UnDeliveredParcelController {
                 .body(resTemplate);
     }
 
-    // 게시글 목록 조회
-//    @GetMapping("/categories/{categoryId}/posts/undelivered-parcel")
-//    public ResTemplate<?> handleGetParcelPosts(
-//            @PathVariable Long categoryId
-//    ) {
-//        ResTemplate<?> resTemplate = new ResTemplate<>(HttpStatus.OK,
-//                undelivParcelPostService.getAllByCategoryId(categoryId));
-//        return ResponseEntity.ok(resTemplate);
-//    }
+//  게시글 목록 조회
+    @GetMapping("/categories/{categoryId}/posts/undelivered-parcel")
+    public ResTemplate<UndelivParcelPostListDto.Res> handleGetParcelPosts(
+            @PathVariable Long categoryId, @RequestParam(defaultValue = "1") int page
+    ) {
+        final int IMAGE_TYPE_PAGE_SIZE = 20;
+        Pageable pageable = PageableUtil.of(page, IMAGE_TYPE_PAGE_SIZE);
+
+        Page<UndeliveredParcelPost> postsPage = undelivParcelPostService.getPage(categoryId, pageable);
+        // 카테고리 내 게시글이 1건도 없는 경우도 있으므로, 게시글과 함께 카테고리를 Join해서 데이터를 찾아오지 않는다.
+        Category category = categoryService.getCategoryById(categoryId);
+
+        UndelivParcelPostListDto.Res resDto = UndelivParcelPostListDto.Res.from(postsPage, category);
+        return new ResTemplate<>(HttpStatus.OK
+                , "페이지 게시글 목록 조회 - " + resDto.getPage().getCurrentPage() + "페이지"
+                ,resDto);
+    }
 
     // 게시글 삭제
     @DeleteMapping("/categories/{categoryId}/posts/undelivered-parcel/{undelivParcelPostId}")
