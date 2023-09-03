@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
@@ -23,7 +24,7 @@ import java.util.List;
 @Entity
 public class UndeliveredParcelPost extends Post {
     @OneToMany(targetEntity = UndeliveredParcel.class, mappedBy = "post"
-            , fetch = FetchType.LAZY)
+            , fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     List<UndeliveredParcel> undelivParcels = new ArrayList<>();
 
     @Builder
