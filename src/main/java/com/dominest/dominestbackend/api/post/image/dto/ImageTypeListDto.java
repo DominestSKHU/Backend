@@ -1,8 +1,8 @@
 package com.dominest.dominestbackend.api.post.image.dto;
 
+import com.dominest.dominestbackend.api.common.CategoryDto;
 import com.dominest.dominestbackend.api.common.PageInfoDto;
 import com.dominest.dominestbackend.domain.post.component.category.Category;
-import com.dominest.dominestbackend.domain.post.component.category.component.Type;
 import com.dominest.dominestbackend.domain.post.image.ImageType;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AccessLevel;
@@ -61,22 +61,5 @@ public class ImageTypeListDto {
                         .collect(Collectors.toList());
             }
         }
-
-        @Getter
-        @Builder
-        private static class CategoryDto {
-            long id;
-            String categoryName;
-            Type type;
-
-            static CategoryDto from(Category category){
-                return CategoryDto.builder()
-                        .id(category.getId())
-                        .categoryName(category.getName())
-                        .type(category.getType())
-                        .build();
-            }
-        }
     }
-
 }
