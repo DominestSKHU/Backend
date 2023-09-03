@@ -1,14 +1,16 @@
 package com.dominest.dominestbackend.api.post.image.dto;
 
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.List;
-
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UpdateImageTypeDto {
     @AllArgsConstructor
     @Getter

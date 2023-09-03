@@ -2,13 +2,12 @@ package com.dominest.dominestbackend.api.post.image.dto;
 
 import com.dominest.dominestbackend.domain.post.image.ImageType;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ImageTypeDetailDto {
     @AllArgsConstructor
     @Getter
@@ -18,7 +17,7 @@ public class ImageTypeDetailDto {
         public static Res from(ImageType imageType) {
             ImageTypeDto imageTypeDto = ImageTypeDto.builder()
                     .createTime(imageType.getCreateTime())
-                    .updateTime(imageType.getUpdateTime())
+                    .updateTime(imageType.getLastModifiedTime())
                     .title(imageType.getTitle())
                     .writer(imageType.getWriter().getName())
                     .imageUrls(imageType.getImageUrls())

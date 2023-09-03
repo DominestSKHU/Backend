@@ -1,8 +1,12 @@
 package com.dominest.dominestbackend.global.util;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
 public class TimeUtil {
     /**
      *  작성 시점 시간 230715.

@@ -38,12 +38,12 @@ public class TokenManager {
         this.refreshTokenExpMillis = refreshTokenExpMillis;
     }
 
-    public TokenDto createTokenDto(String email) {
+    public TokenDto createTokenDto(String audience) {
         Date accessTokenExp = createAccessTokenExp();
         Date refreshTokenExp = createRefreshTokenExp();
 
-        String accessToken = createAccessToken(email, accessTokenExp);
-        String refreshToken = createRefreshToken(email, refreshTokenExp);
+        String accessToken = createAccessToken(audience, accessTokenExp);
+        String refreshToken = createRefreshToken(audience, refreshTokenExp);
         return TokenDto.builder()
                 .authScheme(AuthScheme.BEARER.getType())
                 .accessToken(accessToken)
@@ -54,9 +54,9 @@ public class TokenManager {
     }
 
     // 테스트용 14일 유효 토큰 쌍 생성
-    public TokenDto createTokenDtoTemp(String email, Date tokenExp) {
-        String accessToken = createAccessToken(email, tokenExp);
-        String refreshToken = createRefreshToken(email, tokenExp);
+    public TokenDto createTokenDtoTemp(String audience, Date tokenExp) {
+        String accessToken = createAccessToken(audience, tokenExp);
+        String refreshToken = createRefreshToken(audience, tokenExp);
         return TokenDto.builder()
                 .authScheme(AuthScheme.BEARER.getType())
                 .accessToken(accessToken)
@@ -74,10 +74,10 @@ public class TokenManager {
         return new Date(System.currentTimeMillis() + refreshTokenExpMillis);
     }
 
-    private String createAccessToken(String email, Date exp) {
+    private String createAccessToken(String audience, Date exp) {
         return Jwts.builder()
                 .setSubject(TokenType.ACCESS.name())                // 토큰 제목
-                .setAudience(email)                                 // 토큰 대상자
+                .setAudience(audience)                                 // 토큰 대상자
                 .setIssuedAt(new Date())                         // 토큰 발급 시간
                 .setExpiration(exp)                // 토큰 만료 시간
         /*
@@ -89,10 +89,10 @@ public class TokenManager {
                 .compact();
     }
 
-    private String createRefreshToken(String email, Date exp) {
+    private String createRefreshToken(String audience, Date exp) {
         return Jwts.builder()
                 .setSubject(TokenType.REFRESH.name())               // 토큰 제목
-                .setAudience(email)                                 // 토큰 대상자
+                .setAudience(audience)                                 // 토큰 대상자
                 .setIssuedAt(new Date())                            // 토큰 발급 시간
                 .setExpiration(exp)                      // 토큰 만료 시간
                 .signWith(key, SignatureAlgorithm.HS512)

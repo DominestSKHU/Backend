@@ -54,8 +54,10 @@ public class UserService {
         if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
             throw new BusinessException(ErrorCode.MISMATCHED_SIGNIN_INFO);
         }
+        // audience 는 email + ":" + name 으로 구성
+        String audience = user.getEmail() + ":" + user.getName();
 
-        TokenDto tokenDto = tokenManager.createTokenDto(user.getEmail());
+        TokenDto tokenDto = tokenManager.createTokenDto(audience);
         // refresh token은 관리를 위해 user DB에 저장.
         user.updateRefreshTokenAndExp(tokenDto.getRefreshToken(), tokenDto.getRefreshTokenExp());
 
@@ -74,8 +76,10 @@ public class UserService {
         if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
             throw new BusinessException(ErrorCode.MISMATCHED_SIGNIN_INFO);
         }
+        // audience 는 email + ":" + name 으로 구성
+        String audience = user.getEmail() + ":" + user.getName();
 
-        TokenDto tokenDto = tokenManager.createTokenDtoTemp(email, new Date(System.currentTimeMillis() + 1210500000L));
+        TokenDto tokenDto = tokenManager.createTokenDtoTemp(audience, new Date(System.currentTimeMillis() + 1210500000L));
         // refresh token은 관리를 위해 user DB에 저장.
         user.updateRefreshTokenAndExp(tokenDto.getRefreshToken(), tokenDto.getRefreshTokenExp());
 
@@ -90,7 +94,10 @@ public class UserService {
         User user = findByRefreshToken(refreshToken); // 여기서 토큰 유효성과 토큰타입(refresh) 가 검증된다.
         user.validateRefreshTokenExp();
 
-        TokenDto tokenDto = tokenManager.createTokenDto(user.getEmail());
+        // audience 는 email + ":" + name 으로 구성
+        String audience = user.getEmail() + ":" + user.getName();
+
+        TokenDto tokenDto = tokenManager.createTokenDto(audience);
         user.updateRefreshTokenAndExp(tokenDto.getRefreshToken(), tokenDto.getRefreshTokenExp());
 
         tokenDto.setUsername(user.getName());

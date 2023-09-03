@@ -5,6 +5,7 @@ import com.dominest.dominestbackend.api.post.image.dto.ImageTypeDetailDto;
 import com.dominest.dominestbackend.api.post.image.dto.ImageTypeListDto;
 import com.dominest.dominestbackend.api.post.image.dto.SaveImageTypeDto;
 import com.dominest.dominestbackend.domain.post.component.category.Category;
+import com.dominest.dominestbackend.domain.post.component.category.component.Type;
 import com.dominest.dominestbackend.domain.post.component.category.service.CategoryService;
 import com.dominest.dominestbackend.domain.post.image.ImageType;
 import com.dominest.dominestbackend.domain.post.image.ImageTypeService;
@@ -12,6 +13,7 @@ import com.dominest.dominestbackend.global.exception.ErrorCode;
 import com.dominest.dominestbackend.global.exception.exceptions.file.FileIOException;
 import com.dominest.dominestbackend.global.util.FileService;
 import com.dominest.dominestbackend.global.util.PageableUtil;
+import com.dominest.dominestbackend.global.util.PrincipalUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -42,7 +44,7 @@ public class ImageTypeController {
     public ResponseEntity<ResTemplate<Void>> handleCreateImageType(@Valid SaveImageTypeDto.Req reqDto
                                                                                 , @PathVariable Long categoryId, Principal principal) {
         // 이미지 저장
-        String email = principal.getName();
+        String email = PrincipalUtil.toEmail(principal);
         long imageTypeId = imageTypeService.create(reqDto, categoryId, email);
         ResTemplate<Void> resTemplate = new ResTemplate<>(HttpStatus.CREATED, imageTypeId + "번 게시글 작성");
 
@@ -91,8 +93,11 @@ public class ImageTypeController {
     }
 
     // 게시물 단건 조회
-    @GetMapping("/posts/image-types/{imageTypeId}")
-    public ResTemplate<ImageTypeDetailDto.Res> handleGetImageType(@PathVariable Long imageTypeId) {
+    @GetMapping("/categories/{categoryId}/posts/image-types/{imageTypeId}")
+    public ResTemplate<ImageTypeDetailDto.Res> handleGetImageType(
+            @PathVariable Long categoryId, @PathVariable Long imageTypeId
+    ) {
+        categoryService.validateCategoryType(categoryId, Type.IMAGE);
         ImageType imageType = imageTypeService.getById(imageTypeId);
 
         ImageTypeDetailDto.Res resDto = ImageTypeDetailDto.Res.from(imageType);
@@ -104,11 +109,12 @@ public class ImageTypeController {
     // 게시물 목록을 조회한다.
     @GetMapping("/categories/{categoryId}/posts/image-types")
     public ResTemplate<ImageTypeListDto.Res> handleGetImageTypes(@PathVariable Long categoryId, @RequestParam(defaultValue = "1") int page) {
-        final int IMAGE_TYPE_PAGE_SIZE = 6;
+        final int IMAGE_TYPE_PAGE_SIZE = 20;
         Pageable pageable = PageableUtil.of(page, IMAGE_TYPE_PAGE_SIZE);
 
         Page<ImageType> imageTypes = imageTypeService.getPage(categoryId, pageable);
-        Category category = categoryService.getCategoryById(categoryId);
+        // 카테고리 내 게시글이 1건도 없는 경우도 있으므로, 게시글과 함께 카테고리를 Join해서 데이터를 찾아오지 않는다.
+        Category category = categoryService.getById(categoryId);
 
         ImageTypeListDto.Res resDto = ImageTypeListDto.Res.from(imageTypes, category);
         return new ResTemplate<>(HttpStatus.OK

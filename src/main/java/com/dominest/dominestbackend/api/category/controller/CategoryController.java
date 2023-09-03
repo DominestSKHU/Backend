@@ -8,6 +8,7 @@ import com.dominest.dominestbackend.api.common.ResTemplate;
 import com.dominest.dominestbackend.domain.post.component.category.Category;
 import com.dominest.dominestbackend.domain.post.component.category.repository.CategoryRepository;
 import com.dominest.dominestbackend.domain.post.component.category.service.CategoryService;
+import com.dominest.dominestbackend.global.util.PrincipalUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,7 +40,7 @@ public class CategoryController {
     public ResTemplate<CategoryListWithFavoriteDto.Res> handleGetMyCategoryList(@NotNull(message = "인증 정보가 없습니다.") Principal principal) {
         // 즐찾목록 다 조회해서 카테고리 ID들을 찾아낸다.
         // 찾아낸 카테고리 ID들과 전체 카테고리 목록 중 일치하는 것들은 즐겨찾기가 되어있는 것이다.
-        List<Long> categoryIdsFromFavorites = categoryService.getIdAllByUserEmail(principal.getName());
+        List<Long> categoryIdsFromFavorites = categoryService.getIdAllByUserEmail(PrincipalUtil.toEmail(principal));
         List<Category> categories = categoryRepository.findAll();
 
         CategoryListWithFavoriteDto.Res resDto = CategoryListWithFavoriteDto.Res.from(categories, categoryIdsFromFavorites);
@@ -47,10 +48,10 @@ public class CategoryController {
     }
 
     @PostMapping ("/categories")// 카테고리 생성
-    public ResponseEntity<ResTemplate<?>> createCategory(@RequestBody @Valid final CategoryCreateRequest request) {
+    public ResponseEntity<ResTemplate<Void>> createCategory(@RequestBody @Valid final CategoryCreateRequest request) {
 
-        Category category = categoryService.createCategory(request.getCategoryName(), request.getCategoryType(), request.getExplanation());
-        ResTemplate<?> resTemplate = new ResTemplate<>(HttpStatus.CREATED, "카테고리 생성 성공");
+        Category category = categoryService.create(request.getCategoryName(), request.getCategoryType(), request.getExplanation());
+        ResTemplate<Void> resTemplate = new ResTemplate<>(HttpStatus.CREATED, "카테고리 생성 성공");
         return ResponseEntity
                 .created(URI.create("/categories/" + category.getId()))
                 .body(resTemplate);
@@ -60,7 +61,7 @@ public class CategoryController {
     public ResTemplate<String> updateCategories(@RequestBody @Valid final List<CategoryUpdateRequest> requests) throws Exception {
 
         for (CategoryUpdateRequest request : requests) {
-            categoryService.updateCategory(request.getId(), request.getCategoryName());
+            categoryService.update(request.getId(), request.getCategoryName());
         }
         return new ResTemplate<>(HttpStatus.OK, "카테고리 수정 성공");
     }
@@ -68,7 +69,7 @@ public class CategoryController {
     @DeleteMapping("/categories/{id}") // 카테고리 삭제
     public ResTemplate<String> deleteCategory(@PathVariable Long id) {
 
-        categoryService.deleteCategoryById(id);
+        categoryService.deleteById(id);
         return new ResTemplate<>(HttpStatus.OK, id +"번 카테고리 삭제 성공");
     }
 }

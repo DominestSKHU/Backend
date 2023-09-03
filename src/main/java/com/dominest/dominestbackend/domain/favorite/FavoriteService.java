@@ -27,7 +27,7 @@ public class FavoriteService {
 
         if (favorite == null) {
             User user = userService.getUserByEmail(userEmail);
-            Category category = categoryService.getCategoryById(categoryId);
+            Category category = categoryService.getById(categoryId);
 
             Favorite newFavorite = Favorite.builder()
                     .user(user)

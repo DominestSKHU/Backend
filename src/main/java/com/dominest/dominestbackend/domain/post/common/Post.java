@@ -35,7 +35,7 @@ public abstract class Post extends BaseEntity {
     @JoinColumn(nullable = false, name = "category_id")
     private Category category;
 
-    public Post(String title, User writer, Category category) {
+    protected Post(String title, User writer, Category category) {
         this.title = title;
         this.writer = writer;
         this.category = category;

@@ -19,7 +19,7 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
 
     @Transactional
-    public Category createCategory(String categoryName, Type categoryType, String explanation) {
+    public Category create(String categoryName, Type categoryType, String explanation) {
         Category category = Category.builder()
                 .name(categoryName)
                 .type(categoryType)
@@ -30,7 +30,7 @@ public class CategoryService {
     }
 
     @Transactional
-    public void updateCategory(Long id, String categoryName) throws Exception {
+    public void update(Long id, String categoryName) throws Exception {
         Optional<Category> optionalCategory = categoryRepository.findById(id);
 
         if (optionalCategory.isEmpty()) {
@@ -53,7 +53,7 @@ public class CategoryService {
         categoryRepository.delete(category);
     }
 
-    public Category getCategoryById(Long categoryId) {
+    public Category getById(Long categoryId) {
         return EntityUtil.mustNotNull(categoryRepository.findById(categoryId), ErrorCode.CATEGORY_NOT_FOUND);
     }
 
@@ -63,8 +63,14 @@ public class CategoryService {
     }
 
     @Transactional
-    public void deleteCategoryById(Long categoryId) {
+    public void deleteById(Long categoryId) {
         categoryRepository.deleteById(categoryId);
+    }
+
+    public Category validateCategoryType(Long categoryId, Type type) {
+        Category category = getById(categoryId);
+        category.getType().validateEqualTo(type);
+        return category;
     }
 }
 

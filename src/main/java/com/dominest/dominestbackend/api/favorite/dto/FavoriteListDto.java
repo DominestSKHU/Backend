@@ -2,12 +2,14 @@ package com.dominest.dominestbackend.api.favorite.dto;
 
 import com.dominest.dominestbackend.domain.favorite.Favorite;
 import com.dominest.dominestbackend.domain.post.component.category.Category;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class FavoriteListDto {
     @Getter
     public static class Res{
