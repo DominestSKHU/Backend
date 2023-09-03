@@ -8,10 +8,7 @@ import com.dominest.dominestbackend.global.util.PrincipalUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.security.Principal;
@@ -35,6 +32,26 @@ public class UnDeliveredParcelController {
         return ResponseEntity
                 .created(URI.create("/categories/"+categoryId+"/posts/undelivered-parcel/" + unDeliParcelId))
                 .body(resTemplate);
+    }
+
+    // 게시글 목록 조회
+//    @GetMapping("/categories/{categoryId}/posts/undelivered-parcel")
+//    public ResTemplate<?> handleGetParcelPosts(
+//            @PathVariable Long categoryId
+//    ) {
+//        ResTemplate<?> resTemplate = new ResTemplate<>(HttpStatus.OK,
+//                undelivParcelPostService.getAllByCategoryId(categoryId));
+//        return ResponseEntity.ok(resTemplate);
+//    }
+
+    // 게시글 삭제
+    @DeleteMapping("/categories/{categoryId}/posts/undelivered-parcel/{undelivParcelPostId}")
+    public ResponseEntity<ResTemplate<Void>> handleDeleteParcelPost(
+            @PathVariable Long categoryId, @PathVariable Long undelivParcelPostId
+    ) {
+        long deletedPostId = undelivParcelPostService.delete(undelivParcelPostId);
+        ResTemplate<Void> resTemplate = new ResTemplate<>(HttpStatus.OK, deletedPostId + "번 게시글 삭제");
+        return ResponseEntity.ok(resTemplate);
     }
 
     // 게시글 내부 관리목록에 관리물품 등록

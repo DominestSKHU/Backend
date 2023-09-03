@@ -45,4 +45,11 @@ public class UndeliveredParcelPostService {
         String formattedDate = LocalDateTime.now().format(formatter);
         return formattedDate + " 장기미수령 택배";
     }
+
+    @Transactional
+    public long delete(Long undelivParcelPostId) {
+        UndeliveredParcelPost post = getById(undelivParcelPostId);
+        unDeliParcelPostRepository.delete(post);
+        return post.getId();
+    }
 }
