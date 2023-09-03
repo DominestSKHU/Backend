@@ -2,6 +2,7 @@ package com.dominest.dominestbackend.api.post.undeliveredparcel.controller;
 
 import com.dominest.dominestbackend.api.common.ResTemplate;
 import com.dominest.dominestbackend.api.post.undeliveredparcel.dto.CreateUndelivParcelDto;
+import com.dominest.dominestbackend.api.post.undeliveredparcel.dto.UndelivParcelPostDetailDto;
 import com.dominest.dominestbackend.api.post.undeliveredparcel.dto.UndelivParcelPostListDto;
 import com.dominest.dominestbackend.domain.post.component.category.Category;
 import com.dominest.dominestbackend.domain.post.component.category.service.CategoryService;
@@ -42,7 +43,7 @@ public class UndeliveredParcelController {
                 .body(resTemplate);
     }
 
-//  게시글 목록 조회
+    //  게시글 목록 조회
     @GetMapping("/categories/{categoryId}/posts/undelivered-parcel")
     public ResTemplate<UndelivParcelPostListDto.Res> handleGetParcelPosts(
             @PathVariable Long categoryId, @RequestParam(defaultValue = "1") int page
@@ -71,8 +72,8 @@ public class UndeliveredParcelController {
     }
 
     // 게시글 내부 관리목록에 관리물품 등록
-    @PostMapping("/categories/{categoryId}/posts/undelivered-parcel/{undelivParcelPostId}/register")
-    public ResponseEntity<ResTemplate<Void>> handleCreateRegister(
+    @PostMapping("/categories/{categoryId}/posts/undelivered-parcel/{undelivParcelPostId}")
+    public ResponseEntity<ResTemplate<Void>> handleCreateParcel(
             @PathVariable Long categoryId, @PathVariable Long undelivParcelPostId
             , @RequestBody CreateUndelivParcelDto.Req reqDto
             ) {
@@ -83,4 +84,14 @@ public class UndeliveredParcelController {
         return ResponseEntity.status(HttpStatus.CREATED).body(resTemplate);
     }
 
+    // 게시글 상세 조회
+    @GetMapping("/categories/{categoryId}/posts/undelivered-parcel/{undelivParcelPostId}")
+    public ResTemplate<UndelivParcelPostDetailDto.Res> handleGetParcels(
+            @PathVariable Long categoryId, @PathVariable Long undelivParcelPostId
+    ) {
+        UndeliveredParcelPost undelivParcelPost = undelivParcelPostService.getByIdFetchParcels(undelivParcelPostId);
+
+        UndelivParcelPostDetailDto.Res resDto = UndelivParcelPostDetailDto.Res.from(undelivParcelPost);
+        return new ResTemplate<>(HttpStatus.OK, "택배 관리대장 게시물 상세조회", resDto);
+    }
 }

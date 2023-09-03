@@ -41,6 +41,10 @@ public class UndeliveredParcelPostService {
         return EntityUtil.mustNotNull(undelivParcelPostRepository.findById(undelivParcelPostId), ErrorCode.POST_NOT_FOUND);
     }
 
+    public UndeliveredParcelPost getByIdFetchParcels(Long undelivParcelPostId) {
+        return EntityUtil.mustNotNull(undelivParcelPostRepository.findByIdFetchParcels(undelivParcelPostId), ErrorCode.POST_NOT_FOUND);
+    }
+
     private String createTitle() {
         // 원하는 형식의 문자열로 변환
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");

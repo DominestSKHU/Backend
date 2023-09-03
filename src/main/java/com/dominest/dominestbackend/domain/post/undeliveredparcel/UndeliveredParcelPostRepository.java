@@ -13,4 +13,9 @@ public interface UndeliveredParcelPostRepository extends JpaRepository<Undeliver
             " ORDER BY p.id DESC"
             , countQuery = "SELECT count(p) FROM UndeliveredParcelPost p WHERE p.category.id = :categoryId")
     Page<UndeliveredParcelPost> findAllByCategory(@Param("categoryId") Long categoryId, Pageable pageable);
+
+    @Query("SELECT p FROM UndeliveredParcelPost p" +
+            " JOIN FETCH p.undelivParcels" +
+            " WHERE p.id = :postId")
+    UndeliveredParcelPost findByIdFetchParcels(@Param("postId") Long undelivParcelPostId);
 }
