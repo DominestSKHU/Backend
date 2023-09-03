@@ -43,7 +43,7 @@ public class ImageTypeController {
     public ResponseEntity<ResTemplate<Void>> handleCreateImageType(@Valid SaveImageTypeDto.Req reqDto
                                                                                 , @PathVariable Long categoryId, Principal principal) {
         // 이미지 저장
-        String email = PrincipalUtil.getEmail(principal);
+        String email = PrincipalUtil.toEmail(principal);
         long imageTypeId = imageTypeService.create(reqDto, categoryId, email);
         ResTemplate<Void> resTemplate = new ResTemplate<>(HttpStatus.CREATED, imageTypeId + "번 게시글 작성");
 

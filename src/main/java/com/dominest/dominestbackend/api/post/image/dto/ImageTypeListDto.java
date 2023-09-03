@@ -4,6 +4,7 @@ import com.dominest.dominestbackend.api.common.CategoryDto;
 import com.dominest.dominestbackend.api.common.PageInfoDto;
 import com.dominest.dominestbackend.domain.post.component.category.Category;
 import com.dominest.dominestbackend.domain.post.image.ImageType;
+import com.dominest.dominestbackend.global.util.PrincipalUtil;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -51,7 +52,7 @@ public class ImageTypeListDto {
                         .id(imageType.getId())
                         .createTime(imageType.getCreateTime())
                         .title(imageType.getTitle())
-                        .writer(imageType.getWriter().getName())
+                        .writer(PrincipalUtil.strToName(imageType.getCreatedBy()))
                         .build();
             }
 

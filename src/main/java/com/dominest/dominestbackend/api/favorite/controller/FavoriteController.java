@@ -26,7 +26,7 @@ public class FavoriteController {
     @PostMapping("/categories/{categoryId}/favorites")
     public ResTemplate<String>  handleAddOrUndoFavorite(@PathVariable Long categoryId, Principal principal) {
 
-        boolean isOn = favoriteService.addOrUndo(categoryId, PrincipalUtil.getEmail(principal));
+        boolean isOn = favoriteService.addOrUndo(categoryId, PrincipalUtil.toEmail(principal));
 
         String resMsg = isOn ? "즐겨찾기 추가" : "즐겨찾기 취소";
         return new ResTemplate<>(HttpStatus.OK, resMsg);
@@ -37,7 +37,7 @@ public class FavoriteController {
     public ResTemplate<FavoriteListDto.Res> handleGetAllFavorites(@NotNull(message = "인증 정보가 없습니다.") Principal principal) {
 
         Sort sort = Sort.by(Sort.Direction.DESC, "updateTime");
-        List<Favorite> favorites = favoriteService.getAllByUserEmail(PrincipalUtil.getEmail(principal), sort);
+        List<Favorite> favorites = favoriteService.getAllByUserEmail(PrincipalUtil.toEmail(principal), sort);
 
         FavoriteListDto.Res resDto = FavoriteListDto.Res.from(favorites);
         return new ResTemplate<>(HttpStatus.OK, "즐겨찾기 목록 조회"

@@ -40,7 +40,7 @@ public class CategoryController {
     public ResTemplate<CategoryListWithFavoriteDto.Res> handleGetMyCategoryList(@NotNull(message = "인증 정보가 없습니다.") Principal principal) {
         // 즐찾목록 다 조회해서 카테고리 ID들을 찾아낸다.
         // 찾아낸 카테고리 ID들과 전체 카테고리 목록 중 일치하는 것들은 즐겨찾기가 되어있는 것이다.
-        List<Long> categoryIdsFromFavorites = categoryService.getIdAllByUserEmail(PrincipalUtil.getEmail(principal));
+        List<Long> categoryIdsFromFavorites = categoryService.getIdAllByUserEmail(PrincipalUtil.toEmail(principal));
         List<Category> categories = categoryRepository.findAll();
 
         CategoryListWithFavoriteDto.Res resDto = CategoryListWithFavoriteDto.Res.from(categories, categoryIdsFromFavorites);
