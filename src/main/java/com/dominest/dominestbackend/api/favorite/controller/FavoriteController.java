@@ -36,7 +36,7 @@ public class FavoriteController {
     @GetMapping("/favorites")
     public ResTemplate<FavoriteListDto.Res> handleGetAllFavorites(@NotNull(message = "인증 정보가 없습니다.") Principal principal) {
 
-        Sort sort = Sort.by(Sort.Direction.DESC, "updateTime");
+        Sort sort = Sort.by(Sort.Direction.DESC, "lastModifiedTime");
         List<Favorite> favorites = favoriteService.getAllByUserEmail(PrincipalUtil.toEmail(principal), sort);
 
         FavoriteListDto.Res resDto = FavoriteListDto.Res.from(favorites);
