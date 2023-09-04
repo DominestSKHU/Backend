@@ -1,13 +1,15 @@
 package com.dominest.dominestbackend.api.resident.dto;
 
 import com.dominest.dominestbackend.domain.resident.Resident;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
-
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ResidentListDto {
     @Builder
     @Getter

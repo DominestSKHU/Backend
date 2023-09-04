@@ -2,13 +2,15 @@ package com.dominest.dominestbackend.api.category.response;
 
 import com.dominest.dominestbackend.domain.post.component.category.Category;
 import com.dominest.dominestbackend.domain.post.component.category.component.Type;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CategoryListWithFavoriteDto {
     @Getter
     public static class Res {

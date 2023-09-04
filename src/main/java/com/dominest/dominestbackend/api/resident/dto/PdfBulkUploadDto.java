@@ -1,12 +1,13 @@
 package com.dominest.dominestbackend.api.resident.dto;
 
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
-
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class PdfBulkUploadDto {
 
     @Getter
