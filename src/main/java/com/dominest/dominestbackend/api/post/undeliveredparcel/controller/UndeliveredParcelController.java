@@ -63,9 +63,9 @@ public class UndeliveredParcelController {
     }
 
     // 게시글 삭제
-    @DeleteMapping("/categories/{categoryId}/posts/undelivered-parcel/{undelivParcelPostId}")
+    @DeleteMapping("/posts/undelivered-parcel/{undelivParcelPostId}")
     public ResponseEntity<ResTemplate<Void>> handleDeleteParcelPost(
-            @PathVariable Long categoryId, @PathVariable Long undelivParcelPostId
+            @PathVariable Long undelivParcelPostId
     ) {
         long deletedPostId = undelivParcelPostService.delete(undelivParcelPostId);
 
@@ -74,10 +74,9 @@ public class UndeliveredParcelController {
     }
 
     // 게시글 내부 관리목록에 관리물품 등록
-    @PostMapping("/categories/{categoryId}/posts/undelivered-parcel/{undelivParcelPostId}")
+    @PostMapping("/posts/undelivered-parcel/{undelivParcelPostId}")
     public ResponseEntity<ResTemplate<Void>> handleCreateParcel(
-            @PathVariable Long categoryId, @PathVariable Long undelivParcelPostId
-            , @RequestBody CreateUndelivParcelDto.Req reqDto
+                @PathVariable Long undelivParcelPostId, @RequestBody CreateUndelivParcelDto.Req reqDto
             ) {
         Long undelivParcelId = undeliveredParcelService.create(undelivParcelPostId, reqDto);
 
@@ -87,9 +86,9 @@ public class UndeliveredParcelController {
     }
 
     // 게시글 상세 조회
-    @GetMapping("/categories/{categoryId}/posts/undelivered-parcel/{undelivParcelPostId}")
+    @GetMapping("//posts/undelivered-parcel/{undelivParcelPostId}")
     public ResTemplate<UndelivParcelPostDetailDto.Res> handleGetParcels(
-            @PathVariable Long categoryId, @PathVariable Long undelivParcelPostId
+            @PathVariable Long undelivParcelPostId
     ) {
         UndeliveredParcelPost undelivParcelPost = undelivParcelPostService.getByIdFetchParcels(undelivParcelPostId);
 
