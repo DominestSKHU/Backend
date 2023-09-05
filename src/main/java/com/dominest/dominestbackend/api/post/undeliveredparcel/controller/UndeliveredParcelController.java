@@ -109,7 +109,7 @@ public class UndeliveredParcelController {
     }
 
     // 관리물품 단건 삭제
-    @PatchMapping("/undelivParcels/{undelivParcelId}")
+    @DeleteMapping("/undelivParcels/{undelivParcelId}")
     public ResTemplate<Void> handleDeleteParcel(
             @PathVariable Long undelivParcelId
     ) {
