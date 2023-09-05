@@ -45,6 +45,13 @@ public class UndeliveredParcel extends BaseEntity {
         this.post = post;
     }
 
+    public void updateValues(String recipientName, String recipientPhoneNum, String instruction, ProcessState processState) {
+        this.recipientName = recipientName;
+        this.recipientPhoneNum = recipientPhoneNum;
+        this.instruction = instruction;
+        this.processState = processState;
+    }
+
     // 처리 결과는 (문자발송, 전화완료, 폐기예정, 폐기완료 중 하나)
     @RequiredArgsConstructor
     public enum ProcessState {

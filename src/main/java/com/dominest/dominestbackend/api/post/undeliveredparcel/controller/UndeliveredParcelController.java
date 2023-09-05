@@ -4,6 +4,7 @@ import com.dominest.dominestbackend.api.common.ResTemplate;
 import com.dominest.dominestbackend.api.post.undeliveredparcel.dto.CreateUndelivParcelDto;
 import com.dominest.dominestbackend.api.post.undeliveredparcel.dto.UndelivParcelPostDetailDto;
 import com.dominest.dominestbackend.api.post.undeliveredparcel.dto.UndelivParcelPostListDto;
+import com.dominest.dominestbackend.api.post.undeliveredparcel.dto.UpdateUndelivParcelDto;
 import com.dominest.dominestbackend.domain.post.component.category.Category;
 import com.dominest.dominestbackend.domain.post.component.category.component.Type;
 import com.dominest.dominestbackend.domain.post.component.category.service.CategoryService;
@@ -62,12 +63,10 @@ public class UndeliveredParcelController {
     }
 
     // 게시글 삭제
-    @DeleteMapping("/categories/{categoryId}/posts/undelivered-parcel/{undelivParcelPostId}")
+    @DeleteMapping("/posts/undelivered-parcel/{undelivParcelPostId}")
     public ResponseEntity<ResTemplate<Void>> handleDeleteParcelPost(
-            @PathVariable Long categoryId, @PathVariable Long undelivParcelPostId
+            @PathVariable Long undelivParcelPostId
     ) {
-        categoryService.validateCategoryType(categoryId, Type.UNDELIVERED_PARCEL_REGISTER);
-
         long deletedPostId = undelivParcelPostService.delete(undelivParcelPostId);
 
         ResTemplate<Void> resTemplate = new ResTemplate<>(HttpStatus.OK, deletedPostId + "번 게시글 삭제");
@@ -75,12 +74,10 @@ public class UndeliveredParcelController {
     }
 
     // 게시글 내부 관리목록에 관리물품 등록
-    @PostMapping("/categories/{categoryId}/posts/undelivered-parcel/{undelivParcelPostId}")
+    @PostMapping("/posts/undelivered-parcel/{undelivParcelPostId}")
     public ResponseEntity<ResTemplate<Void>> handleCreateParcel(
-            @PathVariable Long categoryId, @PathVariable Long undelivParcelPostId
-            , @RequestBody CreateUndelivParcelDto.Req reqDto
+                @PathVariable Long undelivParcelPostId, @RequestBody CreateUndelivParcelDto.Req reqDto
             ) {
-        categoryService.validateCategoryType(categoryId, Type.UNDELIVERED_PARCEL_REGISTER);
         Long undelivParcelId = undeliveredParcelService.create(undelivParcelPostId, reqDto);
 
         ResTemplate<Void> resTemplate = new ResTemplate<>(HttpStatus.CREATED,
@@ -89,14 +86,51 @@ public class UndeliveredParcelController {
     }
 
     // 게시글 상세 조회
-    @GetMapping("/categories/{categoryId}/posts/undelivered-parcel/{undelivParcelPostId}")
+    @GetMapping("/posts/undelivered-parcel/{undelivParcelPostId}")
     public ResTemplate<UndelivParcelPostDetailDto.Res> handleGetParcels(
-            @PathVariable Long categoryId, @PathVariable Long undelivParcelPostId
+            @PathVariable Long undelivParcelPostId
     ) {
-        categoryService.validateCategoryType(categoryId, Type.UNDELIVERED_PARCEL_REGISTER);
         UndeliveredParcelPost undelivParcelPost = undelivParcelPostService.getByIdFetchParcels(undelivParcelPostId);
 
         UndelivParcelPostDetailDto.Res resDto = UndelivParcelPostDetailDto.Res.from(undelivParcelPost);
         return new ResTemplate<>(HttpStatus.OK, "택배 관리대장 게시물 상세조회", resDto);
     }
+
+    // 관리물품 단건 수정
+    @PatchMapping("/undelivParcels/{undelivParcelId}")
+    public ResTemplate<Void> handleUpdateParcel(
+            @PathVariable Long undelivParcelId, @RequestBody UpdateUndelivParcelDto.Req reqDto
+    ) {
+        // parcelId 조회, 값 바꿔치기, 저장하기
+        long updatedId = undeliveredParcelService.update(undelivParcelId, reqDto);
+
+        return new ResTemplate<>(HttpStatus.OK, updatedId + "번 관리물품 수정");
+    }
+
+    // 관리물품 단건 삭제
+    @DeleteMapping("/undelivParcels/{undelivParcelId}")
+    public ResTemplate<Void> handleDeleteParcel(
+            @PathVariable Long undelivParcelId
+    ) {
+        // parcelId 조회, 값 바꿔치기, 저장하기
+        long deleteId = undeliveredParcelService.delete(undelivParcelId);
+
+        return new ResTemplate<>(HttpStatus.OK, deleteId + "번 관리물품 삭제");
+    }
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

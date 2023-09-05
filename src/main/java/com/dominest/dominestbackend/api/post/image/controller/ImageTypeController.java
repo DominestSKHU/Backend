@@ -97,7 +97,6 @@ public class ImageTypeController {
     public ResTemplate<ImageTypeDetailDto.Res> handleGetImageType(
             @PathVariable Long categoryId, @PathVariable Long imageTypeId
     ) {
-        categoryService.validateCategoryType(categoryId, Type.IMAGE);
         ImageType imageType = imageTypeService.getById(imageTypeId);
 
         ImageTypeDetailDto.Res resDto = ImageTypeDetailDto.Res.from(imageType);
@@ -112,9 +111,9 @@ public class ImageTypeController {
         final int IMAGE_TYPE_PAGE_SIZE = 20;
         Pageable pageable = PageableUtil.of(page, IMAGE_TYPE_PAGE_SIZE);
 
-        Page<ImageType> imageTypes = imageTypeService.getPage(categoryId, pageable);
+        Category category = categoryService.validateCategoryType(categoryId, Type.IMAGE);
         // 카테고리 내 게시글이 1건도 없는 경우도 있으므로, 게시글과 함께 카테고리를 Join해서 데이터를 찾아오지 않는다.
-        Category category = categoryService.getById(categoryId);
+        Page<ImageType> imageTypes = imageTypeService.getPage(categoryId, pageable);
 
         ImageTypeListDto.Res resDto = ImageTypeListDto.Res.from(imageTypes, category);
         return new ResTemplate<>(HttpStatus.OK
