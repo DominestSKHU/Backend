@@ -86,7 +86,7 @@ public class UndeliveredParcelController {
     }
 
     // 게시글 상세 조회
-    @GetMapping("//posts/undelivered-parcel/{undelivParcelPostId}")
+    @GetMapping("/posts/undelivered-parcel/{undelivParcelPostId}")
     public ResTemplate<UndelivParcelPostDetailDto.Res> handleGetParcels(
             @PathVariable Long undelivParcelPostId
     ) {
