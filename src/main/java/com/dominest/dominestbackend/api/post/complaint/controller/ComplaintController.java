@@ -2,16 +2,14 @@ package com.dominest.dominestbackend.api.post.complaint.controller;
 
 import com.dominest.dominestbackend.api.common.ResTemplate;
 import com.dominest.dominestbackend.api.post.complaint.dto.CreateComplaintDto;
+import com.dominest.dominestbackend.api.post.complaint.dto.UpdateComplaintDto;
 import com.dominest.dominestbackend.domain.post.complaint.ComplaintService;
 import com.dominest.dominestbackend.domain.post.component.category.service.CategoryService;
 import com.dominest.dominestbackend.global.util.PrincipalUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 
@@ -35,4 +33,42 @@ public class ComplaintController {
                 .status(HttpStatus.CREATED)
                 .body(resTemplate);
     }
+
+    // 민원 수정
+    @PatchMapping("/complaints/{complaintId}")
+    public ResTemplate<Void> handleUpdateComplaint(
+            @PathVariable Long complaintId, @RequestBody UpdateComplaintDto.Req reqDto
+    ) {
+        // parcelId 조회, 값 바꿔치기, 저장하기
+        long updatedId = complaintService.update(complaintId, reqDto);
+
+        return new ResTemplate<>(HttpStatus.OK, updatedId + "번 민원내역 수정");
+    }
+
+    // 민원 삭제
+    @DeleteMapping("/complaints/{complaintId}")
+    public ResTemplate<Void> handleDeleteComplaint(
+            @PathVariable Long complaintId
+    ) {
+        long deleteId = complaintService.delete(complaintId);
+
+        return new ResTemplate<>(HttpStatus.OK, deleteId + "번 민원내역 삭제");
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

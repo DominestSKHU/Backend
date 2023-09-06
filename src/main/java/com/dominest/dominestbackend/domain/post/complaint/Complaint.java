@@ -52,6 +52,16 @@ public class Complaint extends BaseEntity {
         this.category = category;
     }
 
+    public void updateValues(String roomNo, String complaintCause, String complaintResolution, ProcessState processState, LocalDate date) {
+        this.roomNo = roomNo;
+        this.complaintCause = complaintCause;
+        this.complaintResolution = complaintResolution;
+        this.processState = processState;
+        this.date = date;
+    }
+
+
+
     // 처리 결과는 (접수완료, 처리중, 처리완료 중 하나)
     @RequiredArgsConstructor
     public enum ProcessState {
