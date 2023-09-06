@@ -4,7 +4,7 @@ import com.dominest.dominestbackend.api.admin.request.ChangePasswordRequest;
 import com.dominest.dominestbackend.api.admin.request.JoinRequest;
 import com.dominest.dominestbackend.api.admin.request.LoginRequest;
 import com.dominest.dominestbackend.api.admin.response.JoinResponse;
-import com.dominest.dominestbackend.api.common.ResTemplate;
+import com.dominest.dominestbackend.api.common.RspTemplate;
 import com.dominest.dominestbackend.domain.email.service.EmailVerificationService;
 import com.dominest.dominestbackend.domain.jwt.dto.TokenDto;
 import com.dominest.dominestbackend.domain.jwt.service.TokenManager;
@@ -58,26 +58,26 @@ public class UserController {
     }
 
     @PostMapping("/login") // 로그인
-    public ResTemplate<TokenDto> login(@RequestBody @Valid final LoginRequest request) {
+    public RspTemplate<TokenDto> login(@RequestBody @Valid final LoginRequest request) {
         TokenDto tokenDto = userService.loginTemp(request.getEmail(), request.getPassword());
 
-        return new ResTemplate<>(HttpStatus.OK, "로그인 성공", tokenDto);
+        return new RspTemplate<>(HttpStatus.OK, "로그인 성공", tokenDto);
     }
 
     @PostMapping("/login/short-token-exp") // 로그인
-    public ResTemplate<TokenDto> loginV2(@RequestBody @Valid final LoginRequest request) {
+    public RspTemplate<TokenDto> loginV2(@RequestBody @Valid final LoginRequest request) {
         TokenDto tokenDto = userService.login(request.getEmail(), request.getPassword());
 
-        return new ResTemplate<>(HttpStatus.OK, "로그인 성공", tokenDto);
+        return new RspTemplate<>(HttpStatus.OK, "로그인 성공", tokenDto);
     }
 
     // 로그아웃
     @PostMapping("/logout")
-    public ResTemplate<Void> logout(Principal principal) {
+    public RspTemplate<Void> logout(Principal principal) {
         // 액세스 토큰 검증은 필터에서 거치므로 바로 로그아웃 처리
         userService.logout(PrincipalUtil.toEmail(principal));
 
-        return new ResTemplate<>(HttpStatus.OK, "로그아웃 성공");
+        return new RspTemplate<>(HttpStatus.OK, "로그아웃 성공");
     }
 
 
@@ -86,7 +86,7 @@ public class UserController {
      *   refresh 토큰을 이용, access 토큰을 재발급하는 메소드
      */
     @PostMapping(value = "/token/reissue")
-    public ResTemplate<TokenDto> accessToken(HttpServletRequest httpServletRequest){
+    public RspTemplate<TokenDto> accessToken(HttpServletRequest httpServletRequest){
 
         String authorizationHeader = httpServletRequest.getHeader("Authorization");
 
@@ -95,7 +95,7 @@ public class UserController {
         String refreshToken = authorizationHeader.split(" ")[1];
         TokenDto tokenDto = userService.reassureByRefreshToken(refreshToken);
 
-        return new ResTemplate<>(HttpStatus.OK, "토큰 재발급", tokenDto);
+        return new RspTemplate<>(HttpStatus.OK, "토큰 재발급", tokenDto);
     }
 
     @GetMapping("/login-test") // accesstoken으로 유저정보 가져오기

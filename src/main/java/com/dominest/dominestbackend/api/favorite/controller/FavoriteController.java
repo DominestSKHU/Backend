@@ -1,6 +1,6 @@
 package com.dominest.dominestbackend.api.favorite.controller;
 
-import com.dominest.dominestbackend.api.common.ResTemplate;
+import com.dominest.dominestbackend.api.common.RspTemplate;
 import com.dominest.dominestbackend.api.favorite.dto.FavoriteListDto;
 import com.dominest.dominestbackend.domain.favorite.Favorite;
 import com.dominest.dominestbackend.domain.favorite.FavoriteService;
@@ -24,23 +24,23 @@ public class FavoriteController {
 
     // 즐겨찾기 추가 / 취소
     @PostMapping("/categories/{categoryId}/favorites")
-    public ResTemplate<String>  handleAddOrUndoFavorite(@PathVariable Long categoryId, Principal principal) {
+    public RspTemplate<String> handleAddOrUndoFavorite(@PathVariable Long categoryId, Principal principal) {
 
         boolean isOn = favoriteService.addOrUndo(categoryId, PrincipalUtil.toEmail(principal));
 
         String resMsg = isOn ? "즐겨찾기 추가" : "즐겨찾기 취소";
-        return new ResTemplate<>(HttpStatus.OK, resMsg);
+        return new RspTemplate<>(HttpStatus.OK, resMsg);
     }
 
     // 토큰을 소유한 유저의 즐찾목록 전체 조회
     @GetMapping("/favorites")
-    public ResTemplate<FavoriteListDto.Res> handleGetAllFavorites(@NotNull(message = "인증 정보가 없습니다.") Principal principal) {
+    public RspTemplate<FavoriteListDto.Res> handleGetAllFavorites(@NotNull(message = "인증 정보가 없습니다.") Principal principal) {
 
         Sort sort = Sort.by(Sort.Direction.DESC, "lastModifiedTime");
         List<Favorite> favorites = favoriteService.getAllByUserEmail(PrincipalUtil.toEmail(principal), sort);
 
         FavoriteListDto.Res resDto = FavoriteListDto.Res.from(favorites);
-        return new ResTemplate<>(HttpStatus.OK, "즐겨찾기 목록 조회"
+        return new RspTemplate<>(HttpStatus.OK, "즐겨찾기 목록 조회"
                 , resDto);
     }
 }
