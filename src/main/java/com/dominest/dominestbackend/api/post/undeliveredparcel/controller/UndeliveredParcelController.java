@@ -111,7 +111,6 @@ public class UndeliveredParcelController {
     public ResTemplate<Void> handleDeleteParcel(
             @PathVariable Long undelivParcelId
     ) {
-        // parcelId 조회, 값 바꿔치기, 저장하기
         long deleteId = undeliveredParcelService.delete(undelivParcelId);
 
         return new ResTemplate<>(HttpStatus.OK, deleteId + "번 관리물품 삭제");

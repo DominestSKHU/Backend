@@ -40,7 +40,14 @@ public class UndeliveredParcelService {
     @Transactional
     public long update(Long undelivParcelId, UpdateUndelivParcelDto.Req reqDto) {
         UndeliveredParcel undelivParcel = getById(undelivParcelId);
-        return reqDto.updateEntity(undelivParcel);
+        undelivParcel.updateValues(
+                reqDto.getRecipientName()
+                , reqDto.getRecipientPhoneNum()
+                , reqDto.getInstruction()
+                , reqDto.getProcessState()
+        );
+
+        return undelivParcel.getId();
     }
 
     public UndeliveredParcel getById(Long undelivParcelId) {
