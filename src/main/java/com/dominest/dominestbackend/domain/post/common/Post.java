@@ -25,8 +25,7 @@ public abstract class Post extends BaseEntity {
     @Column(nullable = false)
     private String title;
     /*작성자의 이름이다. String으로 작성자이름만 넣을까 했으나,
-      토큰 인증방식이라 '상태'를 서버에서 관리할 수 없어, 삭제된 사용자의 정보가 들어갈 가능성이 있으므로
-      User 객체를 넣어 외래키 연관관계를 맺도록 함.*/
+      사용자를 특정할 수 있는 ID를 넣어야 하므로 User 객체를 넣어 외래키 연관관계를 맺도록 함.*/
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, name = "writer_id")
     private User writer;

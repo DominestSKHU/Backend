@@ -35,7 +35,6 @@ public class UndeliveredParcelController {
     public ResponseEntity<ResTemplate<Void>> handleCreateParcelPost(
             @PathVariable Long categoryId, Principal principal
     ) {
-        // 이미지 저장
         String email = PrincipalUtil.toEmail(principal);
         long unDeliParcelId = undelivParcelPostService.create(categoryId, email);
         ResTemplate<Void> resTemplate = new ResTemplate<>(HttpStatus.CREATED, unDeliParcelId + "번 게시글 작성");
