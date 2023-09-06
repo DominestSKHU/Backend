@@ -16,6 +16,7 @@ import com.dominest.dominestbackend.global.util.PrincipalUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -50,10 +51,11 @@ public class UndeliveredParcelController {
             @PathVariable Long categoryId, @RequestParam(defaultValue = "1") int page
     ) {
         final int IMAGE_TYPE_PAGE_SIZE = 20;
-        Pageable pageable = PageableUtil.of(page, IMAGE_TYPE_PAGE_SIZE);
+        Sort sort = Sort.by(Sort.Direction.DESC, "id");
+        Pageable pageable = PageableUtil.of(page, IMAGE_TYPE_PAGE_SIZE, sort);
 
         Category category = categoryService.validateCategoryType(categoryId, Type.UNDELIVERED_PARCEL_REGISTER);
-        Page<UndeliveredParcelPost> postsPage = undelivParcelPostService.getPage(categoryId, pageable);
+        Page<UndeliveredParcelPost> postsPage = undelivParcelPostService.getPage(category.getId(), pageable);
 
         UndelivParcelPostListDto.Res resDto = UndelivParcelPostListDto.Res.from(postsPage, category);
         return new RspTemplate<>(HttpStatus.OK

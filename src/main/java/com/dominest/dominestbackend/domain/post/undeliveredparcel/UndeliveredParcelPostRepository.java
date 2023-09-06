@@ -9,8 +9,7 @@ import org.springframework.data.repository.query.Param;
 public interface UndeliveredParcelPostRepository extends JpaRepository<UndeliveredParcelPost, Long> {
 
     @Query(value = "SELECT p FROM UndeliveredParcelPost p" +
-            " WHERE p.category.id = :categoryId" +
-            " ORDER BY p.id DESC"
+            " WHERE p.category.id = :categoryId"
             , countQuery = "SELECT count(p) FROM UndeliveredParcelPost p WHERE p.category.id = :categoryId")
     Page<UndeliveredParcelPost> findAllByCategory(@Param("categoryId") Long categoryId, Pageable pageable);
 
