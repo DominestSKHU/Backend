@@ -21,11 +21,17 @@ public class Complaint extends BaseEntity {
     @Column(nullable = false)
     private String roomNo; // 호수
     @Column(nullable = false)
-    private LocalDate date; // 민원접수일자
-    @Column(nullable = false)
     private String complaintCause; // 민원내역. FtIdx 만들어야 함.
     @Column(nullable = false)
     private String complaintResolution; // 민원처리내역. FtIdx 만들어야 함.
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private ProcessState processState; // 처리상태
+
+    @Column(nullable = false)
+    private LocalDate date; // 민원접수일자
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, name = "writer_id")
@@ -36,11 +42,12 @@ public class Complaint extends BaseEntity {
     private Category category;
 
     @Builder
-    private Complaint(String roomNo, LocalDate date, String complaintCause, String complaintResolution, User writer, Category category) {
+    private Complaint(String roomNo, String complaintCause, String complaintResolution, ProcessState processState, LocalDate date, User writer, Category category) {
         this.roomNo = roomNo;
-        this.date = date;
         this.complaintCause = complaintCause;
         this.complaintResolution = complaintResolution;
+        this.processState = processState;
+        this.date = date;
         this.writer = writer;
         this.category = category;
     }
