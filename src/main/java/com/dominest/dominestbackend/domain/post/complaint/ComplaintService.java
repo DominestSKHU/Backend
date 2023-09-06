@@ -10,6 +10,8 @@ import com.dominest.dominestbackend.domain.user.service.UserService;
 import com.dominest.dominestbackend.global.exception.ErrorCode;
 import com.dominest.dominestbackend.global.util.EntityUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -57,6 +59,10 @@ public class ComplaintService {
         Complaint complaint = getById(complaintId);
         complaintRepository.delete(complaint);
         return complaint.getId();
+    }
+
+    public Page<Complaint> getPage(Long categoryId, Pageable pageable) {
+        return complaintRepository.findAllByCategoryId(categoryId, pageable);
     }
 }
 

@@ -19,7 +19,7 @@ public class Complaint extends BaseEntity {
     private Long id;
 
     @Column(nullable = false)
-    private String roomNo; // 호수
+    private String roomNo; // 호실
     @Column(nullable = false)
     private String complaintCause; // 민원내역. FtIdx 만들어야 함.
     @Column(nullable = false)
