@@ -1,4 +1,6 @@
 spring:
+
+
   profiles:
     active:
   servlet:
@@ -8,11 +10,11 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create
+    defer-datasource-initialization: true
+  sql:
+    init:
+      mode: always
 
-jwt:
-  secret: ${token.secret}
-  access-token-expiration-time: ${token.access-token-expiration-time}
-  refresh-token-expiration-time: ${token.refresh-token-expiration-time}
 
   mail:
     host: smtp.naver.com #smtp
@@ -32,4 +34,11 @@ jwt:
           ssl:
             trust: smtp.naver.com
             enable: true
+
+jwt:
+  secret: ${token.secret}
+  access-token-expiration-time: ${token.access-token-expiration-time}
+  refresh-token-expiration-time: ${token.refresh-token-expiration-time}
+
+
 
