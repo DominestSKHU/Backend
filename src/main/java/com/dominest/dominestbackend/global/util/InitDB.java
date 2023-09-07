@@ -3,6 +3,8 @@ package com.dominest.dominestbackend.global.util;
 
 import com.dominest.dominestbackend.domain.favorite.Favorite;
 import com.dominest.dominestbackend.domain.favorite.FavoriteRepository;
+import com.dominest.dominestbackend.domain.post.complaint.Complaint;
+import com.dominest.dominestbackend.domain.post.complaint.ComplaintRepository;
 import com.dominest.dominestbackend.domain.post.component.category.Category;
 import com.dominest.dominestbackend.domain.post.component.category.component.Type;
 import com.dominest.dominestbackend.domain.post.component.category.repository.CategoryRepository;
@@ -21,6 +23,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -35,6 +38,7 @@ public class InitDB {
     private final FavoriteRepository favoriteRepository;
     private final UndeliveredParcelPostRepository undelivParcelPostRepository;
     private final UndeliveredParcelRepository undelivParcelRepository;
+    private final ComplaintRepository complaintRepository;
 
     @Transactional
     @PostConstruct
@@ -124,7 +128,7 @@ public class InitDB {
             ImageType imageType = ImageType.builder()
                     .title("title" + i)
                     .writer(user)
-                    .category(category2)
+                    .category(categories.get(2)) // 3번 카테고리
                     .build();
             imageTypes.add(imageType);
         }
@@ -139,6 +143,22 @@ public class InitDB {
             favorites.add(favorite);
         }
         favoriteRepository.saveAll(favorites);
+
+        ArrayList<Complaint> complaints = new ArrayList<>();
+        int complaintCount = 23;
+        for (int i = 1; i <= complaintCount; i++) {
+            Complaint complaint = Complaint.builder()
+                    .roomNo("101")
+                    .complaintCause("난방 불가")
+                    .complaintResolution("난방 수으리 완무료")
+                    .processState(Complaint.ProcessState.PROCESSING)
+                    .date(LocalDate.now())
+                    .writer(user)
+                    .category(category2)
+                    .build();
+            complaints.add(complaint);
+        }
+        complaintRepository.saveAll(complaints);
     }
     private String createTitle() {
         // 원하는 형식의 문자열로 변환

@@ -10,10 +10,14 @@ import com.dominest.dominestbackend.domain.user.service.UserService;
 import com.dominest.dominestbackend.global.exception.ErrorCode;
 import com.dominest.dominestbackend.global.util.EntityUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+
+import javax.persistence.EntityManager;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -22,6 +26,14 @@ public class ComplaintService {
     private final ComplaintRepository complaintRepository;
     private final UserService userService;
     private final CategoryService categoryService;
+
+    private EntityManager em;
+
+    @Autowired
+    public void setEm(EntityManager em) {
+        this.em = em;
+    }
+
 
     @Transactional
     public long create(CreateComplaintDto.Req reqDto, Long categoryId, String email) {
@@ -61,9 +73,18 @@ public class ComplaintService {
         return complaint.getId();
     }
 
-    public Page<Complaint> getPage(Long categoryId, Pageable pageable) {
+    public Page<Complaint> getPage(Long categoryId, Pageable pageable, String complSchText, String roomNoSch) {
+        if (StringUtils.hasText(roomNoSch)) {
+            return complaintRepository.findAllByCategoryIdAndRoomNo(categoryId, roomNoSch, pageable);
+        }
+
+        if (StringUtils.hasText(complSchText)) {
+            return complaintRepository.findAllByCategoryIdSearch(categoryId, complSchText + "*", pageable);
+        }
         return complaintRepository.findAllByCategoryId(categoryId, pageable);
     }
+
+
 }
 
 

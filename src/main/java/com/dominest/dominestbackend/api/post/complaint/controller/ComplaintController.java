@@ -68,13 +68,16 @@ public class ComplaintController {
     @GetMapping("/categories/{categoryId}/posts/complaint")
     public RspTemplate<ComplaintListDto.Res> handleGetParcelPosts(
             @PathVariable Long categoryId, @RequestParam(defaultValue = "1") int page
+            , @RequestParam(required = false) String roomNoSch
+            , @RequestParam(required = false) String complSchText
     ) {
         final int COMPLAINT_TYPE_PAGE_SIZE = 20;
         Sort sort = Sort.by(Sort.Direction.DESC, "id");
         Pageable pageable = PageableUtil.of(page, COMPLAINT_TYPE_PAGE_SIZE, sort);
 
         Category category = categoryService.validateCategoryType(categoryId, Type.COMPLAINT);
-        Page<Complaint> complaintPage = complaintService.getPage(category.getId(), pageable);
+
+        Page<Complaint> complaintPage = complaintService.getPage(category.getId(), pageable, complSchText, roomNoSch);
 
         ComplaintListDto.Res resDto = ComplaintListDto.Res.from(complaintPage, category);
         return new RspTemplate<>(HttpStatus.OK
@@ -82,7 +85,6 @@ public class ComplaintController {
                 ,resDto);
     }
 
-    //
 }
 
 
