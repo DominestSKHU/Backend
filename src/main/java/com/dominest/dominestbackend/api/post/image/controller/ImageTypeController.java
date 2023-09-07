@@ -1,6 +1,6 @@
 package com.dominest.dominestbackend.api.post.image.controller;
 
-import com.dominest.dominestbackend.api.common.ResTemplate;
+import com.dominest.dominestbackend.api.common.RspTemplate;
 import com.dominest.dominestbackend.api.post.image.dto.ImageTypeDetailDto;
 import com.dominest.dominestbackend.api.post.image.dto.ImageTypeListDto;
 import com.dominest.dominestbackend.api.post.image.dto.SaveImageTypeDto;
@@ -41,16 +41,16 @@ public class ImageTypeController {
     //  3. url 리스트
     // 이미지 게시물 작성
     @PostMapping("/categories/{categoryId}/posts/image-types")
-    public ResponseEntity<ResTemplate<Void>> handleCreateImageType(@Valid SaveImageTypeDto.Req reqDto
+    public ResponseEntity<RspTemplate<Void>> handleCreateImageType(@Valid SaveImageTypeDto.Req reqDto
                                                                                 , @PathVariable Long categoryId, Principal principal) {
         // 이미지 저장
         String email = PrincipalUtil.toEmail(principal);
         long imageTypeId = imageTypeService.create(reqDto, categoryId, email);
-        ResTemplate<Void> resTemplate = new ResTemplate<>(HttpStatus.CREATED, imageTypeId + "번 게시글 작성");
+        RspTemplate<Void> rspTemplate = new RspTemplate<>(HttpStatus.CREATED, imageTypeId + "번 게시글 작성");
 
         return ResponseEntity
                 .created(URI.create("/posts/image-types/" + imageTypeId))
-                .body(resTemplate);
+                .body(rspTemplate);
     }
 
     /**
@@ -59,23 +59,23 @@ public class ImageTypeController {
      *  최초 생성자 이름은 유지하지만, 수정 시 권한을 체크하지 않고 수정자 이름만 변경한다.
      */
     @PatchMapping("/posts/image-types/{imageTypeId}")
-    public ResTemplate<Void> handleUpdateImageType(@PathVariable Long imageTypeId
+    public RspTemplate<Void> handleUpdateImageType(@PathVariable Long imageTypeId
                                                                                         , @Valid SaveImageTypeDto.Req reqDto) {
         long updatedImageTypeId = imageTypeService.update(reqDto, imageTypeId);
-        return new ResTemplate<>(HttpStatus.OK, updatedImageTypeId + "번 게시글 수정");
+        return new RspTemplate<>(HttpStatus.OK, updatedImageTypeId + "번 게시글 수정");
     }
 
     /**
      *  게시글 삭제. 권한을 체크하지 않는다.
      */
     @DeleteMapping("/posts/image-types/{imageTypeId}")
-    public ResTemplate<Void> handleUpdateImageType(@PathVariable Long imageTypeId) {
+    public RspTemplate<Void> handleUpdateImageType(@PathVariable Long imageTypeId) {
         ImageType imageType = imageTypeService.deleteById(imageTypeId);
 
         List<String> imageUrlsToDelete = imageType.getImageUrls();
         fileService.deleteFile(FileService.FilePrefix.POST_IMAGE_TYPE, imageUrlsToDelete);
 
-        return new ResTemplate<>(HttpStatus.OK, imageType.getId() + "번 게시글 삭제");
+        return new RspTemplate<>(HttpStatus.OK, imageType.getId() + "번 게시글 삭제");
     }
 
     // 게시물 이미지 조회
@@ -94,20 +94,20 @@ public class ImageTypeController {
 
     // 게시물 단건 조회
     @GetMapping("/categories/{categoryId}/posts/image-types/{imageTypeId}")
-    public ResTemplate<ImageTypeDetailDto.Res> handleGetImageType(
+    public RspTemplate<ImageTypeDetailDto.Res> handleGetImageType(
             @PathVariable Long categoryId, @PathVariable Long imageTypeId
     ) {
         ImageType imageType = imageTypeService.getById(imageTypeId);
 
         ImageTypeDetailDto.Res resDto = ImageTypeDetailDto.Res.from(imageType);
-        return new ResTemplate<>(HttpStatus.OK
+        return new RspTemplate<>(HttpStatus.OK
                 , imageTypeId+"번 게시물  조회 성공"
                 , resDto);
     }
 
     // 게시물 목록을 조회한다.
     @GetMapping("/categories/{categoryId}/posts/image-types")
-    public ResTemplate<ImageTypeListDto.Res> handleGetImageTypes(@PathVariable Long categoryId, @RequestParam(defaultValue = "1") int page) {
+    public RspTemplate<ImageTypeListDto.Res> handleGetImageTypes(@PathVariable Long categoryId, @RequestParam(defaultValue = "1") int page) {
         final int IMAGE_TYPE_PAGE_SIZE = 20;
         Pageable pageable = PageableUtil.of(page, IMAGE_TYPE_PAGE_SIZE);
 
@@ -116,7 +116,7 @@ public class ImageTypeController {
         Page<ImageType> imageTypes = imageTypeService.getPage(categoryId, pageable);
 
         ImageTypeListDto.Res resDto = ImageTypeListDto.Res.from(imageTypes, category);
-        return new ResTemplate<>(HttpStatus.OK
+        return new RspTemplate<>(HttpStatus.OK
                 , "페이지 게시글 목록 조회 - " + resDto.getPage().getCurrentPage() + "페이지"
                 , resDto);
     }

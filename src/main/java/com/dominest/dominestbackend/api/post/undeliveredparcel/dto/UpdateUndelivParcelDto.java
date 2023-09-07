@@ -26,13 +26,6 @@ public class UpdateUndelivParcelDto {
         String instruction;
         @NotNull(message = "처리상태는 비어있을 수 없습니다.")
         UndeliveredParcel.ProcessState processState;
-
-        public long updateEntity(UndeliveredParcel undelivParcel) {
-            undelivParcel.updateValues(
-                    this.recipientName, this.recipientPhoneNum
-                    , this.instruction, this.processState);
-            return undelivParcel.getId();
-        }
     }
 }
 

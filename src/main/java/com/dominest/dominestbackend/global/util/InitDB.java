@@ -39,25 +39,27 @@ public class InitDB {
     @Transactional
     @PostConstruct
     public void init() {
+        final String PHONE_NUM = "010-1234-5678";
+        final String PWD = "pppp";
         User user = User.builder()
                 .email("eeee@email.com")
-                .password(passwordEncoder.encode("pppp"))
+                .password(passwordEncoder.encode(PWD))
                 .name("name1")
-                .phoneNumber("010-1234-5678")
+                .phoneNumber(PHONE_NUM)
                 .role(Role.ROLE_ADMIN)
                 .build();
         User user2 = User.builder()
                 .email("eeee1@email.com")
-                .password(passwordEncoder.encode("pppp"))
+                .password(passwordEncoder.encode(PWD))
                 .name("name2")
-                .phoneNumber("010-1235-5678")
+                .phoneNumber(PHONE_NUM)
                 .role(Role.ROLE_ADMIN)
                 .build();
         User user3 = User.builder()
                 .email("eeee2@email.com")
-                .password(passwordEncoder.encode("pppp"))
+                .password(passwordEncoder.encode(PWD))
                 .name("name3")
-                .phoneNumber("010-1236-5678")
+                .phoneNumber(PHONE_NUM)
                 .role(Role.ROLE_ADMIN)
                 .build();
         userRepository.save(user);
@@ -71,6 +73,13 @@ public class InitDB {
                 .explanation("장미택관")
                 .build();
         categoryRepository.save(category1);
+
+        Category category2 = Category.builder()
+                .name("민원처리내역")
+                .type(Type.COMPLAINT)
+                .explanation("민처내")
+                .build();
+        categoryRepository.save(category2);
         
         UndeliveredParcelPost unDeliParcelPost = UndeliveredParcelPost.builder()
                 .titleWithCurrentDate(createTitle())
@@ -95,14 +104,6 @@ public class InitDB {
                 .build();
         undelivParcelRepository.save(parcel);
         undelivParcelRepository.save(parcel2);
-
-
-        Category category2 = Category.builder()
-                .name("이미지타입1")
-                .type(Type.IMAGE)
-                .explanation("explanation")
-                .build();
-        categoryRepository.save(category2);
 
 
         ArrayList<Category> categories = new ArrayList<>();

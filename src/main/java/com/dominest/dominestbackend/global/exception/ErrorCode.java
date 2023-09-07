@@ -59,6 +59,8 @@ public enum ErrorCode {
     // 미수령 택배
     UNDELIVERED_PARCEL_NOT_FOUND(404, "해당 관리물품이 존재하지 않습니다."),
 
+    // 민원내역
+    COMPLAINT_NOT_FOUND(404, "해당 민원이 존재하지 않습니다."),
     ;
     private final int statusCode;
     private final String message;
