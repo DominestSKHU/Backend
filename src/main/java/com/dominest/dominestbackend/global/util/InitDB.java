@@ -39,27 +39,26 @@ public class InitDB {
     @Transactional
     @PostConstruct
     public void init() {
-        final String PHONE_NUM = "010-1234-5678";
         final String PWD = "pppp";
         User user = User.builder()
                 .email("eeee@email.com")
                 .password(passwordEncoder.encode(PWD))
                 .name("name1")
-                .phoneNumber(PHONE_NUM)
+                .phoneNumber("010-1234-5678")
                 .role(Role.ROLE_ADMIN)
                 .build();
         User user2 = User.builder()
                 .email("eeee1@email.com")
                 .password(passwordEncoder.encode(PWD))
                 .name("name2")
-                .phoneNumber(PHONE_NUM)
+                .phoneNumber("010-1234-5679")
                 .role(Role.ROLE_ADMIN)
                 .build();
         User user3 = User.builder()
                 .email("eeee2@email.com")
                 .password(passwordEncoder.encode(PWD))
                 .name("name3")
-                .phoneNumber(PHONE_NUM)
+                .phoneNumber("010-1234-5676")
                 .role(Role.ROLE_ADMIN)
                 .build();
         userRepository.save(user);

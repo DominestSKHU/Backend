@@ -8,16 +8,12 @@ import lombok.RequiredArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class UpdateUndelivParcelDto {
     @NoArgsConstructor
     @Getter
     public static class Req {
-        @Positive(message = "id가 1보다 작습니다.")
-        @NotNull(message = "id는 비어있을 수 없습니다.")
-        Long id;
         @Length(max = 50, message = "수취인 이름은 50자를 넘을 수 없습니다.")
         String recipientName;
         @Length(max = 50, message = "수취인 전화번호는 50자를 넘을 수 없습니다.")

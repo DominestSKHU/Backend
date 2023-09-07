@@ -82,7 +82,7 @@ public class UndeliveredParcelController {
         Long undelivParcelId = undeliveredParcelService.create(undelivParcelPostId, reqDto);
 
         RspTemplate<Void> rspTemplate = new RspTemplate<>(HttpStatus.CREATED,
-                "관리대장에 " + undelivParcelId + "번 관리물품 작성");
+                undelivParcelPostId + "번 관리대장 게시글에" +  undelivParcelId + "번 관리물품 작성");
         return ResponseEntity.status(HttpStatus.CREATED).body(rspTemplate);
     }
 
@@ -98,7 +98,7 @@ public class UndeliveredParcelController {
     }
 
     // 관리물품 단건 수정
-    @PatchMapping("/undelivParcels/{undelivParcelId}")
+    @PatchMapping("/undeliv-parcels/{undelivParcelId}")
     public RspTemplate<Void> handleUpdateParcel(
             @PathVariable Long undelivParcelId, @RequestBody UpdateUndelivParcelDto.Req reqDto
     ) {
@@ -109,7 +109,7 @@ public class UndeliveredParcelController {
     }
 
     // 관리물품 단건 삭제
-    @DeleteMapping("/undelivParcels/{undelivParcelId}")
+    @DeleteMapping("/undeliv-parcels/{undelivParcelId}")
     public RspTemplate<Void> handleDeleteParcel(
             @PathVariable Long undelivParcelId
     ) {
