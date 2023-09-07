@@ -78,7 +78,7 @@ public class UndeliveredParcelController {
     // 게시글 내부 관리목록에 관리물품 등록
     @PostMapping("/posts/undelivered-parcel/{undelivParcelPostId}")
     public ResponseEntity<RspTemplate<Void>> handleCreateParcel(
-                @PathVariable Long undelivParcelPostId, @RequestBody CreateUndelivParcelDto.Req reqDto
+                @PathVariable Long undelivParcelPostId, @RequestBody @Valid CreateUndelivParcelDto.Req reqDto
             ) {
         Long undelivParcelId = undeliveredParcelService.create(undelivParcelPostId, reqDto);
 

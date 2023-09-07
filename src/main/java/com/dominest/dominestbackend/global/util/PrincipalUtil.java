@@ -11,7 +11,11 @@ public class PrincipalUtil {
         return principal.getName().split(":")[0];
     }
     public static String toName(Principal principal) {
-        return principal.getName().split(":")[1];
+        String[] splitedPrincipal = principal.getName().split(":");
+        if (splitedPrincipal.length < 2) {
+            return "anonymous";
+        }
+        return splitedPrincipal[1];
     }
 
     // Principal.toString()의 결과값 ("email:name 형태")을 파싱해서 이메일과 이름을 추출한다.
@@ -19,6 +23,10 @@ public class PrincipalUtil {
         return principalStr.split(":")[0];
     }
     public static String strToName(String principalStr) {
-        return principalStr.split(":")[1];
+        String[] splitedPrincipal = principalStr.split(":");
+        if (splitedPrincipal.length < 2) {
+            return "anonymous";
+        }
+        return splitedPrincipal[1];
     }
 }
