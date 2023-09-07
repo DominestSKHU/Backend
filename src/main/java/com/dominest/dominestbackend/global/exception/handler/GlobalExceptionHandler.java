@@ -1,5 +1,6 @@
 package com.dominest.dominestbackend.global.exception.handler;
 
+import com.dominest.dominestbackend.global.exception.ErrorCode;
 import com.dominest.dominestbackend.global.exception.dto.ErrorResponseDto;
 import com.dominest.dominestbackend.global.exception.exceptions.AppServiceException;
 import com.dominest.dominestbackend.global.exception.exceptions.BusinessException;
@@ -7,6 +8,7 @@ import com.dominest.dominestbackend.global.util.LoggingUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -17,8 +19,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-;
 
 @Slf4j
 @RestControllerAdvice
@@ -66,6 +66,12 @@ public class GlobalExceptionHandler {
         return createErrorResponse(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
+    @ExceptionHandler({HttpMessageNotReadableException.class})
+    public ResponseEntity<ErrorResponseDto<String>> handleInvalidFormatException(HttpMessageNotReadableException e, HttpServletRequest request){
+        printLog(e, request);
+        return createErrorResponse(ErrorCode.HTTP_MESSAGE_NOT_READABLE);
+    }
+
     // BusinessException 을 상속한 다른 Custom Exception 에도 적용된다.
     @ExceptionHandler({BusinessException.class})
     public ResponseEntity<ErrorResponseDto<String>> handleBusinessException(BusinessException e, HttpServletRequest request){
@@ -82,7 +88,7 @@ public class GlobalExceptionHandler {
 
     // 예상하지 못한 예외 발생 시, 예외 로그 전체를 서버에 남기고, 로그 자체를 모두 클라이언트에 전송한다.
     // TODO 실제 서비스 시  전체 로그 클라이언트에 전송하지 않는다.
-    //  즉 CreateErrorResponseDto 에서 stackTrace 를 빼고 getMessage 정도만 보낸다.
+    //  즉 CreateErrorResponseDto 에서 stackTrace 를 빼고 '알 수 없는 에러' 를 반환한다.
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDto<String>> handleException(Exception e, HttpServletRequest request){
         HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
@@ -96,6 +102,17 @@ public class GlobalExceptionHandler {
 
     private <T> ResponseEntity<ErrorResponseDto<T>> createErrorResponse(int statusCode, HttpStatus httpStatus, T errorMessage) {
         ErrorResponseDto<T> errDto = new ErrorResponseDto<>(statusCode, httpStatus, errorMessage);
+        return ResponseEntity.status(httpStatus).body(errDto);
+    }
+
+    private ResponseEntity<ErrorResponseDto<String>> createErrorResponse(ErrorCode errorCode) {
+        int statusCode = errorCode.getStatusCode();
+        HttpStatus httpStatus = HttpStatus.valueOf(statusCode);
+
+        ErrorResponseDto<String> errDto = new ErrorResponseDto<>(
+                statusCode
+                , httpStatus
+                , errorCode.getMessage());
         return ResponseEntity.status(httpStatus).body(errDto);
     }
 

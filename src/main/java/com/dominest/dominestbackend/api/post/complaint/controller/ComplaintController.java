@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.security.Principal;
 
 @RequiredArgsConstructor
@@ -30,7 +31,7 @@ public class ComplaintController {
     // 민원 등록
     @PostMapping("/categories/{categoryId}/posts/complaint")
     public ResponseEntity<RspTemplate<Void>> handleCreateComplaint(
-            @RequestBody CreateComplaintDto.Req reqDto
+            @RequestBody @Valid CreateComplaintDto.Req reqDto
             , @PathVariable Long categoryId, Principal principal
     ) {
         String email = PrincipalUtil.toEmail(principal);
@@ -45,7 +46,7 @@ public class ComplaintController {
     // 민원 수정
     @PatchMapping("/complaints/{complaintId}")
     public RspTemplate<Void> handleUpdateComplaint(
-            @PathVariable Long complaintId, @RequestBody UpdateComplaintDto.Req reqDto
+            @PathVariable Long complaintId, @RequestBody @Valid UpdateComplaintDto.Req reqDto
     ) {
         // parcelId 조회, 값 바꿔치기, 저장하기
         long updatedId = complaintService.update(complaintId, reqDto);

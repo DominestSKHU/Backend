@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
 import java.time.LocalDate;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -16,9 +15,6 @@ public class UpdateComplaintDto {
     @NoArgsConstructor
     @Getter
     public static class Req {
-        @NotNull(message = "id는 비어있을 수 없습니다.")
-        @Positive(message = "id가 1보다 작습니다.")
-        private Long id;
         @NotBlank(message = "기숙사 방 번호를 입력해주세요.")
         private String roomNo; // N호실
 

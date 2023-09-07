@@ -5,6 +5,9 @@ import lombok.Getter;
 @Getter
 public enum ErrorCode {
 
+    // Jackson 파싱
+    HTTP_MESSAGE_NOT_READABLE(400, "요청값을 읽어들이지 못했습니다. 형식을 확인해 주세요."),
+
     // 이메일
     EMAIL_VERIFICATION_CODE_MISMATCHED(400, "이메일 인증 코드가 일치하지 않습니다."),
     EMAIL_ALREADY_REGISTERED(409, "이미 가입된 이메일입니다."),

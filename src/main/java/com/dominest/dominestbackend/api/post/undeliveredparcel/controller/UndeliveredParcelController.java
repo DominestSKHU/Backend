@@ -21,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.security.Principal;
 
@@ -100,7 +101,7 @@ public class UndeliveredParcelController {
     // 관리물품 단건 수정
     @PatchMapping("/undeliv-parcels/{undelivParcelId}")
     public RspTemplate<Void> handleUpdateParcel(
-            @PathVariable Long undelivParcelId, @RequestBody UpdateUndelivParcelDto.Req reqDto
+            @PathVariable Long undelivParcelId, @RequestBody @Valid UpdateUndelivParcelDto.Req reqDto
     ) {
         // parcelId 조회, 값 바꿔치기, 저장하기
         long updatedId = undeliveredParcelService.update(undelivParcelId, reqDto);
