@@ -1,6 +1,7 @@
 package com.dominest.dominestbackend.domain.post.component.category;
 
 import com.dominest.dominestbackend.domain.common.BaseEntity;
+import com.dominest.dominestbackend.domain.favorite.Favorite;
 import com.dominest.dominestbackend.domain.post.component.category.component.Type;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -8,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -30,6 +33,8 @@ public class Category extends BaseEntity {
     @Column(nullable = false)
     private Integer orderKey;   // 정렬 기준
 
+    @OneToMany(mappedBy = "category", cascade = CascadeType.REMOVE)
+    private List<Favorite> favorites = new ArrayList<>();
     @Builder
     public Category(String name, Type type, String explanation, Integer orderKey) {
         this.name = name;
