@@ -10,6 +10,7 @@ import com.dominest.dominestbackend.domain.post.component.category.repository.Ca
 import com.dominest.dominestbackend.domain.post.component.category.service.CategoryService;
 import com.dominest.dominestbackend.global.util.PrincipalUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,10 +29,12 @@ public class CategoryController {
     private final CategoryRepository categoryRepository;
 
     // 카테고리 관리페이지 목록 조회, orderKey ASC로 조회.
+    // 페이지네이션 하지 않음.
     @GetMapping("/categories")
     public RspTemplate<CategoryListDto.Res> handleGetCategoryList() {
+        Sort sort = Sort.by("orderKey");
+        List<Category> categories = categoryRepository.findAll(sort);
 
-        List<Category> categories = categoryRepository.findAll();
         CategoryListDto.Res resDto = CategoryListDto.Res.from(categories);
         return new RspTemplate<>(HttpStatus.OK, "카테고리 조회 성공", resDto);
     }
