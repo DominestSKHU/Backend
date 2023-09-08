@@ -29,4 +29,6 @@ public interface ComplaintRepository extends JpaRepository<Complaint, Long> {
             , countQuery = "SELECT count(c) FROM Complaint c WHERE c.category.id = :categoryId AND c.roomNo = :roomNoSch"
     )
     Page<Complaint> findAllByCategoryIdAndRoomNo(@Param("categoryId") Long categoryId, @Param("roomNoSch") String roomNoSch, Pageable pageable);
+
+    void deleteByCategoryId(Long categoryId);
 }
