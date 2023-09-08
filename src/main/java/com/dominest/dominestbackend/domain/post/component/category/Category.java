@@ -12,10 +12,6 @@ import javax.persistence.*;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@Table(indexes = {
-        @Index(name = "idx_category_orderKey"
-                    , columnList = "order_key, type, name, id, explanation") // covering index
-        })
 public class Category extends BaseEntity {
 
     @Id
@@ -46,7 +42,10 @@ public class Category extends BaseEntity {
         return  "/categories/" + getId() + "/posts/" + getType().getUrl();
     }
 
-    public void updateCategory(String updatedCategoryName) {
-        this.name = updatedCategoryName;
+    // update name, explanation, orderKey
+    public void updateValues(String name, String explanation, Integer orderKey) {
+        this.name = name;
+        this.explanation = explanation;
+        this.orderKey = orderKey;
     }
 }

@@ -26,7 +26,8 @@ public class CategoryListDto {
         @Builder
         @Getter
         private static class CategoryDto{
-            Long id;
+            long id;
+            int orderKey;
             String name; // 카테고리 이름
             Type type;
             String explanation; // 카테고리 상세설명
@@ -35,6 +36,7 @@ public class CategoryListDto {
             static CategoryDto from(Category category) {
                 return CategoryDto.builder()
                         .id(category.getId())
+                        .orderKey(category.getOrderKey())
                         .name(category.getName())
                         .type(category.getType())
                         .explanation(category.getExplanation())

@@ -17,4 +17,7 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     @Query("SELECT COALESCE(MAX(c.orderKey) + 1, 1) FROM Category c")
     Integer getNewOrderKey();
+
+    @Query("SELECT c.orderKey FROM Category c")
+    List<Integer> findAllOrderKey();
 }

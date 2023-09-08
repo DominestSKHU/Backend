@@ -45,7 +45,9 @@ public class CategoryController {
         // 즐찾목록 다 조회해서 카테고리 ID들을 찾아낸다.
         // 찾아낸 카테고리 ID들과 전체 카테고리 목록 중 일치하는 것들은 즐겨찾기가 되어있는 것이다.
         List<Long> categoryIdsFromFavorites = categoryService.getIdAllByUserEmail(PrincipalUtil.toEmail(principal));
-        List<Category> categories = categoryRepository.findAll();
+
+        Sort sort = Sort.by("orderKey");
+        List<Category> categories = categoryRepository.findAll(sort);
 
         CategoryListWithFavoriteDto.Res resDto = CategoryListWithFavoriteDto.Res.from(categories, categoryIdsFromFavorites);
         return new RspTemplate<>(HttpStatus.OK, "카테고리 조회 성공", resDto);
@@ -67,17 +69,15 @@ public class CategoryController {
     }
 
     @PutMapping("/categories") // 카테고리 수정
-    public RspTemplate<String> updateCategories(@RequestBody @Valid final List<CategoryUpdateRequest> requests) throws Exception {
-
-        for (CategoryUpdateRequest request : requests) {
-            categoryService.update(request.getId(), request.getCategoryName());
-        }
-        return new RspTemplate<>(HttpStatus.OK, "카테고리 수정 성공");
+    public RspTemplate<String> updateCategories(@RequestBody @Valid final CategoryUpdateRequest reqDto
+    ) {
+        int updateCount = categoryService.update(reqDto);
+        return new RspTemplate<>(HttpStatus.OK
+                , updateCount + "개의 카테고리 변경 요청 성공");
     }
 
     @DeleteMapping("/categories/{id}") // 카테고리 삭제
     public RspTemplate<String> deleteCategory(@PathVariable Long id) {
-
         categoryService.deleteById(id);
         return new RspTemplate<>(HttpStatus.OK, id +"번 카테고리 삭제 성공");
     }

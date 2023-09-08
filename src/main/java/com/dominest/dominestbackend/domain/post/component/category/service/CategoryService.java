@@ -1,8 +1,12 @@
 package com.dominest.dominestbackend.domain.post.component.category.service;
 
+import com.dominest.dominestbackend.api.category.request.CategoryUpdateRequest;
+import com.dominest.dominestbackend.domain.post.complaint.ComplaintRepository;
 import com.dominest.dominestbackend.domain.post.component.category.Category;
 import com.dominest.dominestbackend.domain.post.component.category.component.Type;
 import com.dominest.dominestbackend.domain.post.component.category.repository.CategoryRepository;
+import com.dominest.dominestbackend.domain.post.image.ImageTypeRepository;
+import com.dominest.dominestbackend.domain.post.undeliveredparcel.UndeliveredParcelPostRepository;
 import com.dominest.dominestbackend.global.exception.ErrorCode;
 import com.dominest.dominestbackend.global.exception.exceptions.BusinessException;
 import com.dominest.dominestbackend.global.util.EntityUtil;
@@ -12,14 +16,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 
 @Service
 @RequiredArgsConstructor
 public class CategoryService {
     private final CategoryRepository categoryRepository;
+    private final ImageTypeRepository imageTypeRepository;
+    private final UndeliveredParcelPostRepository undeliveredParcelPostRepository;
+    private final ComplaintRepository complaintRepository;
 
     @Transactional
     public Category create(String categoryName, Type categoryType, String explanation) {
@@ -38,28 +44,32 @@ public class CategoryService {
         }
     }
 
+    /**
+     * @return 변경 요청이 들어온 카테고리의 개수
+     */
     @Transactional
-    public void update(Long id, String categoryName) throws Exception {
-        Optional<Category> optionalCategory = categoryRepository.findById(id);
+    public int update(CategoryUpdateRequest reqDto) {
+        // forEach, update
+        reqDto.getCategories().forEach(
+                categoryDto -> {
+            Category category = EntityUtil.mustNotNull(categoryRepository.findById(categoryDto.getId()), ErrorCode.CATEGORY_NOT_FOUND);
+            category.updateValues(categoryDto.getCategoryName(), categoryDto.getExplanation(), categoryDto.getOrderKey());
+            }
+        );
 
-        if (optionalCategory.isEmpty()) {
-            throw new Exception("찾을 수 업서");
-        }
+        // 중복 체크, 조회 시점에서 flush 되었을 것.
+        List<Integer> orderKeys = categoryRepository.findAllOrderKey();
+        Set<Integer> set = new HashSet<>();
 
-        Category category = optionalCategory.get();
-        category.updateCategory(categoryName);
-    }
+        orderKeys.forEach(key -> {
+            // If this set already contains the element, the call leaves the set unchanged and returns false
+            // nullable false. orderKeys에 null 없음
+            if (!set.add(key)) {
+                throw new BusinessException(ErrorCode.CATEGORY_ORDER_KEY_DUPLICATED);
+            }
+        });
 
-    @Transactional
-    public void deleteCategory(Long categoryId) throws Exception {
-        Optional<Category> optionalCategory = categoryRepository.findById(categoryId);
-
-        if (optionalCategory.isEmpty()) {
-            throw new Exception("삭제할 카테고리가 존재하지 않습니다.");
-        }
-
-        Category category = optionalCategory.get();
-        categoryRepository.delete(category);
+        return reqDto.getCategories().size();
     }
 
     public Category getById(Long categoryId) {
@@ -73,7 +83,21 @@ public class CategoryService {
 
     @Transactional
     public void deleteById(Long categoryId) {
-        categoryRepository.deleteById(categoryId);
+        Category category = EntityUtil.mustNotNull(categoryRepository.findById(categoryId), ErrorCode.CATEGORY_NOT_FOUND);
+
+        deletePosts(categoryId, category.getType()); // 카테고리를 참조하는 연관 게시글 함께 삭제
+
+        categoryRepository.delete(category);
+    }
+
+    private void deletePosts(Long categoryId, Type type) {
+        if (Type.IMAGE.equals(type)) {
+            imageTypeRepository.deleteByCategoryId(categoryId);
+        } else if (Type.UNDELIVERED_PARCEL_REGISTER.equals(type)) {
+            undeliveredParcelPostRepository.deleteByCategoryId(categoryId);
+        } else if (Type.COMPLAINT.equals(type)) {
+            complaintRepository.deleteByCategoryId(categoryId);
+        }
     }
 
     public Category validateCategoryType(Long categoryId, Type type) {
