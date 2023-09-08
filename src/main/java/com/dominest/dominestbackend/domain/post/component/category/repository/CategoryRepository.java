@@ -14,4 +14,10 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
             " WHERE u.email = :email AND f.onOff = true")
         // userEmail은 조회결과가 아니라 조건이므로 Fetch하지 않아도 될 듯?
     List<Long> findIdAllByUserEmailFetchCategory(@Param("email") String email);
+
+    @Query("SELECT COALESCE(MAX(c.orderKey) + 1, 1) FROM Category c")
+    Integer getNewOrderKey();
+
+    @Query("SELECT c.orderKey FROM Category c")
+    List<Integer> findAllOrderKey();
 }

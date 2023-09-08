@@ -20,4 +20,6 @@ public interface ImageTypeRepository extends JpaRepository<ImageType, Long> {
             " LEFT JOIN FETCH i.imageUrls" +
             " WHERE i.id = :imageTypeId")
     ImageType findByIdFetchImageUrls(@Param("imageTypeId") Long imageTypeId);
+
+    void deleteByCategoryId(Long categoryId);
 }

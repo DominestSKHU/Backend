@@ -53,6 +53,7 @@ public enum ErrorCode {
     // 카테고리
     CATEGORY_NOT_FOUND(404, "해당 카테고리가 존재하지 않습니다."),
     CATEGORY_TYPE_MISMATCHED(400, "해당 카테고리의 타입이 일치하지 않습니다."),
+    CATEGORY_ORDER_KEY_DUPLICATED(400, "카테고리의 orderKey가 중복됩니다."),
     // 게시글 공통
     POST_NOT_FOUND(404, "해당 게시글이 존재하지 않습니다."),
 
@@ -65,6 +66,9 @@ public enum ErrorCode {
     // 민원내역
     COMPLAINT_NOT_FOUND(404, "해당 민원이 존재하지 않습니다."),
     ;
+
+
+
     private final int statusCode;
     private final String message;
 

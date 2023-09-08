@@ -74,6 +74,7 @@ public class InitDB {
                 .name("장기 미수령 택배 관리대장")
                 .type(Type.UNDELIVERED_PARCEL_REGISTER)
                 .explanation("장미택관")
+                .orderKey(1)
                 .build();
         categoryRepository.save(category1);
 
@@ -81,6 +82,7 @@ public class InitDB {
                 .name("민원처리내역")
                 .type(Type.COMPLAINT)
                 .explanation("민처내")
+                .orderKey(2)
                 .build();
         categoryRepository.save(category2);
         
@@ -116,6 +118,7 @@ public class InitDB {
                     .name("categoryName" + i)
                     .type(Type.IMAGE)
                     .explanation("explanation")
+                    .orderKey(categoryCount + i)
                     .build();
             categories.add(category);
         }

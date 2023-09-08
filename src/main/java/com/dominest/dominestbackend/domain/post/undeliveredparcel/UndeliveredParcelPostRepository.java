@@ -17,4 +17,6 @@ public interface UndeliveredParcelPostRepository extends JpaRepository<Undeliver
             " LEFT JOIN FETCH p.undelivParcels" +
             " WHERE p.id = :postId")
     UndeliveredParcelPost findByIdFetchParcels(@Param("postId") Long undelivParcelPostId);
+
+    void deleteByCategoryId(Long categoryId);
 }
