@@ -19,7 +19,7 @@ public interface ComplaintRepository extends JpaRepository<Complaint, Long> {
             value = "SELECT * FROM complaint c" +
             " WHERE c.category_id = :categoryId AND MATCH(complaint_cause, complaint_resolution) AGAINST(:complSchText IN BOOLEAN MODE)"
 
-            , countQuery = "SELECT count(*) FROM Complaint c WHERE c.category_id = :categoryId AND MATCH(complaint_cause, complaint_resolution) AGAINST(:complSchText IN BOOLEAN MODE)"
+            , countQuery = "SELECT count(*) FROM complaint c WHERE c.category_id = :categoryId AND MATCH(complaint_cause, complaint_resolution) AGAINST(:complSchText IN BOOLEAN MODE)"
     )
     Page<Complaint> findAllByCategoryIdSearch(@Param("categoryId")Long categoryId, @Param("complSchText") String complSchText, Pageable pageable);
 
