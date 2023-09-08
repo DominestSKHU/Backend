@@ -1,15 +1,17 @@
 package com.dominest.dominestbackend.api.category.controller;
 
-import com.dominest.dominestbackend.api.category.request.CreateCategoryRequest;
 import com.dominest.dominestbackend.api.category.request.CategoryUpdateRequest;
+import com.dominest.dominestbackend.api.category.request.CreateCategoryRequest;
 import com.dominest.dominestbackend.api.category.response.CategoryListDto;
 import com.dominest.dominestbackend.api.category.response.CategoryListWithFavoriteDto;
 import com.dominest.dominestbackend.api.common.RspTemplate;
 import com.dominest.dominestbackend.domain.post.component.category.Category;
 import com.dominest.dominestbackend.domain.post.component.category.repository.CategoryRepository;
 import com.dominest.dominestbackend.domain.post.component.category.service.CategoryService;
+import com.dominest.dominestbackend.global.exception.exceptions.BusinessException;
 import com.dominest.dominestbackend.global.util.PrincipalUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -71,7 +73,13 @@ public class CategoryController {
     @PutMapping("/categories") // 카테고리 수정
     public RspTemplate<String> updateCategories(@RequestBody @Valid final CategoryUpdateRequest reqDto
     ) {
-        int updateCount = categoryService.update(reqDto);
+        int updateCount;
+        try {
+            updateCount = categoryService.update(reqDto);
+        } catch (DataIntegrityViolationException e) {
+            throw new BusinessException("카테고리 수정 실패, name 중복 혹은 값의 누락을 확인해주세요", HttpStatus.BAD_REQUEST);
+        }
+
         return new RspTemplate<>(HttpStatus.OK
                 , updateCount + "개의 카테고리 변경 요청 성공");
     }
