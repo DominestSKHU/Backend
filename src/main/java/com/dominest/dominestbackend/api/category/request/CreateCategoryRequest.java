@@ -10,11 +10,11 @@ import javax.validation.constraints.NotNull;
 
 @NoArgsConstructor
 @Getter
-public class CategoryCreateRequest {
-    @NotBlank(message = "카테고리 이름은 필수 입력 값입니다.")
+public class CreateCategoryRequest {
+    @NotBlank(message = "카테고리 이름은 필수 입력 값입니다")
     @Length(max = 255, message = "카테고리 이름은 255자 이내로 입력해주세요.")
     private String categoryName;
-    @NotNull(message = "카테고리 타입은 필수 입력 값입니다.")
+    @NotNull(message = "카테고리 타입은 필수 입력 값입니다")
     private Type categoryType;
-    private String explanation;
+    private String explanation = "";
 }

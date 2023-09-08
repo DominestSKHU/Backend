@@ -4,8 +4,11 @@ import com.dominest.dominestbackend.domain.post.component.category.Category;
 import com.dominest.dominestbackend.domain.post.component.category.component.Type;
 import com.dominest.dominestbackend.domain.post.component.category.repository.CategoryRepository;
 import com.dominest.dominestbackend.global.exception.ErrorCode;
+import com.dominest.dominestbackend.global.exception.exceptions.BusinessException;
 import com.dominest.dominestbackend.global.util.EntityUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,13 +23,19 @@ public class CategoryService {
 
     @Transactional
     public Category create(String categoryName, Type categoryType, String explanation) {
+
         Category category = Category.builder()
                 .name(categoryName)
                 .type(categoryType)
                 .explanation(explanation)
+                .orderKey(categoryRepository.getNewOrderKey())
                 .build();
 
-        return categoryRepository.save(category);
+        try {
+            return categoryRepository.save(category); // Identity 전략이므로 즉시 flush
+        } catch (DataIntegrityViolationException e) {
+            throw new BusinessException("카테고리 저장 실패, name 중복 혹은 값의 누락을 확인해주세요", HttpStatus.BAD_REQUEST);
+        }
     }
 
     @Transactional

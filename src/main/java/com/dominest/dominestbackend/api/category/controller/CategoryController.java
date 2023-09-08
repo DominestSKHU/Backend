@@ -1,6 +1,6 @@
 package com.dominest.dominestbackend.api.category.controller;
 
-import com.dominest.dominestbackend.api.category.request.CategoryCreateRequest;
+import com.dominest.dominestbackend.api.category.request.CreateCategoryRequest;
 import com.dominest.dominestbackend.api.category.request.CategoryUpdateRequest;
 import com.dominest.dominestbackend.api.category.response.CategoryListDto;
 import com.dominest.dominestbackend.api.category.response.CategoryListWithFavoriteDto;
@@ -27,7 +27,8 @@ public class CategoryController {
     private final CategoryService categoryService;
     private final CategoryRepository categoryRepository;
 
-    @GetMapping("/categories") // 카테고리 조회
+    // 카테고리 관리페이지 목록 조회, orderKey ASC로 조회.
+    @GetMapping("/categories")
     public RspTemplate<CategoryListDto.Res> handleGetCategoryList() {
 
         List<Category> categories = categoryRepository.findAll();
@@ -48,12 +49,17 @@ public class CategoryController {
     }
 
     @PostMapping ("/categories")// 카테고리 생성
-    public ResponseEntity<RspTemplate<Void>> createCategory(@RequestBody @Valid final CategoryCreateRequest request) {
+    public ResponseEntity<RspTemplate<Void>> createCategory(
+            @RequestBody @Valid final CreateCategoryRequest reqDto
+    ) {
+        Category category = categoryService.create(reqDto.getCategoryName(), reqDto.getCategoryType(), reqDto.getExplanation());
 
-        Category category = categoryService.create(request.getCategoryName(), request.getCategoryType(), request.getExplanation());
-        RspTemplate<Void> rspTemplate = new RspTemplate<>(HttpStatus.CREATED, "카테고리 생성 성공");
+        RspTemplate<Void> rspTemplate = new RspTemplate<>(
+                HttpStatus.CREATED
+                , category.getId() + "번 " + category.getName() + " 카테고리 생성 성공"
+        );
         return ResponseEntity
-                .created(URI.create("/categories/" + category.getId()))
+                .created(URI.create(category.getPostsLink()))
                 .body(rspTemplate);
     }
 
