@@ -12,7 +12,10 @@ import javax.persistence.*;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@Table(name = "Category")
+@Table(indexes = {
+        @Index(name = "idx_category_orderKey"
+                    , columnList = "order_key, type, name, id, explanation") // covering index
+        })
 public class Category extends BaseEntity {
 
     @Id
@@ -25,14 +28,18 @@ public class Category extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Type type;
 
-    @Column(length = 255, nullable = false)
+    @Column(nullable = false)
     private String explanation; // 카테고리 상세설명
 
+    @Column(nullable = false)
+    private Integer orderKey;   // 정렬 기준
+
     @Builder
-    public Category(String name, Type type, String explanation) {
+    public Category(String name, Type type, String explanation, Integer orderKey) {
         this.name = name;
         this.type = type;
         this.explanation = explanation;
+        this.orderKey = orderKey;
     }
 
     public String getPostsLink(){
