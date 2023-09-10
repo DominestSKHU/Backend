@@ -45,6 +45,7 @@ public class ComplaintListDto {
     @Getter
     static class ComplaintDto {
         Long id;
+        String name;    //민원인 이름
         LocalDate date; // 민원접수일자
         String roomNo; // 호실
         String complaintCause; // 민원내역. FtIdx 만들어야 함.
@@ -56,6 +57,7 @@ public class ComplaintListDto {
         static ComplaintDto from(Complaint complaint){
             return ComplaintDto.builder()
                     .id(complaint.getId())
+                    .name(complaint.getName())
                     .date(complaint.getDate())
                     .roomNo(complaint.getRoomNo())
                     .complaintCause(complaint.getComplaintCause())

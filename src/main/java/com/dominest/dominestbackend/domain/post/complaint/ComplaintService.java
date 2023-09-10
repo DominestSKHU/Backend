@@ -42,7 +42,8 @@ public class ComplaintService {
         Complaint complaint = getById(complaintId);
 
         complaint.updateValues(
-                reqDto.getRoomNo()
+                reqDto.getName()
+                , reqDto.getRoomNo()
                 , reqDto.getComplaintCause()
                 , reqDto.getComplaintResolution()
                 , reqDto.getProcessState()

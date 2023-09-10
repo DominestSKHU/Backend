@@ -162,6 +162,7 @@ public class InitDB {
         int complaintCount = 23;
         for (int i = 1; i <= complaintCount; i++) {
             Complaint complaint = Complaint.builder()
+                    .name("고세구먼트" + i)
                     .roomNo("101")
                     .complaintCause("난방 불가")
                     .complaintResolution("난방 수으리 완무료")

@@ -19,6 +19,8 @@ public class Complaint extends BaseEntity {
     private Long id;
 
     @Column(nullable = false)
+    private String name;    //민원인 이름
+    @Column(nullable = false)
     private String roomNo; // 호실
     @Column(nullable = false)
     private String complaintCause; // 민원내역. FtIdx 만들어야 함.
@@ -42,7 +44,8 @@ public class Complaint extends BaseEntity {
     private Category category;
 
     @Builder
-    private Complaint(String roomNo, String complaintCause, String complaintResolution, ProcessState processState, LocalDate date, User writer, Category category) {
+    private Complaint(String name, String roomNo, String complaintCause, String complaintResolution, ProcessState processState, LocalDate date, User writer, Category category) {
+        this.name = name;
         this.roomNo = roomNo;
         this.complaintCause = complaintCause;
         this.complaintResolution = complaintResolution;
@@ -52,7 +55,8 @@ public class Complaint extends BaseEntity {
         this.category = category;
     }
 
-    public void updateValues(String roomNo, String complaintCause, String complaintResolution, ProcessState processState, LocalDate date) {
+    public void updateValues(String name, String roomNo, String complaintCause, String complaintResolution, ProcessState processState, LocalDate date) {
+        this.name = name;
         this.roomNo = roomNo;
         this.complaintCause = complaintCause;
         this.complaintResolution = complaintResolution;

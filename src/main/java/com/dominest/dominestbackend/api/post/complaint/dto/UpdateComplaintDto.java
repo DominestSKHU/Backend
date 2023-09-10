@@ -15,6 +15,8 @@ public class UpdateComplaintDto {
     @NoArgsConstructor
     @Getter
     public static class Req {
+        @NotBlank(message = "민원인 이름을 입력해주세요.")
+        private String name;    //민원인 이름
         @NotBlank(message = "기숙사 방 번호를 입력해주세요.")
         private String roomNo; // N호실
 

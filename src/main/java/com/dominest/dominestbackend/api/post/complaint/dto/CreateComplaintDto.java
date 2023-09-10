@@ -17,6 +17,8 @@ public class CreateComplaintDto {
     @NoArgsConstructor
     @Getter
     public static class Req {
+        @NotBlank(message = "민원인 이름을 입력해주세요.")
+        private String name;    //민원인 이름
         @NotBlank(message = "기숙사 방 번호를 입력해주세요.")
         private String roomNo; // N호실
 
@@ -33,6 +35,7 @@ public class CreateComplaintDto {
 
         public Complaint toEntity(User user, Category category) {
             return Complaint.builder()
+                    .name(name)
                     .roomNo(roomNo)
                     .complaintCause(complaintCause)
                     .complaintResolution(complaintResolution)
