@@ -10,14 +10,11 @@ import com.dominest.dominestbackend.domain.user.service.UserService;
 import com.dominest.dominestbackend.global.exception.ErrorCode;
 import com.dominest.dominestbackend.global.util.EntityUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-
-import javax.persistence.EntityManager;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -26,14 +23,6 @@ public class ComplaintService {
     private final ComplaintRepository complaintRepository;
     private final UserService userService;
     private final CategoryService categoryService;
-
-    private EntityManager em;
-
-    @Autowired
-    public void setEm(EntityManager em) {
-        this.em = em;
-    }
-
 
     @Transactional
     public long create(CreateComplaintDto.Req reqDto, Long categoryId, String email) {
@@ -53,7 +42,8 @@ public class ComplaintService {
         Complaint complaint = getById(complaintId);
 
         complaint.updateValues(
-                reqDto.getRoomNo()
+                reqDto.getName()
+                , reqDto.getRoomNo()
                 , reqDto.getComplaintCause()
                 , reqDto.getComplaintResolution()
                 , reqDto.getProcessState()
@@ -67,8 +57,8 @@ public class ComplaintService {
     }
 
     @Transactional
-    public long delete(Long complaintId) {
-        Complaint complaint = getById(complaintId);
+    public long delete(Long id) {
+        Complaint complaint = getById(id);
         complaintRepository.delete(complaint);
         return complaint.getId();
     }

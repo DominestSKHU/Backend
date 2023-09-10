@@ -7,8 +7,9 @@ import lombok.Getter;
 @Getter
 public enum Type {
     IMAGE("image-types"), TEXT_IMAGE("text-image-types")
-    , UNDELIVERED_PARCEL_REGISTER("undelivered-parcel")
-    , COMPLAINT("complaint")
+    , UNDELIVERED_PARCEL_REGISTER("undelivered-parcel") // 장기 미수령 택배 관리대장
+    , COMPLAINT("complaint") // 민원처리내역
+    , CARD_KEY("card-key") // 카드키관리대장
     ;
 
     private final String url;

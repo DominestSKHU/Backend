@@ -66,6 +66,7 @@ public class GlobalExceptionHandler {
         return createErrorResponse(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
+    // ENUM 변환실패, 날짜타입에 2999-15-99 와 같은 잘못된 값이 들어올 때 발생
     @ExceptionHandler({HttpMessageNotReadableException.class})
     public ResponseEntity<ErrorResponseDto<String>> handleInvalidFormatException(HttpMessageNotReadableException e, HttpServletRequest request){
         printLog(e, request);

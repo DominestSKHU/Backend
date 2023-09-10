@@ -66,7 +66,7 @@ public class ComplaintController {
 
     // 민원 목록 조회. 최신등록순
     @GetMapping("/categories/{categoryId}/posts/complaint")
-    public RspTemplate<ComplaintListDto.Res> handleGetParcelPosts(
+    public RspTemplate<ComplaintListDto.Res> handleGetComplaints(
             @PathVariable Long categoryId, @RequestParam(defaultValue = "1") int page
             , @RequestParam(required = false) String roomNoSch
             , @RequestParam(required = false) String complSchText
