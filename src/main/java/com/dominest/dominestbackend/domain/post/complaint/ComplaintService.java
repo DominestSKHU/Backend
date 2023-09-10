@@ -56,8 +56,8 @@ public class ComplaintService {
     }
 
     @Transactional
-    public long delete(Long complaintId) {
-        Complaint complaint = getById(complaintId);
+    public long delete(Long id) {
+        Complaint complaint = getById(id);
         complaintRepository.delete(complaint);
         return complaint.getId();
     }

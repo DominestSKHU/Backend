@@ -30,7 +30,7 @@ public class CardKeyController {
 
     // 등록
     @PostMapping("/categories/{categoryId}/posts/card-key")
-    public ResponseEntity<RspTemplate<Void>> handleCreateComplaint(
+    public ResponseEntity<RspTemplate<Void>> handleCreateCardKey(
             @RequestBody @Valid CreateCardKeyDto.Req reqDto
             , @PathVariable Long categoryId, Principal principal
     ) {
@@ -43,8 +43,6 @@ public class CardKeyController {
                 .status(HttpStatus.CREATED)
                 .body(rspTemplate);
     }
-    // 목록조회
-
     // 수정
     @PatchMapping("/card-keys/{cardKeyId}")
     public RspTemplate<Void> handleUpdateCardKey(
@@ -57,7 +55,7 @@ public class CardKeyController {
     }
 
     // 삭제
-    // 민원 삭제
+    // 카드키 기록 삭제
     @DeleteMapping("/card-keys/{cardKeyId}")
     public RspTemplate<Void> handleDeleteCardKey(
             @PathVariable Long cardKeyId
@@ -66,8 +64,8 @@ public class CardKeyController {
 
         return new RspTemplate<>(HttpStatus.OK, deletedKeyId + "번 카드키 기록 삭제");
     }
-    // 이름검색 (인덱스 만들고, '검색어%' 로 만들 것
-    // 민원 목록 조회. 최신등록순
+    // 이름검색 (인덱스 만들고, '검색어%' 로 만들 것)
+    // 카드키 목록 조회. 최신등록순
     @GetMapping("/categories/{categoryId}/posts/card-key")
     public RspTemplate<CardKeyListDto.Res> handleGetCardKeys(
             @PathVariable Long categoryId, @RequestParam(defaultValue = "1") int page

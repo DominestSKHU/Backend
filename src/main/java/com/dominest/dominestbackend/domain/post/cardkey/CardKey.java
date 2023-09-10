@@ -18,6 +18,10 @@ import java.time.LocalDate;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
+@Table(
+        indexes =
+        @Index(name = "idx_card_key_name", columnList = "name")
+)
 public class CardKey extends BaseEntity {
 
     @Id
@@ -30,7 +34,7 @@ public class CardKey extends BaseEntity {
     private String roomNo; // 호실
 
     @Column(nullable = false)
-    private String name; // 이름
+    private String name; // 소유자 이름
     @Column(nullable = false)
     private LocalDate dateOfBirth; // 생년월일
 

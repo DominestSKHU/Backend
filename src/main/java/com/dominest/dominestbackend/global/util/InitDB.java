@@ -3,6 +3,8 @@ package com.dominest.dominestbackend.global.util;
 
 import com.dominest.dominestbackend.domain.favorite.Favorite;
 import com.dominest.dominestbackend.domain.favorite.FavoriteRepository;
+import com.dominest.dominestbackend.domain.post.cardkey.CardKey;
+import com.dominest.dominestbackend.domain.post.cardkey.CardKeyRepository;
 import com.dominest.dominestbackend.domain.post.complaint.Complaint;
 import com.dominest.dominestbackend.domain.post.complaint.ComplaintRepository;
 import com.dominest.dominestbackend.domain.post.component.category.Category;
@@ -39,6 +41,7 @@ public class InitDB {
     private final UndeliveredParcelPostRepository undelivParcelPostRepository;
     private final UndeliveredParcelRepository undelivParcelRepository;
     private final ComplaintRepository complaintRepository;
+    private final CardKeyRepository cardKeyRepository;
 
     @Transactional
     @PostConstruct
@@ -70,33 +73,33 @@ public class InitDB {
         userRepository.save(user3);
 
 
-        Category category1 = Category.builder()
-                .name("장기 미수령 택배 관리대장")
+        Category undelivCategoryNo1 = Category.builder()
+                .name("장기 미수령 택배 관리대장1")
                 .type(Type.UNDELIVERED_PARCEL_REGISTER)
-                .explanation("장미택관")
+                .explanation("장미택관1")
                 .orderKey(1)
                 .build();
-        categoryRepository.save(category1);
+        categoryRepository.save(undelivCategoryNo1);
 
-        Category category2 = Category.builder()
-                .name("민원처리내역")
+        Category complaintCategoryNO2 = Category.builder()
+                .name("민원접수내역1")
                 .type(Type.COMPLAINT)
-                .explanation("민처내")
+                .explanation("민접내")
                 .orderKey(2)
                 .build();
-        categoryRepository.save(category2);
+        categoryRepository.save(complaintCategoryNO2);
 
-        Category category3 = Category.builder()
+        Category cardKeyCategoryNO3 = Category.builder()
                 .name("카드키관리대장1")
                 .type(Type.CARD_KEY)
                 .explanation("카키관1")
                 .orderKey(3)
                 .build();
-        categoryRepository.save(category3);
+        categoryRepository.save(cardKeyCategoryNO3);
         
         UndeliveredParcelPost unDeliParcelPost = UndeliveredParcelPost.builder()
                 .titleWithCurrentDate(createTitle())
-                .category(category1)
+                .category(undelivCategoryNo1)
                 .writer(user)
                 .build();
         undelivParcelPostRepository.save(unDeliParcelPost);
@@ -139,7 +142,7 @@ public class InitDB {
             ImageType imageType = ImageType.builder()
                     .title("title" + i)
                     .writer(user)
-                    .category(categories.get(2)) // 3번 카테고리
+                    .category(categories.get(2)) // 3번째 카테고리
                     .build();
             imageTypes.add(imageType);
         }
@@ -165,11 +168,28 @@ public class InitDB {
                     .processState(Complaint.ProcessState.PROCESSING)
                     .date(LocalDate.now())
                     .writer(user)
-                    .category(category3)
+                    .category(complaintCategoryNO2) // 민원접수내역
                     .build();
             complaints.add(complaint);
         }
         complaintRepository.saveAll(complaints);
+
+        ArrayList<CardKey> cardKeys = new ArrayList<>();
+        int cardKeyCount = 23;
+        for (int i = 1; i <= cardKeyCount; i++) {
+            CardKey cardKey = CardKey.builder()
+                    .issuedDate(LocalDate.now())
+                    .roomNo("10" + i)
+                    .name("송승헌" + i)
+                    .dateOfBirth(LocalDate.of(1999, 1, i))
+                    .reIssueCnt(i)
+                    .etc(i + "번 안아줘요")
+                    .writer(user)
+                    .category(cardKeyCategoryNO3)
+                    .build();
+            cardKeys.add(cardKey);
+        }
+        cardKeyRepository.saveAll(cardKeys);
     }
     private String createTitle() {
         // 원하는 형식의 문자열로 변환
