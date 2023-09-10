@@ -8,8 +8,6 @@ spring:
       max-file-size: 30MB
       max-request-size: 30MB
   jpa:
-    hibernate:
-      ddl-auto: create
     defer-datasource-initialization: true
   sql:
     init:
