@@ -54,6 +54,8 @@ public enum ErrorCode {
     CATEGORY_NOT_FOUND(404, "해당 카테고리가 존재하지 않습니다."),
     CATEGORY_TYPE_MISMATCHED(400, "해당 카테고리의 타입이 일치하지 않습니다."),
     CATEGORY_ORDER_KEY_DUPLICATED(400, "카테고리의 orderKey가 중복됩니다."),
+    CANNOT_DELETE_ASSOCIATED_POST(409, "해당 카테고리에 연관된 게시글이 존재합니다."),
+
     // 게시글 공통
     POST_NOT_FOUND(404, "해당 게시글이 존재하지 않습니다."),
 

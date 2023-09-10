@@ -1,6 +1,7 @@
 package com.dominest.dominestbackend.domain.post.component.category.service;
 
 import com.dominest.dominestbackend.api.category.request.CategoryUpdateRequest;
+import com.dominest.dominestbackend.domain.post.cardkey.CardKeyRepository;
 import com.dominest.dominestbackend.domain.post.complaint.ComplaintRepository;
 import com.dominest.dominestbackend.domain.post.component.category.Category;
 import com.dominest.dominestbackend.domain.post.component.category.component.Type;
@@ -26,6 +27,7 @@ public class CategoryService {
     private final ImageTypeRepository imageTypeRepository;
     private final UndeliveredParcelPostRepository undeliveredParcelPostRepository;
     private final ComplaintRepository complaintRepository;
+    private final CardKeyRepository cardKeyRepository;
 
     @Transactional
     public Category create(String categoryName, Type categoryType, String explanation) {
@@ -97,7 +99,10 @@ public class CategoryService {
             undeliveredParcelPostRepository.deleteByCategoryId(categoryId);
         } else if (Type.COMPLAINT.equals(type)) {
             complaintRepository.deleteByCategoryId(categoryId);
+        } else if (Type.CARD_KEY.equals(type)) {
+            cardKeyRepository.deleteByCategoryId(categoryId);
         }
+        throw new BusinessException(ErrorCode.CANNOT_DELETE_ASSOCIATED_POST);
     }
 
     public Category validateCategoryType(Long categoryId, Type type) {
