@@ -85,6 +85,14 @@ public class InitDB {
                 .orderKey(2)
                 .build();
         categoryRepository.save(category2);
+
+        Category category3 = Category.builder()
+                .name("카드키관리대장1")
+                .type(Type.CARD_KEY)
+                .explanation("카키관1")
+                .orderKey(3)
+                .build();
+        categoryRepository.save(category3);
         
         UndeliveredParcelPost unDeliParcelPost = UndeliveredParcelPost.builder()
                 .titleWithCurrentDate(createTitle())
@@ -157,7 +165,7 @@ public class InitDB {
                     .processState(Complaint.ProcessState.PROCESSING)
                     .date(LocalDate.now())
                     .writer(user)
-                    .category(category2)
+                    .category(category3)
                     .build();
             complaints.add(complaint);
         }
