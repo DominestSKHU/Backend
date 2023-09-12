@@ -27,7 +27,7 @@ spring:
 
 logging:
   level:
-    org.hibernate.type: trace
+    org.hibernate.type: TRACE
 
 file:
   upload:

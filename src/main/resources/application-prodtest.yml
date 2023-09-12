@@ -1,11 +1,11 @@
 server:
-  port: 8443
-  ssl:
-    key-store:
-    key-store-password:
-    key-store-type: pkcs12
-    key-alias: tomcat
-    enabled: true
+  port: 8080
+#  ssl:
+#    key-store:
+#    key-store-password:
+#    key-store-type: pkcs12
+#    key-alias: tomcat
+#    enabled: true
 
 spring:
   datasource:
@@ -20,7 +20,6 @@ spring:
 
     properties:
       hibernate:
-        format_sql: false
         default_batch_fetch_size: 1000 # where in ()
 
     show-sql: false
@@ -28,12 +27,5 @@ spring:
 
 logging:
   level:
-    org.hibernate.type: DEBUG
-
-#  logback:
-#    rollingpolicy:
-#      max-file-size: 20MB
-#      max-history: 5
-#  file:
-#    name:
+    org.hibernate.type: INFO
 
