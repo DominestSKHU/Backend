@@ -1,9 +1,10 @@
 package com.dominest.dominestbackend.domain.resident;
 
 import com.dominest.dominestbackend.api.resident.dto.PdfBulkUploadDto;
-import com.dominest.dominestbackend.api.resident.dto.ResidentListDto;
-import com.dominest.dominestbackend.api.resident.dto.ResidentPdfListDto;
+import com.dominest.dominestbackend.api.resident.dto.SaveResidentDto;
 import com.dominest.dominestbackend.domain.resident.component.ResidenceSemester;
+import com.dominest.dominestbackend.domain.room.Room;
+import com.dominest.dominestbackend.domain.room.RoomService;
 import com.dominest.dominestbackend.global.exception.ErrorCode;
 import com.dominest.dominestbackend.global.exception.exceptions.AppServiceException;
 import com.dominest.dominestbackend.global.exception.exceptions.BusinessException;
@@ -29,6 +30,7 @@ import java.util.Optional;
 public class ResidentService {
     private final ResidentRepository residentRepository;
     private final FileService fileService;
+    private final RoomService roomService;
 
     /** @return 저장한 파일명 */
     @Transactional
@@ -115,11 +117,16 @@ public class ResidentService {
         if (residentRepository.existsByResidenceSemester(residenceSemester)) {
             residentRepository.deleteAllInBatch();
         }
+
         // 데이터를 저장한다. 예외발생시 삭제나 저장 작업의 트랜잭션 롤백.
         for (List<String> row : sheet) {
             if ("".equals(row.get(columnCount - 1))) // 빈 row 발견 시 continue;
                 continue;
-            Resident resident = Resident.from(row, residenceSemester);
+            // Room 객체를 찾아서 넣어줘야 함
+            String assignedRoom = row.get(11);
+
+            Room room = roomService.getByAssignedRoom(assignedRoom);
+            Resident resident = Resident.from(row, residenceSemester, room);
             saveResident(resident);
         }
     }
@@ -132,6 +139,27 @@ public class ResidentService {
     @Transactional
     public void deleteAllResident() {
         residentRepository.deleteAllInBatch();
+    }
+
+    // Room 업데이트
+    @Transactional
+    public void saveResident(SaveResidentDto.Req reqDto) {
+        // 한 테이블에서 모든 차수의 데이터가 있어야 해서 Unique Check는 DB 제약이 아닌
+        // Application 단에서 한다. 학기와 학번이 같은 데이터가 있으면 삭제 후 저장(원본 데이터 덮어쓰기)한다.
+        Resident existingResident = residentRepository.findByStudentIdAndResidenceSemester(reqDto.getStudentId(), reqDto.getResidenceSemester());
+        if (existingResident != null)
+            residentRepository.delete(existingResident);
+
+        Room room = roomService.getByAssignedRoom(reqDto.getAssignedRoom());
+        Resident resident = reqDto.toEntity(room);
+
+        try {
+            // Sequence 방식의 기본 키 생성 전략을 사용할 땐 쓰기지연이 발생하여 트랜잭션이 끝날 때 insert 쿼리가 실행됨.
+            // 따라서 메서드 끝(트랜잭션 커밋) 에서 insert 쿼리가 실행되는데, 이 때 catch 블록의 예외처리 범위를 벗어나므로 saveAndFlush()를 사용한다.
+            residentRepository.saveAndFlush(resident);
+        } catch (DataIntegrityViolationException e) {
+            throw new BusinessException("입사생 저장 실패, 잘못된 입력값입니다. 데이터 누락 혹은 중복을 확인해주세요.", HttpStatus.BAD_REQUEST);
+        }
     }
 
     @Transactional
@@ -152,9 +180,18 @@ public class ResidentService {
     }
 
     @Transactional
-    public void updateResident(Long id, Resident resident) {
+    public void updateResident(Long id, SaveResidentDto.Req reqDto) {
+        Room room = roomService.getByAssignedRoom(reqDto.getAssignedRoom());
+        Resident resident = reqDto.toEntity(room);
+
         Resident residentToUpdate = findById(id);
         residentToUpdate.updateValueFrom(resident);
+
+        try {
+            residentRepository.saveAndFlush(residentToUpdate);
+        } catch (DataIntegrityViolationException e) {
+            throw new BusinessException("입사생 정보 변경 실패, 잘못된 입력값입니다. 데이터 누락 혹은 중복을 확인해주세요.", HttpStatus.BAD_REQUEST);
+        }
     }
 
     public Resident findById(Long id) {

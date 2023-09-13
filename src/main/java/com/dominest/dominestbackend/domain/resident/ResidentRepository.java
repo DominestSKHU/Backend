@@ -2,11 +2,16 @@ package com.dominest.dominestbackend.domain.resident;
 
 import com.dominest.dominestbackend.domain.resident.component.ResidenceSemester;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
 public interface ResidentRepository extends JpaRepository<Resident, Long> {
-    List<Resident> findAllByResidenceSemester(ResidenceSemester residenceSemester);
+    @Query("SELECT r FROM Resident r" +
+            " join fetch r.room" +
+            " where r.residenceSemester = :residenceSemester")
+    List<Resident> findAllByResidenceSemester(@Param("residenceSemester") ResidenceSemester residenceSemester);
 
     boolean existsByResidenceSemester(ResidenceSemester residenceSemester);
 

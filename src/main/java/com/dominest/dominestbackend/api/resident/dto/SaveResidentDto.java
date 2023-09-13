@@ -2,6 +2,7 @@ package com.dominest.dominestbackend.api.resident.dto;
 
 import com.dominest.dominestbackend.domain.resident.Resident;
 import com.dominest.dominestbackend.domain.resident.component.ResidenceSemester;
+import com.dominest.dominestbackend.domain.room.Room;
 import com.dominest.dominestbackend.global.validation.PhoneNumber;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AccessLevel;
@@ -68,7 +69,7 @@ public class SaveResidentDto {
         @NotBlank(message = "주소를 입력해주세요.")
         private String address;
 
-        public Resident toEntity(){
+        public Resident toEntity(Room room){
 
             return Resident.builder()
                     .name(name)
@@ -78,12 +79,10 @@ public class SaveResidentDto {
                     .currentStatus(currentStatus)
                     .dateOfBirth(dateOfBirth)
                     .residenceSemester(residenceSemester)
-                    .dormitory(dormitory)
                     .major(major)
                     .grade(grade)
                     .period(period)
-                    .roomNumber(roomNumber)
-                    .assignedRoom(assignedRoom)
+                    .room(room)
                     .admissionDate(admissionDate)
                     .leavingDate("".equals(leavingDate) ?  null :
                             LocalDate.parse(leavingDate, DateTimeFormatter.ofPattern("yyyyMMdd")))
