@@ -42,19 +42,9 @@ public class UserController {
     private final EmailVerificationService emailVerificationService;
 
     @PostMapping("/join") // 회원가입
-    public ResponseEntity<ApiResponseDto<JoinResponse>> signUp(@RequestBody @Valid final JoinRequest request){
-
-        if(userService.checkDuplicateEmail(request.getEmail())){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponseDto.error(ErrorStatus.EMAIL_ALREADY_EXIST));
-        }
-
-        boolean isEmailVerified = emailVerificationService.isEmailVerified(request.getEmail());
-        if (!isEmailVerified) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponseDto.error(ErrorStatus.EMAIL_NOT_VERIFIED));
-        }
-
+    public ResponseEntity<JoinResponse> signUp(@RequestBody @Valid final JoinRequest request){
         JoinResponse joinResponse = userService.create(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseDto.success(SuccessStatus.JOIN_SUCCESS, joinResponse));
+        return ResponseEntity.status(HttpStatus.OK).body(joinResponse);
     }
 
     @PostMapping("/login") // 로그인
@@ -80,8 +70,6 @@ public class UserController {
         return new RspTemplate<>(HttpStatus.OK, "로그아웃 성공");
     }
 
-
-
     /**
      *   refresh 토큰을 이용, access 토큰을 재발급하는 메소드
      */
@@ -98,26 +86,25 @@ public class UserController {
         return new RspTemplate<>(HttpStatus.OK, "토큰 재발급", tokenDto);
     }
 
-    @GetMapping("/login-test") // accesstoken으로 유저정보 가져오기
-    public ResponseEntity<ApiResponseDto<String>> loginTest(@RequestHeader(value = "Authorization") String authHeader) {
-        try {
-            if (authHeader != null && authHeader.startsWith("Bearer ")) {
-                String accessToken = authHeader.substring(7); // "Bearer " 접두사 제거
-                if (tokenManager.validateToken(accessToken)) {
-                    return ResponseEntity.ok(ApiResponseDto.success(SuccessStatus.TOKEN_USER_INFO, tokenManager.getMemberEmail(accessToken)));
-                } else {
-                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponseDto.error(ErrorStatus.USER_CERTIFICATION_FAILED)); // 401 Unauthorized 상태로 실패 응답 반환
-                }
-            } else {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponseDto.error(ErrorStatus.USER_CERTIFICATION_FAILED)); // 401 Unauthorized 상태로 실패 응답 반환
-            }
-        } catch (JwtAuthException e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponseDto.error(ErrorStatus.USER_CERTIFICATION_FAILED)); // 401 Unauthorized 상태로 실패 응답 반환
-        }
-    }
+//    @GetMapping("/login-test") // accesstoken으로 유저정보 가져오기
+//    public ResponseEntity<ApiResponseDto<String>> loginTest(@RequestHeader(value = "Authorization") String authHeader) {
+//        try {
+//            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+//                String accessToken = authHeader.substring(7); // "Bearer " 접두사 제거
+//                if (tokenManager.validateToken(accessToken)) {
+//                    return ResponseEntity.ok(ApiResponseDto.success(SuccessStatus.TOKEN_USER_INFO, tokenManager.getMemberEmail(accessToken)));
+//                } else {
+//                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponseDto.error(ErrorStatus.USER_CERTIFICATION_FAILED)); // 401 Unauthorized 상태로 실패 응답 반환
+//                }
+//            } else {
+//                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponseDto.error(ErrorStatus.USER_CERTIFICATION_FAILED)); // 401 Unauthorized 상태로 실패 응답 반환
+//            }
+//        } catch (JwtAuthException e) {
+//            e.printStackTrace();
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponseDto.error(ErrorStatus.USER_CERTIFICATION_FAILED)); // 401 Unauthorized 상태로 실패 응답 반환
+//        }
+//    }
 
-    // 실패를 위에 성공을 아래에... 통일하기...
     @PostMapping("/myPage/password") // 비밀번호 변경
     public ResponseEntity<ApiResponseDto<Void>> changePassword(@RequestBody ChangePasswordRequest request
                                                                                                                 , Principal principal) {
