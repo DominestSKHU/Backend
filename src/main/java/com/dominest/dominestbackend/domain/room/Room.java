@@ -1,6 +1,7 @@
 package com.dominest.dominestbackend.domain.room;
 
 import com.dominest.dominestbackend.domain.common.BaseEntity;
+import com.dominest.dominestbackend.domain.resident.Resident;
 import lombok.*;
 
 import javax.persistence.*;
@@ -31,6 +32,9 @@ public class Room extends BaseEntity {
     private Integer roomNumber; // 호실. (1(미가엘), 2(행기))
     @Column(nullable = false)
     private String dormitory; // (A(미가엘) B(행기))
+
+    @OneToOne(mappedBy = "room", fetch = FetchType.LAZY)
+    private Resident resident;
 
     @Builder
     private Room(Integer roomNumber, String assignedRoom, String dormitory) {

@@ -76,7 +76,6 @@ public class InitDB {
         userRepository.save(user2);
         userRepository.save(user3);
 
-
         Category undelivCategoryNo1 = Category.builder()
                 .name("장기 미수령 택배 관리대장1")
                 .type(Type.UNDELIVERED_PARCEL_REGISTER)
@@ -100,6 +99,14 @@ public class InitDB {
                 .orderKey(3)
                 .build();
         categoryRepository.save(cardKeyCategoryNO3);
+
+        Category sanitationCheckCategoryNO4 = Category.builder()
+                .name("방역호실점검")
+                .type(Type.SANITATION_CHECK)
+                .explanation("방호점")
+                .orderKey(4)
+                .build();
+        categoryRepository.save(sanitationCheckCategoryNO4);
         
         UndeliveredParcelPost unDeliParcelPost = UndeliveredParcelPost.builder()
                 .titleWithCurrentDate(createTitle())
