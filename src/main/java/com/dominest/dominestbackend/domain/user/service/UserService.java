@@ -79,7 +79,7 @@ public class UserService {
         // audience 는 email + ":" + name 으로 구성
         String audience = user.getEmail() + ":" + user.getName();
 
-        TokenDto tokenDto = tokenManager.createTokenDtoTemp(audience, new Date(System.currentTimeMillis() + 1210500000L));
+        TokenDto tokenDto = tokenManager.createTokenDtoTemp(audience, new Date(System.currentTimeMillis() + 4896000000L));
         // refresh token은 관리를 위해 user DB에 저장.
         user.updateRefreshTokenAndExp(tokenDto.getRefreshToken(), tokenDto.getRefreshTokenExp());
 
