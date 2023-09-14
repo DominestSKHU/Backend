@@ -8,14 +8,13 @@ import com.dominest.dominestbackend.api.resident.dto.ResidentPdfListDto;
 import com.dominest.dominestbackend.api.resident.dto.SaveResidentDto;
 import com.dominest.dominestbackend.api.resident.util.PdfType;
 import com.dominest.dominestbackend.domain.resident.Resident;
+import com.dominest.dominestbackend.domain.resident.ResidentRepository;
 import com.dominest.dominestbackend.domain.resident.ResidentService;
 import com.dominest.dominestbackend.domain.resident.component.ResidenceSemester;
 import com.dominest.dominestbackend.global.exception.ErrorCode;
-import com.dominest.dominestbackend.global.exception.exceptions.BusinessException;
 import com.dominest.dominestbackend.global.exception.exceptions.file.FileIOException;
 import com.dominest.dominestbackend.global.util.FileService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -35,10 +34,11 @@ public class ResidentController {
 
     private final ResidentService residentService;
     private final FileService fileService;
+    private final ResidentRepository residentRepository;
 
     // 엑셀로 업로드
     @PostMapping("/residents/upload-excel")
-    public ResponseEntity<RspTemplate<?>> handleFileUpload(@RequestParam(required = true) MultipartFile file
+    public ResponseEntity<RspTemplate<Void>> handleFileUpload(@RequestParam(required = true) MultipartFile file
                                                                                                             , @RequestParam(required = true) ResidenceSemester residenceSemester){
         residentService.excelUpload(file, residenceSemester);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
@@ -56,7 +56,7 @@ public class ResidentController {
 
     // (테스트용) 입사생 데이터 전체삭제
     @DeleteMapping("/residents")
-    public ResponseEntity<RspTemplate<?>> handleDeleteAllResident(){
+    public ResponseEntity<RspTemplate<Void>> handleDeleteAllResident(){
         residentService.deleteAllResident();
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
@@ -64,34 +64,31 @@ public class ResidentController {
 
     // 입사생 단건 등록. 단순 DTO 변환 후 저장만 하면 될듯
     @PostMapping("/residents")
-    public ResponseEntity<RspTemplate<?>> handleSaveResident(@RequestBody @Valid SaveResidentDto.Req reqDto){
-        residentService.saveResident(reqDto.toEntity());
+    public ResponseEntity<RspTemplate<Void>> handleSaveResident(@RequestBody @Valid SaveResidentDto.Req reqDto){
+        residentService.saveResident(reqDto);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     // 입사생 수정
     @PatchMapping("/residents/{id}")
-    public ResponseEntity<RspTemplate<?>> handleUpdateResident(@PathVariable Long id, @RequestBody @Valid SaveResidentDto.Req reqDto){
-        try {
-            residentService.updateResident(id, reqDto.toEntity());
-        }catch (DataIntegrityViolationException e) {
-            throw new BusinessException("입사생 정보 변경 실패, 잘못된 입력값입니다. 데이터 누락 혹은 중복을 확인해주세요.", HttpStatus.BAD_REQUEST);
-        }
-
+    public ResponseEntity<RspTemplate<Void>> handleUpdateResident(
+            @PathVariable Long id, @RequestBody @Valid SaveResidentDto.Req reqDto
+    ){
+        residentService.updateResident(id, reqDto);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     // 입사생 삭제
     @DeleteMapping("/residents/{id}")
-    public ResponseEntity<RspTemplate<?>> handleDeleteResident(@PathVariable Long id){
+    public ResponseEntity<RspTemplate<Void>> handleDeleteResident(@PathVariable Long id){
         residentService.deleteById(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     // 특정 입사생의 PDF 조회
     @GetMapping("/residents/{id}/pdf")
-    public RspTemplate<?> handleGetPdf(@PathVariable Long id, @RequestParam(required = true) PdfType pdfType,
+    public RspTemplate<Void> handleGetPdf(@PathVariable Long id, @RequestParam(required = true) PdfType pdfType,
                                        HttpServletResponse response){
         // filename 가져오기.
         Resident resident = residentService.findById(id);

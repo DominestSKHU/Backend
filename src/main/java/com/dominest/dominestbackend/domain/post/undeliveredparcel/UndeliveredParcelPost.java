@@ -27,6 +27,9 @@ public class UndeliveredParcelPost extends Post {
             , fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     List<UndeliveredParcel> undelivParcels = new ArrayList<>();
 
+    public void setTitle(String title) {
+        super.setTitle(title);
+    }
     @Builder
     private UndeliveredParcelPost(String titleWithCurrentDate, User writer, Category category) {
         // currentDate는 "yyyy-MM-dd 장기미수령 택배" 형식의 문자열이다.

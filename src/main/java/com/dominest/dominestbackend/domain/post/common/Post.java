@@ -6,6 +6,7 @@ import com.dominest.dominestbackend.domain.user.User;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 
@@ -22,6 +23,7 @@ public abstract class Post extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Setter
     @Column(nullable = false)
     private String title;
     /*작성자의 이름이다. String으로 작성자이름만 넣을까 했으나,

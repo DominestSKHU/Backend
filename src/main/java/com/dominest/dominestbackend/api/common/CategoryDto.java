@@ -11,12 +11,14 @@ public class CategoryDto {
     long id;
     String categoryName;
     Type type;
+    String postsLink;
 
     public static CategoryDto from(Category category){
         return CategoryDto.builder()
                 .id(category.getId())
                 .categoryName(category.getName())
                 .type(category.getType())
+                .postsLink(category.getPostsLink())
                 .build();
     }
 }

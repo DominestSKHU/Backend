@@ -16,6 +16,8 @@ import com.dominest.dominestbackend.domain.post.undeliveredparcel.UndeliveredPar
 import com.dominest.dominestbackend.domain.post.undeliveredparcel.UndeliveredParcelPostRepository;
 import com.dominest.dominestbackend.domain.post.undeliveredparcel.component.UndeliveredParcel;
 import com.dominest.dominestbackend.domain.post.undeliveredparcel.component.UndeliveredParcelRepository;
+import com.dominest.dominestbackend.domain.room.Room;
+import com.dominest.dominestbackend.domain.room.RoomRepository;
 import com.dominest.dominestbackend.domain.user.User;
 import com.dominest.dominestbackend.domain.user.component.Role;
 import com.dominest.dominestbackend.domain.user.repository.UserRepository;
@@ -29,6 +31,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Component
@@ -42,6 +45,7 @@ public class InitDB {
     private final UndeliveredParcelRepository undelivParcelRepository;
     private final ComplaintRepository complaintRepository;
     private final CardKeyRepository cardKeyRepository;
+    private final RoomRepository roomRepository;
 
     @Transactional
     @PostConstruct
@@ -72,7 +76,6 @@ public class InitDB {
         userRepository.save(user2);
         userRepository.save(user3);
 
-
         Category undelivCategoryNo1 = Category.builder()
                 .name("장기 미수령 택배 관리대장1")
                 .type(Type.UNDELIVERED_PARCEL_REGISTER)
@@ -96,6 +99,14 @@ public class InitDB {
                 .orderKey(3)
                 .build();
         categoryRepository.save(cardKeyCategoryNO3);
+
+        Category sanitationCheckCategoryNO4 = Category.builder()
+                .name("방역호실점검")
+                .type(Type.SANITATION_CHECK)
+                .explanation("방호점")
+                .orderKey(4)
+                .build();
+        categoryRepository.save(sanitationCheckCategoryNO4);
         
         UndeliveredParcelPost unDeliParcelPost = UndeliveredParcelPost.builder()
                 .titleWithCurrentDate(createTitle())
@@ -191,7 +202,71 @@ public class InitDB {
             cardKeys.add(cardKey);
         }
         cardKeyRepository.saveAll(cardKeys);
+
+        // 2~3층은 26호실까지, 4~10층은 17호실까지 있음
+        List<Room> rooms = createRooms();
+
+        roomRepository.saveAll(rooms);
     }
+
+    private static List<Room> createRooms() {
+        int roomCount2To3 = 26;
+        int roomCount4To10 = 17;
+        List<Room> rooms = new ArrayList<>();
+
+        // 2층
+        createRoomsFor(roomCount2To3, "02",rooms);
+        createRoomsFor(roomCount2To3, "03",rooms);
+
+        // 4~10층
+        createRoomsFor(roomCount4To10, "04",rooms);
+        createRoomsFor(roomCount4To10, "05",rooms);
+        createRoomsFor(roomCount4To10, "06",rooms);
+        createRoomsFor(roomCount4To10, "07",rooms);
+        createRoomsFor(roomCount4To10, "08",rooms);
+        createRoomsFor(roomCount4To10, "09",rooms);
+        createRoomsFor(roomCount4To10, "10",rooms);
+
+        return rooms;
+    }
+
+    private static void createRoomsFor(int roomCount, String floor, List<Room> rooms) {
+        for (int i = 1; i <= roomCount; i++) {
+            String roomNo = String.format("%02d", i);
+            Integer floorNo = Integer.valueOf(floor);
+            StringBuilder sb = new StringBuilder();
+
+            Room roomA = Room.builder()
+                    .assignedRoom(
+                            sb.append("B")
+                                    .append(floor)
+                                    .append(roomNo)
+                                    .append("A")
+                                    .toString())
+                    .floorNo(floorNo)
+
+                    .dormitory("B")
+                    .roomNo(2)
+                    .build();
+            rooms.add(roomA);
+            sb.setLength(0);
+
+            Room roomB = Room.builder()
+                    .assignedRoom(sb
+                            .append("B")
+                            .append(floor)
+                            .append(roomNo)
+                            .append("B")
+                            .toString())
+                    .floorNo(floorNo)
+                    .dormitory("B")
+                    .roomNo(2)
+                    .build();
+
+            rooms.add(roomB);
+        }
+    }
+
     private String createTitle() {
         // 원하는 형식의 문자열로 변환
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");

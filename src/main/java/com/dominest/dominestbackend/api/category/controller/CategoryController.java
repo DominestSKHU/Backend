@@ -18,7 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import java.net.URI;
 import java.security.Principal;
 import java.util.List;
@@ -43,7 +42,7 @@ public class CategoryController {
 
     // 현재 로그인한 사용자를 기준으로 즐겨찾기 여부와 함께 카테고리 조회
     @GetMapping("/my-categories")
-    public RspTemplate<CategoryListWithFavoriteDto.Res> handleGetMyCategoryList(@NotNull(message = "인증 정보가 없습니다.") Principal principal) {
+    public RspTemplate<CategoryListWithFavoriteDto.Res> handleGetMyCategoryList(Principal principal) {
         // 즐찾목록 다 조회해서 카테고리 ID들을 찾아낸다.
         // 찾아낸 카테고리 ID들과 전체 카테고리 목록 중 일치하는 것들은 즐겨찾기가 되어있는 것이다.
         List<Long> categoryIdsFromFavorites = categoryService.getIdAllByUserEmail(PrincipalUtil.toEmail(principal));

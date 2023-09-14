@@ -1,22 +1,28 @@
 package com.dominest.dominestbackend.domain.resident;
 
 import com.dominest.dominestbackend.domain.common.BaseEntity;
+import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.checkedroom.CheckedRoom;
 import com.dominest.dominestbackend.domain.resident.component.ResidenceSemester;
+import com.dominest.dominestbackend.domain.room.Room;
 import com.dominest.dominestbackend.global.util.TimeUtil;
 import lombok.*;
 
 import javax.persistence.*;
-import javax.validation.constraints.Min;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(uniqueConstraints = {
+        // 학번, 학기가 중복되면 안된다. 똑같은 학생이 한 학기에 둘 이상 있을 순 없다.
+        // 방번호, 학기가 중복되면 안된다. 학기중 하나의 방, 하나의 구역에 둘 이상이 있을 순 없다.
         @UniqueConstraint(name = "unique_resident_Info_for_semester",
                                             columnNames = { "studentId", "residenceSemester" })
+        , @UniqueConstraint(name = "unique_resident_Info_for_room",
+                                            columnNames = { "room_id", "residenceSemester" })
 })
 public class Resident extends BaseEntity {
     @Id
@@ -53,13 +59,10 @@ public class Resident extends BaseEntity {
     private String semester; // 차수. '2023SMSK02' 형식
     @Column(nullable = false)
     private String currentStatus;  // 현재상태,   Todo: 'A', 'I' 말고 다른 상태가 있는지 확인필요
-    @Column(nullable = false)
-    private String dormitory;
-    private String period; // 기간. 'LY' 'AY' 'VY' 'YY'
-    @Min(1)
-    private Integer roomNumber; // 호실
-    private String assignedRoom; // 배정방. 'B1049A' 와 같음
 
+    private String period; // 기간. 'LY' 'AY' 'VY' 'YY'
+
+    // 호실(1, 2), 배정방, 기숙사(A, B) 3개가 물리적인 위치에 관여
     /** 날짜정보 */
     // 엑셀데이터는 8자리로 저장되긴 하는데, 날짜 필터링 걸려면 날짜타입 사용해야 할 듯
     // Todo: 날짜타입 유지하면서 8자리로 표시할 수 있는지?
@@ -76,7 +79,12 @@ public class Resident extends BaseEntity {
     private String zipCode; // 우편번호
     private String address; // 주소. 이거 거주지별로 분류할 일이 생기나?
 
-    /** 아래는 학생정보 페이지에 표시되지 않는 정보들 */
+    private Integer penalty; // 벌점.
+
+    /** 아래는 학생정보 페이지에 표시되지 않는 정보들
+     *
+     * */
+    //ResidenceSemester를 Room에도 둘까 했으나, 여기서 조인해서 쓰면 됨.
     @Enumerated(EnumType.STRING)
     private ResidenceSemester residenceSemester; // 거주학기. '2020-2' 와 같음
 
@@ -87,14 +95,20 @@ public class Resident extends BaseEntity {
     @Setter
     private String departurePdfFileName; // UUID로 저장된다.
 
+    // 방 정보는 하나지만 학생데이터는 학기마다 추가됨. N : 1
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "room_id")
+    private Room room;
 
+    @OneToMany(mappedBy = "resident", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<CheckedRoom> checkedRooms = new ArrayList<>();
 
     @Builder
     private Resident(String name, String gender, String studentId, String major, String grade,
-                    LocalDate dateOfBirth, String semester, ResidenceSemester residenceSemester, String currentStatus, String dormitory, String period,
-                     Integer roomNumber, String assignedRoom, LocalDate admissionDate, LocalDate leavingDate,
+                    LocalDate dateOfBirth, String semester, ResidenceSemester residenceSemester, String currentStatus, String period,
+                     LocalDate admissionDate, LocalDate leavingDate,
                     LocalDate semesterStartDate, LocalDate semesterEndDate, String phoneNumber, String socialCode,
-                    String socialName, String zipCode, String address) {
+                    String socialName, String zipCode, String address, Room room) {
         this.name = name;
         this.gender = gender;
         this.studentId = studentId;
@@ -104,10 +118,8 @@ public class Resident extends BaseEntity {
         this.semester = semester;
         this.residenceSemester = residenceSemester;
         this.currentStatus = currentStatus;
-        this.dormitory = dormitory;
         this.period = period;
-        this.roomNumber = roomNumber;
-        this.assignedRoom = assignedRoom;
+        this.room = room;
         this.admissionDate = admissionDate;
         this.leavingDate = leavingDate;
         this.semesterStartDate = semesterStartDate;
@@ -117,9 +129,12 @@ public class Resident extends BaseEntity {
         this.socialName = socialName;
         this.zipCode = zipCode;
         this.address = address;
+        this.penalty = 0;
     }
-    // 0~20까지의 데이터를 추출하므로 추가된 컬럼(22번째 열 이상)의 데이터를 무시한다.
-    public static Resident from(List<String> data, ResidenceSemester residenceSemester) {
+
+    public static Resident from(List<String> data, ResidenceSemester residenceSemester, Room room) {
+        String yyyyMMddPattern = "yyyyMMdd";
+
         // create the resident object using builder
         return Resident.builder()
                 .name(data.get(0))
@@ -129,17 +144,15 @@ public class Resident extends BaseEntity {
                 .residenceSemester(residenceSemester)
                 .currentStatus(data.get(4))
                 .dateOfBirth(TimeUtil.parseyyMMddToLocalDate(data.get(5)))
-                .dormitory(data.get(6))
+                .room(room)
                 .major(data.get(7))
                 .grade(data.get(8))
                 .period(data.get(9))
-                .roomNumber(Integer.valueOf(data.get(10)))
-                .assignedRoom(data.get(11))
-                .admissionDate(LocalDate.parse(data.get(12), DateTimeFormatter.ofPattern("yyyyMMdd")))
+                .admissionDate(LocalDate.parse(data.get(12), DateTimeFormatter.ofPattern(yyyyMMddPattern)))
                 .leavingDate("".equals(data.get(13)) ?  null :
-                        LocalDate.parse(data.get(13), DateTimeFormatter.ofPattern("yyyyMMdd")))
-                .semesterStartDate(LocalDate.parse(data.get(14), DateTimeFormatter.ofPattern("yyyyMMdd")))
-                .semesterEndDate(LocalDate.parse(data.get(15), DateTimeFormatter.ofPattern("yyyyMMdd")))
+                        LocalDate.parse(data.get(13), DateTimeFormatter.ofPattern(yyyyMMddPattern)))
+                .semesterStartDate(LocalDate.parse(data.get(14), DateTimeFormatter.ofPattern(yyyyMMddPattern)))
+                .semesterEndDate(LocalDate.parse(data.get(15), DateTimeFormatter.ofPattern(yyyyMMddPattern)))
                 .phoneNumber(data.get(16))
                 .socialCode(data.get(17))
                 .socialName(data.get(18))
@@ -159,10 +172,8 @@ public class Resident extends BaseEntity {
         this.semester = resident.getSemester();
         this.residenceSemester = resident.getResidenceSemester();
         this.currentStatus = resident.getCurrentStatus();
-        this.dormitory = resident.getDormitory();
+        this.room = resident.getRoom();
         this.period = resident.getPeriod();
-        this.roomNumber = resident.getRoomNumber();
-        this.assignedRoom = resident.getAssignedRoom();
         this.admissionDate = resident.getAdmissionDate();
         this.leavingDate = resident.getLeavingDate();
         this.semesterStartDate = resident.getSemesterStartDate();
