@@ -132,7 +132,21 @@ public class SanitationCheckController {
                 ,resDto);
     }
 
-//    // 컬럼 수정
+    // 미통과자
+    @GetMapping("/posts/sanitation-check/{postId}/not-passed")
+    public RspTemplate<CheckedRoomListDto.Res> handleGetNotPassed(
+            @PathVariable Long postId
+    ) {
+        Category category = sanitationCheckPostService.getByIdFetchCategory(postId).getCategory();
+        List<CheckedRoom> checkedRooms = checkedRoomService.getNotPassedAllByPostId(postId);
+
+        CheckedRoomListDto.Res resDto = CheckedRoomListDto.Res.from(checkedRooms, category);
+        return new RspTemplate<>(HttpStatus.OK
+                , postId + "번 게시글의 미통과자 목록 조회"
+                ,resDto);
+    }
+
+    // 컬럼 수정
     @PatchMapping("/checked-rooms/{roomId}")
     public ResponseEntity<RspTemplate<Void>> handleUpdateCheckedRoom(
             @PathVariable Long roomId
@@ -152,6 +166,8 @@ public class SanitationCheckController {
         RspTemplate<Void> rspTemplate = new RspTemplate<>(HttpStatus.OK, "점검표 전체 통과 완료");
         return ResponseEntity.ok(rspTemplate);
     }
+
+
 
 
 
