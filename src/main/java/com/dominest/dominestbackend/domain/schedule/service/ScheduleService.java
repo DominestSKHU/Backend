@@ -26,9 +26,7 @@ public class ScheduleService {
             Schedule schedule = scheduleRepository.findByDayOfWeekAndTimeSlot(requests.getDayOfWeek(), requests.getTimeSlot()).get(0);
 
             schedule.getUsernames().addAll(usernames);
-            if (usernames.size() > 5) {
-                throw new BusinessException(ErrorCode.MAX_USER_FIVE);
-            }
+
             scheduleRepository.save(schedule);
         } catch (Exception e){
             throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR);
