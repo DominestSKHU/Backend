@@ -130,6 +130,11 @@ public class SanitationCheckController {
                 , postId + "번 게시글 " + floorId + "층의 점검표 조회"
                 ,resDto);
     }
+
+//    // 컬럼 수정
+//    // posts sanitation-check num floors num rooms num
+//    @PatchMapping("/posts/sanitation-check/{postId}/floors/{floorId}/rooms/{roomId}")
+
 }
 
 
