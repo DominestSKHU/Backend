@@ -24,4 +24,8 @@ public class FloorService {
                     , HttpStatus.BAD_REQUEST);
         }
     }
+
+    public List<Floor> getAllByPostId(Long postId) {
+        return null;
+    }
 }

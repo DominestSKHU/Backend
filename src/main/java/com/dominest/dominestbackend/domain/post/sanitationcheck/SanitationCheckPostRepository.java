@@ -12,4 +12,9 @@ public interface SanitationCheckPostRepository extends JpaRepository<SanitationC
             " WHERE p.category.id = :categoryId"
             , countQuery = "SELECT count(p) FROM SanitationCheckPost p WHERE p.category.id = :categoryId")
     Page<SanitationCheckPost> findAllByCategory(@Param("categoryId") Long categoryId, Pageable pageable);
+
+    @Query(value = "SELECT p FROM SanitationCheckPost p" +
+            " JOIN FETCH p.category" +
+            " WHERE p.id = :postId")
+    SanitationCheckPost findByIdFetchCategory(@Param("postId") Long postId);
 }

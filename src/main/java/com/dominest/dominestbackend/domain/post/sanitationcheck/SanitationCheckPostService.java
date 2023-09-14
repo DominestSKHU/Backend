@@ -125,6 +125,10 @@ public class SanitationCheckPostService {
     public Page<SanitationCheckPost> getPage(Long categoryId, Pageable pageable) {
         return sanitationCheckPostRepository.findAllByCategory(categoryId, pageable);
     }
+
+    public SanitationCheckPost getByIdFetchCategory(Long postId) {
+        return sanitationCheckPostRepository.findByIdFetchCategory(postId);
+    }
 }
 
 
