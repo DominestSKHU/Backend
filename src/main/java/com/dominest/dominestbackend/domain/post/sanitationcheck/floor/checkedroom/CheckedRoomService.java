@@ -32,6 +32,10 @@ public class CheckedRoomService {
         }
     }
 
+    public CheckedRoom getById(Long id) {
+        return EntityUtil.mustNotNull(checkedRoomRepository.findById(id), ErrorCode.CHECKED_ROOM_NOT_FOUND);
+    }
+
     public List<CheckedRoom> getAllByFloorId(Long floorId) {
         return checkedRoomRepository.findAllByFloorIdFetchResidentAndRoom(floorId);
     }
@@ -74,6 +78,12 @@ public class CheckedRoomService {
                 penaltyHistService.create(newPenaltyHist);
             }
         }
+    }
+
+    @Transactional
+    public void passAll(Long roomId) {
+        CheckedRoom checkedRoom = getById(roomId);
+        checkedRoom.passAll();
     }
 }
 

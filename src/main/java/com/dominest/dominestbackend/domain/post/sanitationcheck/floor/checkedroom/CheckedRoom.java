@@ -74,6 +74,14 @@ public class CheckedRoom extends BaseEntity {
         if (etc != null) {this.etc = etc;}
     }
 
+    public void passAll() {
+        this.indoor = true;
+        this.leavedTrash = true;
+        this.toilet = true;
+        this.shower = true;
+        this.prohibitedItem = true;
+    }
+
     @Getter
     @RequiredArgsConstructor
     public enum PassState {

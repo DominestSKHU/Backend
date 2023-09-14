@@ -17,5 +17,5 @@ public interface CheckedRoomRepository extends JpaRepository<CheckedRoom, Long> 
     @Query("SELECT cr FROM CheckedRoom cr" +
             " LEFT JOIN FETCH cr.resident " +
             " WHERE cr.id = :id")
-    CheckedRoom findByIdFetchResident(Long id);
+    CheckedRoom findByIdFetchResident(@Param("id") Long id);
 }

@@ -143,6 +143,16 @@ public class SanitationCheckController {
         return ResponseEntity.ok(rspTemplate);
     }
 
+    // 전체 통과
+    @PatchMapping("/checked-rooms/{roomId}/pass-all")
+    public ResponseEntity<RspTemplate<Void>> handleUpdateCheckedRoomPass(
+            @PathVariable Long roomId
+    ) {
+        checkedRoomService.passAll(roomId);
+        RspTemplate<Void> rspTemplate = new RspTemplate<>(HttpStatus.OK, "점검표 전체 통과 완료");
+        return ResponseEntity.ok(rspTemplate);
+    }
+
 
 
 }
