@@ -14,28 +14,28 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class SaniCheckedRoomListDto {
+public class CheckedRoomListDto {
     @Getter
     public static class Res {
         CategoryDto category;
-        List<SaniCheckedRoomDto> checkedRooms;
-        public static SaniCheckedRoomListDto.Res from(List<CheckedRoom> checkedRooms, Category category){
+        List<CheckedRoomDto> checkedRooms;
+        public static CheckedRoomListDto.Res from(List<CheckedRoom> checkedRooms, Category category){
             CategoryDto categoryDto = CategoryDto.from(category);
 
-            List<SaniCheckedRoomDto> checkedRoomDtos
-                    = SaniCheckedRoomDto.from(checkedRooms);
+            List<CheckedRoomDto> checkedRoomDtos
+                    = CheckedRoomDto.from(checkedRooms);
 
-            return new SaniCheckedRoomListDto.Res(checkedRoomDtos, categoryDto);
+            return new CheckedRoomListDto.Res(checkedRoomDtos, categoryDto);
         }
 
-        Res(List<SaniCheckedRoomDto> checkedRooms, CategoryDto category) {
+        Res(List<CheckedRoomDto> checkedRooms, CategoryDto category) {
             this.checkedRooms = checkedRooms;
             this.category = category;
         }
 
         @Builder
         @Getter
-        static class SaniCheckedRoomDto {
+        static class CheckedRoomDto {
             long id;
             boolean emptyRoom;
             String assignedRoom;
@@ -52,7 +52,7 @@ public class SaniCheckedRoomListDto {
 
             AuditLog auditLog;
 
-            static SaniCheckedRoomDto from(CheckedRoom checkedRoom){
+            static CheckedRoomDto from(CheckedRoom checkedRoom){
                 Resident resident = checkedRoom.getResident();
                 ResidentDto residentDto = null;
                 boolean emptyRoom = true;
@@ -65,7 +65,7 @@ public class SaniCheckedRoomListDto {
                      emptyRoom = false;
                 }
 
-                return SaniCheckedRoomDto.builder()
+                return CheckedRoomDto.builder()
                         .id(checkedRoom.getId())
                         .emptyRoom(emptyRoom)
                         .assignedRoom(checkedRoom.getRoom().getAssignedRoom())
@@ -81,9 +81,9 @@ public class SaniCheckedRoomListDto {
                         .build();
             }
 
-            static List<SaniCheckedRoomDto> from(List<CheckedRoom> rooms){
+            static List<CheckedRoomDto> from(List<CheckedRoom> rooms){
                 return rooms.stream()
-                        .map(SaniCheckedRoomDto::from)
+                        .map(CheckedRoomDto::from)
                         .collect(Collectors.toList());
             }
 
