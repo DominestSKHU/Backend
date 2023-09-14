@@ -5,6 +5,7 @@ import com.dominest.dominestbackend.api.common.CategoryDto;
 import com.dominest.dominestbackend.domain.post.component.category.Category;
 import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.checkedroom.CheckedRoom;
 import com.dominest.dominestbackend.domain.resident.Resident;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -60,6 +61,7 @@ public class CheckedRoomListDto {
                      residentDto = ResidentDto.builder()
                             .name(resident.getName())
                             .studentId(resident.getStudentId())
+                            .phoneNo(resident.getPhoneNumber())
                             .penalty(resident.getPenalty())
                             .build();
                      emptyRoom = false;
@@ -92,6 +94,8 @@ public class CheckedRoomListDto {
             static class ResidentDto {
                 String name;
                 String studentId;
+                @JsonProperty("phon") // 이현우씨의 속성명 요구...
+                String phoneNo;
                 Integer penalty;
             }
         }

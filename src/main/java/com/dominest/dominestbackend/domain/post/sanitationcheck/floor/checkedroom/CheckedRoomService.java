@@ -85,6 +85,10 @@ public class CheckedRoomService {
         CheckedRoom checkedRoom = getById(roomId);
         checkedRoom.passAll();
     }
+
+    public List<CheckedRoom> getNotPassedAllByPostId(Long postId) {
+        return checkedRoomRepository.findNotPassedAllByPostId(postId, CheckedRoom.PassState.NOT_PASSED);
+    }
 }
 
 
