@@ -1,12 +1,21 @@
 package com.dominest.dominestbackend.api.post.sanitationcheck.controller;
 
 import com.dominest.dominestbackend.api.common.RspTemplate;
+import com.dominest.dominestbackend.api.post.sanitationcheck.dto.SaniCheckPostListDto;
+import com.dominest.dominestbackend.domain.post.component.category.Category;
+import com.dominest.dominestbackend.domain.post.component.category.component.Type;
+import com.dominest.dominestbackend.domain.post.component.category.service.CategoryService;
+import com.dominest.dominestbackend.domain.post.sanitationcheck.SanitationCheckPost;
 import com.dominest.dominestbackend.domain.post.sanitationcheck.SanitationCheckPostService;
 import com.dominest.dominestbackend.domain.resident.component.ResidenceSemester;
+import com.dominest.dominestbackend.global.util.PageableUtil;
 import com.dominest.dominestbackend.global.util.PrincipalUtil;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +30,7 @@ import java.security.Principal;
 @RestController
 public class SanitationCheckController {
     private final SanitationCheckPostService sanitationCheckPostService;
+    private final CategoryService categoryService;
 
     // 게시글 생성(학기 지정)
     // category 4 posts sanitation-check
@@ -67,7 +77,22 @@ public class SanitationCheckController {
 
     // 게시글 목록
     // category 4 posts sanitation-check
+    @GetMapping("/categories/{categoryId}/posts/sanitation-check")
+    public RspTemplate<SaniCheckPostListDto.Res> handleGetSanitationCheckPosts(
+            @PathVariable Long categoryId, @RequestParam(defaultValue = "1") int page
+    ) {
+        final int IMAGE_TYPE_PAGE_SIZE = 20;
+        Sort sort = Sort.by(Sort.Direction.DESC, "id");
+        Pageable pageable = PageableUtil.of(page, IMAGE_TYPE_PAGE_SIZE, sort);
 
+        Category category = categoryService.validateCategoryType(categoryId, Type.SANITATION_CHECK);
+        Page<SanitationCheckPost> postPage = sanitationCheckPostService.getPage(category.getId(), pageable);
+
+        SaniCheckPostListDto.Res resDto = SaniCheckPostListDto.Res.from(postPage, category);
+        return new RspTemplate<>(HttpStatus.OK
+                , "페이지 게시글 목록 조회 - " + resDto.getPage().getCurrentPage() + "페이지"
+                ,resDto);
+    }
 
     // 게시글 상세조회 - 층 목록
     // posts sanitation-check num floors

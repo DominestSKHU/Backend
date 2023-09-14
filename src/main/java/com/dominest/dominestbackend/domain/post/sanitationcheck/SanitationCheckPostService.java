@@ -18,6 +18,8 @@ import com.dominest.dominestbackend.global.exception.ErrorCode;
 import com.dominest.dominestbackend.global.util.EntityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -118,6 +120,10 @@ public class SanitationCheckPostService {
         SanitationCheckPost saniCheckPost = getById(postId);
         saniCheckPost.setTitle(title);
         return postId;
+    }
+
+    public Page<SanitationCheckPost> getPage(Long categoryId, Pageable pageable) {
+        return sanitationCheckPostRepository.findAllByCategory(categoryId, pageable);
     }
 }
 
