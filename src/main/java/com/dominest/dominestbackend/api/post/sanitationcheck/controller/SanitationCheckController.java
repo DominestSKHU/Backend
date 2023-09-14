@@ -3,6 +3,7 @@ package com.dominest.dominestbackend.api.post.sanitationcheck.controller;
 import com.dominest.dominestbackend.api.common.RspTemplate;
 import com.dominest.dominestbackend.api.post.sanitationcheck.dto.SaniCheckFloorListDto;
 import com.dominest.dominestbackend.api.post.sanitationcheck.dto.SaniCheckPostListDto;
+import com.dominest.dominestbackend.api.post.sanitationcheck.dto.SaniCheckedRoomListDto;
 import com.dominest.dominestbackend.domain.post.component.category.Category;
 import com.dominest.dominestbackend.domain.post.component.category.component.Type;
 import com.dominest.dominestbackend.domain.post.component.category.service.CategoryService;
@@ -10,6 +11,8 @@ import com.dominest.dominestbackend.domain.post.sanitationcheck.SanitationCheckP
 import com.dominest.dominestbackend.domain.post.sanitationcheck.SanitationCheckPostService;
 import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.Floor;
 import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.FloorService;
+import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.checkedroom.CheckedRoom;
+import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.checkedroom.CheckedRoomService;
 import com.dominest.dominestbackend.domain.resident.component.ResidenceSemester;
 import com.dominest.dominestbackend.global.util.PageableUtil;
 import com.dominest.dominestbackend.global.util.PrincipalUtil;
@@ -36,6 +39,7 @@ public class SanitationCheckController {
     private final SanitationCheckPostService sanitationCheckPostService;
     private final CategoryService categoryService;
     private final FloorService floorService;
+    private final CheckedRoomService checkedRoomService;
 
     // 게시글 생성(학기 지정)
     // category 4 posts sanitation-check
@@ -114,7 +118,18 @@ public class SanitationCheckController {
     }
     // 층을 클릭해서 들어간 점검표 페이지
     // posts sanitation-check num floors num
+    @GetMapping("/posts/sanitation-check/{postId}/floors/{floorId}")
+    public RspTemplate<SaniCheckedRoomListDto.Res> handleGetFloors(
+            @PathVariable Long postId, @PathVariable Long floorId
+    ) {
+        Category category = sanitationCheckPostService.getByIdFetchCategory(postId).getCategory();
+        List<CheckedRoom> checkedRooms = checkedRoomService.getAllByFloorId(floorId);
 
+        SaniCheckedRoomListDto.Res resDto = SaniCheckedRoomListDto.Res.from(checkedRooms, category);
+        return new RspTemplate<>(HttpStatus.OK
+                , postId + "번 게시글 " + floorId + "층의 점검표 조회"
+                ,resDto);
+    }
 }
 
 
