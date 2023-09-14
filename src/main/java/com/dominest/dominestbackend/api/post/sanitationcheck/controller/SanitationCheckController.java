@@ -1,9 +1,10 @@
 package com.dominest.dominestbackend.api.post.sanitationcheck.controller;
 
 import com.dominest.dominestbackend.api.common.RspTemplate;
-import com.dominest.dominestbackend.api.post.sanitationcheck.dto.SaniCheckFloorListDto;
-import com.dominest.dominestbackend.api.post.sanitationcheck.dto.SaniCheckPostListDto;
-import com.dominest.dominestbackend.api.post.sanitationcheck.dto.SaniCheckedRoomListDto;
+import com.dominest.dominestbackend.api.post.sanitationcheck.dto.CheckFloorListDto;
+import com.dominest.dominestbackend.api.post.sanitationcheck.dto.CheckPostListDto;
+import com.dominest.dominestbackend.api.post.sanitationcheck.dto.CheckedRoomListDto;
+import com.dominest.dominestbackend.api.post.sanitationcheck.dto.UpdateCheckedRoomDto;
 import com.dominest.dominestbackend.domain.post.component.category.Category;
 import com.dominest.dominestbackend.domain.post.component.category.component.Type;
 import com.dominest.dominestbackend.domain.post.component.category.service.CategoryService;
@@ -87,7 +88,7 @@ public class SanitationCheckController {
     // 게시글 목록
     // category 4 posts sanitation-check
     @GetMapping("/categories/{categoryId}/posts/sanitation-check")
-    public RspTemplate<SaniCheckPostListDto.Res> handleGetSanitationCheckPosts(
+    public RspTemplate<CheckPostListDto.Res> handleGetSanitationCheckPosts(
             @PathVariable Long categoryId, @RequestParam(defaultValue = "1") int page
     ) {
         final int IMAGE_TYPE_PAGE_SIZE = 20;
@@ -97,7 +98,7 @@ public class SanitationCheckController {
         Category category = categoryService.validateCategoryType(categoryId, Type.SANITATION_CHECK);
         Page<SanitationCheckPost> postPage = sanitationCheckPostService.getPage(category.getId(), pageable);
 
-        SaniCheckPostListDto.Res resDto = SaniCheckPostListDto.Res.from(postPage, category);
+        CheckPostListDto.Res resDto = CheckPostListDto.Res.from(postPage, category);
         return new RspTemplate<>(HttpStatus.OK
                 , "페이지 게시글 목록 조회 - " + resDto.getPage().getCurrentPage() + "페이지"
                 ,resDto);
@@ -105,13 +106,13 @@ public class SanitationCheckController {
     // 게시글 상세조회 - 층 목록
     // posts sanitation-check num floors
     @GetMapping("/posts/sanitation-check/{postId}/floors")
-    public RspTemplate<SaniCheckFloorListDto.Res> handleGetFloors(
+    public RspTemplate<CheckFloorListDto.Res> handleGetFloors(
             @PathVariable Long postId
     ) {
         List<Floor> floors = floorService.getAllByPostId(postId);
         Category category = sanitationCheckPostService.getByIdFetchCategory(postId).getCategory();
 
-        SaniCheckFloorListDto.Res resDto = SaniCheckFloorListDto.Res.from(floors, category);
+        CheckFloorListDto.Res resDto = CheckFloorListDto.Res.from(floors, category);
         return new RspTemplate<>(HttpStatus.OK
                 , postId + "번 게시글의 층 목록 조회"
                 ,resDto);
@@ -119,21 +120,30 @@ public class SanitationCheckController {
     // 층을 클릭해서 들어간 점검표 페이지
     // posts sanitation-check num floors num
     @GetMapping("/posts/sanitation-check/{postId}/floors/{floorId}")
-    public RspTemplate<SaniCheckedRoomListDto.Res> handleGetFloors(
+    public RspTemplate<CheckedRoomListDto.Res> handleGetFloors(
             @PathVariable Long postId, @PathVariable Long floorId
     ) {
         Category category = sanitationCheckPostService.getByIdFetchCategory(postId).getCategory();
         List<CheckedRoom> checkedRooms = checkedRoomService.getAllByFloorId(floorId);
 
-        SaniCheckedRoomListDto.Res resDto = SaniCheckedRoomListDto.Res.from(checkedRooms, category);
+        CheckedRoomListDto.Res resDto = CheckedRoomListDto.Res.from(checkedRooms, category);
         return new RspTemplate<>(HttpStatus.OK
                 , postId + "번 게시글 " + floorId + "층의 점검표 조회"
                 ,resDto);
     }
 
 //    // 컬럼 수정
-//    // posts sanitation-check num floors num rooms num
-//    @PatchMapping("/posts/sanitation-check/{postId}/floors/{floorId}/rooms/{roomId}")
+    @PatchMapping("/checked-rooms/{roomId}")
+    public ResponseEntity<RspTemplate<Void>> handleUpdateCheckedRoom(
+            @PathVariable Long roomId
+            , @RequestBody UpdateCheckedRoomDto.Req checkedRoomDto
+    ) {
+        checkedRoomService.update(roomId, checkedRoomDto);
+        RspTemplate<Void> rspTemplate = new RspTemplate<>(HttpStatus.OK, "점검표 수정 완료");
+        return ResponseEntity.ok(rspTemplate);
+    }
+
+
 
 }
 

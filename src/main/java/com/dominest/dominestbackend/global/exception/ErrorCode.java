@@ -68,7 +68,9 @@ public enum ErrorCode {
     // 민원내역
     COMPLAINT_NOT_FOUND(404, "해당 민원이 존재하지 않습니다."),
     CARD_KEY_NOT_FOUND(404, "카드키를 찾을 수 없습니다."),
-    ROOM_NOT_FOUND_BY_ROOM_CODE(404, "방 코드로 방을 찾을 수 없습니다.");
+    ROOM_NOT_FOUND_BY_ROOM_CODE(404, "방 코드로 방을 찾을 수 없습니다.")
+    , CHECKED_ROOM_NOT_FOUND(404, "해당 방역점검 방이 존재하지 않습니다.")
+    ;
 
 
 

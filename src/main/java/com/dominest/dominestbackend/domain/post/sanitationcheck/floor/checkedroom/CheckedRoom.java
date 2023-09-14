@@ -62,14 +62,30 @@ public class CheckedRoom extends BaseEntity {
         this.resident = resident;
     }
 
+    public void updateValuesOnlyNotNull(Boolean indoor, Boolean leavedTrash
+            , Boolean toilet, Boolean shower, Boolean prohibitedItem
+            , PassState passState, String etc) {
+        if (indoor != null) {this.indoor = indoor;}
+        if (leavedTrash != null) {this.leavedTrash = leavedTrash;}
+        if (toilet != null) {this.toilet = toilet;}
+        if (shower != null) {this.shower = shower;}
+        if (prohibitedItem != null) {this.prohibitedItem = prohibitedItem;}
+        if (passState != null) {this.passed = passState;}
+        if (etc != null) {this.etc = etc;}
+    }
+
+    @Getter
     @RequiredArgsConstructor
     public enum PassState {
-        NOT_PASSED("미통과"), FIRST_PASSED("1차 통과"), SECOND_PASSED("2차 통과")
-        , THIRD_PASSED("3차 통과"), FOURTH_PASSED("4차 통과"), FIFTH_PASSED("5차 통과")
-        , SIXTH_PASSED("6차 통과");
+        NOT_PASSED("미통과", 0), FIRST_PASSED("1차 통과", 0)
+        , SECOND_PASSED("2차 통과", 3), THIRD_PASSED("3차 통과", 6)
+        , FOURTH_PASSED("4차 통과", 9), FIFTH_PASSED("5차 통과", 12)
+        , SIXTH_PASSED("6차 통과", 15)
+        ;
 
         @JsonValue
         private final String value;
+        private final int penalty;
     }
 }
 

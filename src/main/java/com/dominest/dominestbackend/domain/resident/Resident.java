@@ -185,5 +185,13 @@ public class Resident extends BaseEntity {
         this.address = resident.getAddress();
     }
 
+    public void increasePenalty(int penalty) {
+        this.penalty += penalty;
+    }
+
+    public void changePenalty(Integer oldPenalty, int newPenalty) {
+        this.penalty -= oldPenalty;
+        this.penalty += newPenalty;
+    }
 }
 
