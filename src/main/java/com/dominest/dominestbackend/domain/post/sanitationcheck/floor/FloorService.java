@@ -26,6 +26,6 @@ public class FloorService {
     }
 
     public List<Floor> getAllByPostId(Long postId) {
-        return null;
+        return floorRepository.findAllByPostId(postId);
     }
 }

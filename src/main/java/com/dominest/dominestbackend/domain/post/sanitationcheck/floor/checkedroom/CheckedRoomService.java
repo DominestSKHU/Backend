@@ -24,4 +24,22 @@ public class CheckedRoomService {
                     , HttpStatus.BAD_REQUEST);
         }
     }
+
+    public List<CheckedRoom> getAllByFloorId(Long floorId) {
+        return checkedRoomRepository.findAllByFloorIdFetchResidentAndRoom(floorId);
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

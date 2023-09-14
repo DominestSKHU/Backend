@@ -127,7 +127,7 @@ public class SanitationCheckPostService {
     }
 
     public SanitationCheckPost getByIdFetchCategory(Long postId) {
-        return sanitationCheckPostRepository.findByIdFetchCategory(postId);
+        return EntityUtil.mustNotNull(sanitationCheckPostRepository.findByIdFetchCategory(postId), ErrorCode.POST_NOT_FOUND);
     }
 }
 

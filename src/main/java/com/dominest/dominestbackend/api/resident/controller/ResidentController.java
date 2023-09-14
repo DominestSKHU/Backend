@@ -8,7 +8,6 @@ import com.dominest.dominestbackend.api.resident.dto.ResidentPdfListDto;
 import com.dominest.dominestbackend.api.resident.dto.SaveResidentDto;
 import com.dominest.dominestbackend.api.resident.util.PdfType;
 import com.dominest.dominestbackend.domain.resident.Resident;
-import com.dominest.dominestbackend.domain.resident.ResidentRepository;
 import com.dominest.dominestbackend.domain.resident.ResidentService;
 import com.dominest.dominestbackend.domain.resident.component.ResidenceSemester;
 import com.dominest.dominestbackend.global.exception.ErrorCode;
@@ -34,8 +33,9 @@ public class ResidentController {
 
     private final ResidentService residentService;
     private final FileService fileService;
-    private final ResidentRepository residentRepository;
 
+
+    // todo checkedRoom Update
     // 엑셀로 업로드
     @PostMapping("/residents/upload-excel")
     public ResponseEntity<RspTemplate<Void>> handleFileUpload(@RequestParam(required = true) MultipartFile file
@@ -62,6 +62,7 @@ public class ResidentController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
+    // todo checkedRoom Update
     // 입사생 단건 등록. 단순 DTO 변환 후 저장만 하면 될듯
     @PostMapping("/residents")
     public ResponseEntity<RspTemplate<Void>> handleSaveResident(@RequestBody @Valid SaveResidentDto.Req reqDto){
