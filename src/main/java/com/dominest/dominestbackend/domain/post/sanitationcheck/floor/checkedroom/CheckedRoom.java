@@ -48,16 +48,14 @@ public class CheckedRoom extends BaseEntity {
     private Resident resident;
 
     @Builder
-    private CheckedRoom(Room room
-            , Boolean indoor, Boolean leavedTrash, Boolean toilet
-            , Boolean shower, Boolean prohibitedItem, PassState passed
+    private CheckedRoom(Room room, PassState passed
             , String etc, Floor floor, Resident resident) {
         this.room = room;
-        this.indoor = indoor;
-        this.leavedTrash = leavedTrash;
-        this.toilet = toilet;
-        this.shower = shower;
-        this.prohibitedItem = prohibitedItem;
+        this.indoor = false;
+        this.leavedTrash = false;
+        this.toilet = false;
+        this.shower = false;
+        this.prohibitedItem = false;
         this.passed = passed;
         this.etc = etc;
         this.floor = floor;
