@@ -2,6 +2,7 @@ package com.dominest.dominestbackend.domain.post.sanitationcheck.floor.checkedro
 
 import com.dominest.dominestbackend.domain.common.BaseEntity;
 import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.Floor;
+import com.dominest.dominestbackend.domain.resident.Resident;
 import com.dominest.dominestbackend.domain.room.Room;
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.*;
@@ -32,6 +33,8 @@ public class CheckedRoom extends BaseEntity {
     private Boolean toilet;
     private Boolean shower;
     private Boolean prohibitedItem;
+
+    @Enumerated(EnumType.STRING)
     private PassState passed;
 
     private String etc;
@@ -40,11 +43,15 @@ public class CheckedRoom extends BaseEntity {
     @JoinColumn(name = "floor_id", nullable = false)
     private Floor floor;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "resident_id", nullable = true)
+    private Resident resident;
+
     @Builder
     private CheckedRoom(Room room
             , Boolean indoor, Boolean leavedTrash, Boolean toilet
             , Boolean shower, Boolean prohibitedItem, PassState passed
-            , String etc, Floor floor) {
+            , String etc, Floor floor, Resident resident) {
         this.room = room;
         this.indoor = indoor;
         this.leavedTrash = leavedTrash;
@@ -54,6 +61,7 @@ public class CheckedRoom extends BaseEntity {
         this.passed = passed;
         this.etc = etc;
         this.floor = floor;
+        this.resident = resident;
     }
 
     @RequiredArgsConstructor

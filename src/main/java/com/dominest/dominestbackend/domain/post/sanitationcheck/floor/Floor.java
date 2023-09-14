@@ -7,6 +7,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Range;
 
 import javax.persistence.*;
 import java.util.List;
@@ -26,8 +27,13 @@ public class Floor extends BaseEntity {
     @JoinColumn(name = "sanitation_check_post_id", nullable = false)
     private SanitationCheckPost sanitationCheckPost;
 
+    @Range(min = 2, max = 10, message = "층수는 2층 이상 10층 이하만 가능합니다")
+    @Column(nullable = false)
+    private Integer floorNumber;
+
     @Builder
-    private Floor(SanitationCheckPost sanitationCheckPost) {
+    private Floor(Integer floorNumber, SanitationCheckPost sanitationCheckPost) {
+        this.floorNumber = floorNumber;
         this.sanitationCheckPost = sanitationCheckPost;
     }
 }

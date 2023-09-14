@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Service
@@ -16,5 +18,9 @@ public class RoomService {
         return EntityUtil.mustNotNull(
                 roomRepository.findByAssignedRoom(assignedRoom)
                 , ErrorCode.ROOM_NOT_FOUND_BY_ROOM_CODE);
+    }
+
+    public List<Room> getByFloorNo(Integer roomNo) {
+        return roomRepository.findByFloorNo(roomNo);
     }
 }

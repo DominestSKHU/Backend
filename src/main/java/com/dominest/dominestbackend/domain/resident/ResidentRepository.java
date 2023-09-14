@@ -1,6 +1,7 @@
 package com.dominest.dominestbackend.domain.resident;
 
 import com.dominest.dominestbackend.domain.resident.component.ResidenceSemester;
+import com.dominest.dominestbackend.domain.room.Room;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,4 +19,6 @@ public interface ResidentRepository extends JpaRepository<Resident, Long> {
     Resident findByNameAndResidenceSemester(String name, ResidenceSemester residenceSemester);
 
     Resident findByStudentIdAndResidenceSemester(String studentId, ResidenceSemester residenceSemester);
+
+    Resident findByResidenceSemesterAndRoom(ResidenceSemester residenceSemester, Room room);
 }

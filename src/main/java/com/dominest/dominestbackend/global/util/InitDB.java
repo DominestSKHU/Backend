@@ -233,6 +233,7 @@ public class InitDB {
     private static void createRoomsFor(int roomCount, String floor, List<Room> rooms) {
         for (int i = 1; i <= roomCount; i++) {
             String roomNo = String.format("%02d", i);
+            Integer floorNo = Integer.valueOf(floor);
             StringBuilder sb = new StringBuilder();
 
             Room roomA = Room.builder()
@@ -242,9 +243,10 @@ public class InitDB {
                                     .append(roomNo)
                                     .append("A")
                                     .toString())
+                    .floorNo(floorNo)
 
                     .dormitory("B")
-                    .roomNumber(2)
+                    .roomNo(2)
                     .build();
             rooms.add(roomA);
             sb.setLength(0);
@@ -256,9 +258,9 @@ public class InitDB {
                             .append(roomNo)
                             .append("B")
                             .toString())
-
+                    .floorNo(floorNo)
                     .dormitory("B")
-                    .roomNumber(2)
+                    .roomNo(2)
                     .build();
 
             rooms.add(roomB);

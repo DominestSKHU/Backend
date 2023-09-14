@@ -1,6 +1,7 @@
 package com.dominest.dominestbackend.domain.resident;
 
 import com.dominest.dominestbackend.domain.common.BaseEntity;
+import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.checkedroom.CheckedRoom;
 import com.dominest.dominestbackend.domain.resident.component.ResidenceSemester;
 import com.dominest.dominestbackend.domain.room.Room;
 import com.dominest.dominestbackend.global.util.TimeUtil;
@@ -9,14 +10,19 @@ import lombok.*;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(uniqueConstraints = {
+        // 학번, 학기가 중복되면 안된다. 똑같은 학생이 한 학기에 둘 이상 있을 순 없다.
+        // 방번호, 학기가 중복되면 안된다. 학기중 하나의 방, 하나의 구역에 둘 이상이 있을 순 없다.
         @UniqueConstraint(name = "unique_resident_Info_for_semester",
                                             columnNames = { "studentId", "residenceSemester" })
+        , @UniqueConstraint(name = "unique_resident_Info_for_room",
+                                            columnNames = { "room_id", "residenceSemester" })
 })
 public class Resident extends BaseEntity {
     @Id
@@ -56,10 +62,6 @@ public class Resident extends BaseEntity {
 
     private String period; // 기간. 'LY' 'AY' 'VY' 'YY'
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "room_id")
-    private Room room;
-
     // 호실(1, 2), 배정방, 기숙사(A, B) 3개가 물리적인 위치에 관여
     /** 날짜정보 */
     // 엑셀데이터는 8자리로 저장되긴 하는데, 날짜 필터링 걸려면 날짜타입 사용해야 할 듯
@@ -77,6 +79,8 @@ public class Resident extends BaseEntity {
     private String zipCode; // 우편번호
     private String address; // 주소. 이거 거주지별로 분류할 일이 생기나?
 
+    private Integer penalty; // 벌점.
+
     /** 아래는 학생정보 페이지에 표시되지 않는 정보들
      *
      * */
@@ -90,6 +94,14 @@ public class Resident extends BaseEntity {
     @Column(nullable = true)
     @Setter
     private String departurePdfFileName; // UUID로 저장된다.
+
+    // 방 정보는 하나지만 학생데이터는 학기마다 추가됨. N : 1
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "room_id")
+    private Room room;
+
+    @OneToMany(mappedBy = "resident", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<CheckedRoom> checkedRooms = new ArrayList<>();
 
     @Builder
     private Resident(String name, String gender, String studentId, String major, String grade,
@@ -117,11 +129,9 @@ public class Resident extends BaseEntity {
         this.socialName = socialName;
         this.zipCode = zipCode;
         this.address = address;
+        this.penalty = 0;
     }
-    // 0~20까지의 데이터를 추출하므로 추가된 컬럼(22번째 열 이상)의 데이터를 무시한다.
-//        String dormitory = data.get(6);
-//        Integer roomNumber = Integer.valueOf(data.get(10));
-//        String assignedRoom = data.get(11);
+
     public static Resident from(List<String> data, ResidenceSemester residenceSemester, Room room) {
         String yyyyMMddPattern = "yyyyMMdd";
 

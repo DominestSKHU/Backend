@@ -63,7 +63,7 @@ public class ResidentListDto {
                         .major(resident.getMajor())
                         .grade(resident.getGrade())
                         .period(resident.getPeriod())
-                        .roomNumber(resident.getRoom().getRoomNumber())
+                        .roomNumber(resident.getRoom().getRoomNo())
                         .assignedRoom(resident.getRoom().getAssignedRoom())
                         .admissionDate(resident.getAdmissionDate())
                         .leavingDate(resident.getLeavingDate() == null ? "" :

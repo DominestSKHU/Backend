@@ -47,13 +47,6 @@ public class UndeliveredParcelPostService {
         return EntityUtil.mustNotNull(undelivParcelPostRepository.findByIdFetchParcels(undelivParcelPostId), ErrorCode.POST_NOT_FOUND);
     }
 
-    private String createTitle() {
-        // 원하는 형식의 문자열로 변환
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        String formattedDate = LocalDateTime.now().format(formatter);
-        return formattedDate + " 장기미수령 택배";
-    }
-
     @Transactional
     public long delete(Long undelivParcelPostId) {
         UndeliveredParcelPost post = getById(undelivParcelPostId);
@@ -64,5 +57,12 @@ public class UndeliveredParcelPostService {
     public Page<UndeliveredParcelPost> getPage(Long categoryId, Pageable pageable) {
         // 카테고리 내 게시글이 1건도 없는 경우도 있으므로, 게시글과 함께 카테고리를 Join해서 데이터를 찾아오지 않는다.
         return undelivParcelPostRepository.findAllByCategory(categoryId, pageable);
+    }
+
+    private String createTitle() {
+        // 원하는 형식의 문자열로 변환
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String formattedDate = LocalDateTime.now().format(formatter);
+        return formattedDate + " 장기미수령 택배";
     }
 }
