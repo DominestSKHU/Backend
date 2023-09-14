@@ -1,4 +1,4 @@
-insert into schedule(dayOfWeek, timeSlot) values ('월요일', '09:00 ~ 10:00'),
+insert into schedule(day_of_week, time_slot) values ('월요일', '09:00 ~ 10:00'),
                                                  ('월요일', '10:00 ~ 11:00'),
                                                  ('월요일', '11:00 ~ 12:00'),
                                                  ('월요일', '12:00 ~ 13:00'),
