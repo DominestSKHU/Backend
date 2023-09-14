@@ -28,11 +28,11 @@ public class CheckedRoom extends BaseEntity {
     @JoinColumn(name = "room_id", nullable = false)
     private Room room;
 
-    private Boolean indoor;
-    private Boolean leavedTrash;
-    private Boolean toilet;
-    private Boolean shower;
-    private Boolean prohibitedItem;
+    private Boolean indoor = false;
+    private Boolean leavedTrash = false;
+    private Boolean toilet = false;
+    private Boolean shower = false;
+    private Boolean prohibitedItem = false;
 
     @Enumerated(EnumType.STRING)
     private PassState passed;

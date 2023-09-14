@@ -92,7 +92,6 @@ public class SanitationCheckPostService {
             List<Room> rooms = roomService.getByFloorNo(floorNumber);
             for (Room room : rooms) { // CheckedRoom 은 Room 만큼 생성되어야 한다.
                 Resident resident = residentRepository.findByResidenceSemesterAndRoom(residenceSemester, room);
-                log.info("쿼리 어캐날림?");
 
                 CheckedRoom checkedRoom = CheckedRoom.builder()
                         .room(room)
