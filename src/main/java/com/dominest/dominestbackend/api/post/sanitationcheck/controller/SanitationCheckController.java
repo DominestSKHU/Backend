@@ -9,12 +9,10 @@ import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.net.URI;
 import java.security.Principal;
@@ -51,11 +49,25 @@ public class SanitationCheckController {
 
 
     // 게시글 제목 수정
-    // category 4 posts sanitation-check num
+    @PatchMapping("/posts/sanitation-check/{postId}")
+    public ResponseEntity<RspTemplate<Void>> handleUpdateSanitationCheckPostTitle(
+            @PathVariable Long postId, @RequestBody @Valid TitleDto titleDto
+    ) {
+        long updatedPostId = sanitationCheckPostService.updateTitle(postId, titleDto.getTitle());
 
+        RspTemplate<Void> rspTemplate = new RspTemplate<>(HttpStatus.OK, updatedPostId + "번 게시글 제목 수정");
+        return ResponseEntity.ok(rspTemplate);
+    }
+    @Getter
+    @NoArgsConstructor
+    public static class TitleDto {
+        @NotBlank(message = "제목을 입력해주세요.")
+        String title;
+    }
 
     // 게시글 목록
     // category 4 posts sanitation-check
+
 
     // 게시글 상세조회 - 층 목록
     // posts sanitation-check num floors
@@ -63,3 +75,16 @@ public class SanitationCheckController {
     // 층을 클릭해서 들어간 점검표 페이지
     // posts sanitation-check num floors num
 }
+
+
+
+
+
+
+
+
+
+
+
+
+

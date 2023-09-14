@@ -14,6 +14,8 @@ import com.dominest.dominestbackend.domain.room.Room;
 import com.dominest.dominestbackend.domain.room.RoomService;
 import com.dominest.dominestbackend.domain.user.User;
 import com.dominest.dominestbackend.domain.user.service.UserService;
+import com.dominest.dominestbackend.global.exception.ErrorCode;
+import com.dominest.dominestbackend.global.util.EntityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -38,6 +40,9 @@ public class SanitationCheckPostService {
     private final RoomService roomService;
     private final ResidentRepository residentRepository;
 
+    public SanitationCheckPost getById(Long id) {
+        return EntityUtil.mustNotNull(sanitationCheckPostRepository.findById(id), ErrorCode.POST_NOT_FOUND);
+    }
     /**
      * 방역점검 게시글 생성한다.
      * 게시글만 생성하는 것이 아니라, 게시글에 연관된 각 층수(Floor 객체),
@@ -106,6 +111,13 @@ public class SanitationCheckPostService {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         String formattedDate = LocalDateTime.now().format(formatter);
         return formattedDate + "방역호실점검";
+    }
+
+    @Transactional
+    public long updateTitle(Long postId, String title) {
+        SanitationCheckPost saniCheckPost = getById(postId);
+        saniCheckPost.setTitle(title);
+        return postId;
     }
 }
 
