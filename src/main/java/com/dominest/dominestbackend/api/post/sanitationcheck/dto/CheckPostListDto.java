@@ -16,24 +16,24 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class SaniCheckPostListDto {
+public class CheckPostListDto {
     @Getter
     public static class Res {
         CategoryDto category;
         PageInfoDto page;
 
-        List<SaniCheckPostDto> posts;
+        List<CheckPostDto> posts;
         public static Res from(Page<SanitationCheckPost> postPage, Category category){
             CategoryDto categoryDto = CategoryDto.from(category);
             PageInfoDto pageInfoDto = PageInfoDto.from(postPage);
 
-            List<SaniCheckPostDto> posts
-                    = SaniCheckPostDto.from(postPage);
+            List<CheckPostDto> posts
+                    = CheckPostDto.from(postPage);
 
             return new Res(pageInfoDto, posts, categoryDto);
         }
 
-        Res(PageInfoDto page, List<SaniCheckPostDto> posts, CategoryDto category) {
+        Res(PageInfoDto page, List<CheckPostDto> posts, CategoryDto category) {
             this.page = page;
             this.posts = posts;
             this.category = category;
@@ -41,22 +41,22 @@ public class SaniCheckPostListDto {
 
         @Builder
         @Getter
-        static class SaniCheckPostDto {
+        static class CheckPostDto {
             long id;
             String title;
             AuditLog auditLog;
 
-            static SaniCheckPostDto from(SanitationCheckPost post){
-                return SaniCheckPostDto.builder()
+            static CheckPostDto from(SanitationCheckPost post){
+                return CheckPostDto.builder()
                         .id(post.getId())
                         .title(post.getTitle())
                         .auditLog(AuditLog.from(post))
                         .build();
             }
 
-            static List<SaniCheckPostDto> from(Page<SanitationCheckPost> posts){
+            static List<CheckPostDto> from(Page<SanitationCheckPost> posts){
                 return posts.stream()
-                        .map(SaniCheckPostDto::from)
+                        .map(CheckPostDto::from)
                         .collect(Collectors.toList());
             }
         }
