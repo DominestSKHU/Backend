@@ -67,7 +67,13 @@ public enum ErrorCode {
 
     // 민원내역
     COMPLAINT_NOT_FOUND(404, "해당 민원이 존재하지 않습니다."),
-    CARD_KEY_NOT_FOUND(404, "카드키를 찾을 수 없습니다.");
+    CARD_KEY_NOT_FOUND(404, "카드키를 찾을 수 없습니다."),
+
+    // 캘린터
+    DATA_NOT_FOUND(404, "데이터가 존재하지 않습니다."),
+
+    // 500
+    INTERNAL_SERVER_ERROR(500, "서버 오류가 발생하였습니다.");
 
 
 
