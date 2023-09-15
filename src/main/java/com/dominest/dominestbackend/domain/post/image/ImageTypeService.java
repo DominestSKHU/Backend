@@ -1,6 +1,8 @@
 package com.dominest.dominestbackend.domain.post.image;
 
 import com.dominest.dominestbackend.api.post.image.dto.SaveImageTypeDto;
+import com.dominest.dominestbackend.domain.post.common.RecentPost;
+import com.dominest.dominestbackend.domain.post.common.RecentPostService;
 import com.dominest.dominestbackend.domain.post.component.category.Category;
 import com.dominest.dominestbackend.domain.post.component.category.component.Type;
 import com.dominest.dominestbackend.domain.post.component.category.service.CategoryService;
@@ -25,6 +27,7 @@ public class ImageTypeService {
     private final UserService userService;
     private final CategoryService categoryService;
     private final FileService fileService;
+    private final RecentPostService recentPostService;
 
     @Transactional
     public Long create(SaveImageTypeDto.Req reqDto
@@ -37,7 +40,18 @@ public class ImageTypeService {
 
         List<String> savedImgUrls = fileService.save(FileService.FilePrefix.POST_IMAGE_TYPE, reqDto.getPostImages());
         ImageType imageType = reqDto.toEntity(savedImgUrls, writer, category);
-        return imageTypeRepository.save(imageType).getId();
+
+
+        ImageType saved = imageTypeRepository.save(imageType);
+        RecentPost recentPost = RecentPost.builder()
+                .title(saved.getTitle())
+                .categoryLink(saved.getCategory().getPostsLink())
+                .categoryType(saved.getCategory().getType())
+                .link(saved.getCategory().getPostsLink() + "/" + saved.getId())
+                .build();
+        recentPostService.create(recentPost);
+
+        return saved.getId();
     }
 
     public ImageType getById(Long imageTypeId) {

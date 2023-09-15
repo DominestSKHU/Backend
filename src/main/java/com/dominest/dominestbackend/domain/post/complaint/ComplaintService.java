@@ -2,6 +2,8 @@ package com.dominest.dominestbackend.domain.post.complaint;
 
 import com.dominest.dominestbackend.api.post.complaint.dto.CreateComplaintDto;
 import com.dominest.dominestbackend.api.post.complaint.dto.UpdateComplaintDto;
+import com.dominest.dominestbackend.domain.post.common.RecentPost;
+import com.dominest.dominestbackend.domain.post.common.RecentPostService;
 import com.dominest.dominestbackend.domain.post.component.category.Category;
 import com.dominest.dominestbackend.domain.post.component.category.component.Type;
 import com.dominest.dominestbackend.domain.post.component.category.service.CategoryService;
@@ -23,6 +25,7 @@ public class ComplaintService {
     private final ComplaintRepository complaintRepository;
     private final UserService userService;
     private final CategoryService categoryService;
+    private final RecentPostService recentPostService;
 
     @Transactional
     public long create(CreateComplaintDto.Req reqDto, Long categoryId, String email) {
@@ -33,8 +36,18 @@ public class ComplaintService {
 
         Complaint complaint = reqDto.toEntity(user, category);
 
+
+        Complaint compl = complaintRepository.save(complaint);
+        RecentPost recentPost = RecentPost.builder()
+                .title(compl.getRoomNo() + "호 민원 기록")
+                .categoryLink(compl.getCategory().getPostsLink())
+                .categoryType(compl.getCategory().getType())
+                .link(null)
+                .build();
+        recentPostService.create(recentPost);
+
         // Complaint 객체 생성 후 저장
-        return complaintRepository.save(complaint).getId();
+        return compl.getId();
     }
 
     @Transactional

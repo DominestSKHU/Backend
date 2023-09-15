@@ -2,6 +2,8 @@ package com.dominest.dominestbackend.domain.post.cardkey;
 
 import com.dominest.dominestbackend.api.post.cardkey.dto.CreateCardKeyDto;
 import com.dominest.dominestbackend.api.post.cardkey.dto.UpdateCardKeyDto;
+import com.dominest.dominestbackend.domain.post.common.RecentPost;
+import com.dominest.dominestbackend.domain.post.common.RecentPostService;
 import com.dominest.dominestbackend.domain.post.component.category.Category;
 import com.dominest.dominestbackend.domain.post.component.category.component.Type;
 import com.dominest.dominestbackend.domain.post.component.category.service.CategoryService;
@@ -23,6 +25,7 @@ public class CardKeyService {
     private final CardKeyRepository cardKeyRepository;
     private final UserService userService;
     private final CategoryService categoryService;
+    private final RecentPostService recentPostService;
 
     @Transactional
     public long create(CreateCardKeyDto.Req reqDto, Long categoryId, String email) {
@@ -31,10 +34,20 @@ public class CardKeyService {
         // CardKey 연관 객체인 category 찾기
         Category category = categoryService.validateCategoryType(categoryId, Type.CARD_KEY);
 
+        // CardKey 객체 생성 후 저장
         CardKey cardKey = reqDto.toEntity(user, category);
 
-        // CardKey 객체 생성 후 저장
-        return cardKeyRepository.save(cardKey).getId();
+        CardKey key = cardKeyRepository.save(cardKey);
+
+        RecentPost recentPost = RecentPost.builder()
+                .title(key.getRoomNo() + "호 카드키 기록")
+                .categoryLink(key.getCategory().getPostsLink())
+                .categoryType(key.getCategory().getType())
+                .link(null)
+                .build();
+        recentPostService.create(recentPost);
+
+        return key.getId();
     }
 
     @Transactional

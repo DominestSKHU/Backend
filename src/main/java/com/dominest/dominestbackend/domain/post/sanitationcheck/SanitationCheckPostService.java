@@ -1,5 +1,7 @@
 package com.dominest.dominestbackend.domain.post.sanitationcheck;
 
+import com.dominest.dominestbackend.domain.post.common.RecentPost;
+import com.dominest.dominestbackend.domain.post.common.RecentPostService;
 import com.dominest.dominestbackend.domain.post.component.category.Category;
 import com.dominest.dominestbackend.domain.post.component.category.component.Type;
 import com.dominest.dominestbackend.domain.post.component.category.service.CategoryService;
@@ -41,6 +43,7 @@ public class SanitationCheckPostService {
     private final FloorService floorService;
     private final RoomService roomService;
     private final ResidentRepository residentRepository;
+    private final RecentPostService recentPostService;
 
     public SanitationCheckPost getById(Long id) {
         return EntityUtil.mustNotNull(sanitationCheckPostRepository.findById(id), ErrorCode.POST_NOT_FOUND);
@@ -103,6 +106,14 @@ public class SanitationCheckPostService {
             }
         }
         checkedRoomService.create(checkedRooms);
+
+        RecentPost recentPost = RecentPost.builder()
+                .title(saniChkPost.getTitle())
+                .categoryLink(saniChkPost.getCategory().getPostsLink())
+                .categoryType(saniChkPost.getCategory().getType())
+                .link("/posts/sanitation-check/" + saniChkPost.getId() + "/floors")
+                .build();
+        recentPostService.create(recentPost);
 
         return saniChkPost.getId();
     }

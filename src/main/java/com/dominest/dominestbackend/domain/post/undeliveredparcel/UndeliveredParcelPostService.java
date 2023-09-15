@@ -1,5 +1,7 @@
 package com.dominest.dominestbackend.domain.post.undeliveredparcel;
 
+import com.dominest.dominestbackend.domain.post.common.RecentPost;
+import com.dominest.dominestbackend.domain.post.common.RecentPostService;
 import com.dominest.dominestbackend.domain.post.component.category.Category;
 import com.dominest.dominestbackend.domain.post.component.category.component.Type;
 import com.dominest.dominestbackend.domain.post.component.category.service.CategoryService;
@@ -23,6 +25,8 @@ public class UndeliveredParcelPostService {
     private final UndeliveredParcelPostRepository undelivParcelPostRepository;
     private final UserService userService;
     private final CategoryService categoryService;
+    private final RecentPostService recentPostService;
+
     @Transactional
     public Long create(Long categoryId, String email) {
         // Undeli...의 연관 객체인 category, user 찾기
@@ -36,7 +40,18 @@ public class UndeliveredParcelPostService {
                 .category(category)
                 .writer(user)
                 .build();
-        return undelivParcelPostRepository.save(unDeliParcelPost).getId();
+
+        UndeliveredParcelPost post = undelivParcelPostRepository.save(unDeliParcelPost);
+
+        RecentPost recentPost = RecentPost.builder()
+                .title(post.getTitle())
+                .categoryLink(post.getCategory().getPostsLink())
+                .categoryType(post.getCategory().getType())
+                .link("/posts/undelivered-parcel/" + post.getId())
+                .build();
+        recentPostService.create(recentPost);
+
+        return post.getId();
     }
 
     public UndeliveredParcelPost getById(Long undelivParcelPostId) {
