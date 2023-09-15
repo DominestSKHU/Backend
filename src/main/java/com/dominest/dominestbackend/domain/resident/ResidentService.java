@@ -2,6 +2,8 @@ package com.dominest.dominestbackend.domain.resident;
 
 import com.dominest.dominestbackend.api.resident.dto.PdfBulkUploadDto;
 import com.dominest.dominestbackend.api.resident.dto.SaveResidentDto;
+import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.checkedroom.CheckedRoom;
+import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.checkedroom.CheckedRoomService;
 import com.dominest.dominestbackend.domain.resident.component.ResidenceSemester;
 import com.dominest.dominestbackend.domain.room.Room;
 import com.dominest.dominestbackend.domain.room.RoomService;
@@ -31,6 +33,7 @@ public class ResidentService {
     private final ResidentRepository residentRepository;
     private final FileService fileService;
     private final RoomService roomService;
+    private final CheckedRoomService checkedRoomService;
 
     /** @return 저장한 파일명 */
     @Transactional
@@ -141,7 +144,7 @@ public class ResidentService {
         residentRepository.deleteAllInBatch();
     }
 
-    // Room 업데이트
+    // Room 업데이트. 단건 등록용
     @Transactional
     public void saveResident(SaveResidentDto.Req reqDto) {
         // 한 테이블에서 모든 차수의 데이터가 있어야 해서 Unique Check는 DB 제약이 아닌
@@ -156,7 +159,13 @@ public class ResidentService {
         try {
             // Sequence 방식의 기본 키 생성 전략을 사용할 땐 쓰기지연이 발생하여 트랜잭션이 끝날 때 insert 쿼리가 실행됨.
             // 따라서 메서드 끝(트랜잭션 커밋) 에서 insert 쿼리가 실행되는데, 이 때 catch 블록의 예외처리 범위를 벗어나므로 saveAndFlush()를 사용한다.
-            residentRepository.saveAndFlush(resident);
+            Resident savedResident = residentRepository.saveAndFlush(resident);
+
+            // 새로 등록된 입사생의 배정방을 대상으로 하는 CheckedRoom에 입사생 정보를 반영한다.
+            // checkedRoom, Resident, Room 조인해서,
+            List<CheckedRoom> checkedRooms = checkedRoomService.findAllByRoomId(savedResident.getRoom().getId());
+            checkedRooms.forEach(checkedRoom -> checkedRoom.setResident(savedResident));
+
         } catch (DataIntegrityViolationException e) {
             throw new BusinessException("입사생 저장 실패, 잘못된 입력값입니다. 데이터 누락 혹은 중복을 확인해주세요.", HttpStatus.BAD_REQUEST);
         }

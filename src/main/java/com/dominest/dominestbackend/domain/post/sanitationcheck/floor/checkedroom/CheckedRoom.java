@@ -43,6 +43,7 @@ public class CheckedRoom extends BaseEntity {
     @JoinColumn(name = "floor_id", nullable = false)
     private Floor floor;
 
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "resident_id", nullable = true)
     private Resident resident;
