@@ -8,6 +8,9 @@ server:
 #    enabled: true
 
 spring:
+  sql:
+    init:
+      mode: never
   datasource:
     url:
     username:
