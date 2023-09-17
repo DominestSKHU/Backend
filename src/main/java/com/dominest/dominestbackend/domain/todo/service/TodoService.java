@@ -3,8 +3,6 @@ package com.dominest.dominestbackend.domain.todo.service;
 import com.dominest.dominestbackend.api.todo.request.TodoSaveRequest;
 import com.dominest.dominestbackend.domain.todo.Todo;
 import com.dominest.dominestbackend.domain.todo.repository.TodoRepository;
-import com.dominest.dominestbackend.domain.user.User;
-import com.dominest.dominestbackend.domain.user.repository.UserRepository;
 import com.dominest.dominestbackend.global.exception.ErrorCode;
 import com.dominest.dominestbackend.global.exception.exceptions.BusinessException;
 import lombok.RequiredArgsConstructor;
@@ -13,14 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.security.Principal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -59,19 +51,14 @@ public class TodoService {
     }
 
     @Transactional
-    public void deleteTodo(Long todoId, String email) { // 강의평 삭제
+    public void deleteTodo(Long todoId) {
         Optional<Todo> todo = todoRepository.findById(todoId);
 
         if (todo.isEmpty()) {
             throw new BusinessException(ErrorCode.TODO_NOT_FOUND);
         }
 
+        todoRepository.delete(todo.get());
 
-        try {
-            todoRepository.delete(todo.get());
-        } catch (Exception e) { // 서버 오류
-            throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR);
-        }
     }
-
 }

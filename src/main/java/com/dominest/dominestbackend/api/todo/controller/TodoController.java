@@ -54,8 +54,8 @@ public class TodoController {
     }
 
     @DeleteMapping("/delete/{todoId}")
-    public RspTemplate<Void> deleteEvaluation(@PathVariable Long todoId, Principal principal) {
-        todoService.deleteTodo(todoId, principal.getName());
+    public RspTemplate<Void> deleteEvaluation(@PathVariable Long todoId) {
+        todoService.deleteTodo(todoId);
         return new RspTemplate<>(HttpStatus.OK, todoId + "번 투두가 성공적으로 삭제되었습니다.");
     }
 }
