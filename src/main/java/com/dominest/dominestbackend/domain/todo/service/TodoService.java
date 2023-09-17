@@ -3,8 +3,6 @@ package com.dominest.dominestbackend.domain.todo.service;
 import com.dominest.dominestbackend.api.todo.request.TodoSaveRequest;
 import com.dominest.dominestbackend.domain.todo.Todo;
 import com.dominest.dominestbackend.domain.todo.repository.TodoRepository;
-import com.dominest.dominestbackend.domain.user.User;
-import com.dominest.dominestbackend.domain.user.repository.UserRepository;
 import com.dominest.dominestbackend.global.exception.ErrorCode;
 import com.dominest.dominestbackend.global.exception.exceptions.BusinessException;
 import lombok.RequiredArgsConstructor;
@@ -13,13 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.security.Principal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -55,5 +48,17 @@ public class TodoService {
                 .orElseThrow(() -> new EntityNotFoundException(todoId + "에 해당하는 Todo가 없습니다."));
 
         todo.updateCheckYn(checkYn);
+    }
+
+    @Transactional
+    public void deleteTodo(Long todoId) {
+        Optional<Todo> todo = todoRepository.findById(todoId);
+
+        if (todo.isEmpty()) {
+            throw new BusinessException(ErrorCode.TODO_NOT_FOUND);
+        }
+
+        todoRepository.delete(todo.get());
+
     }
 }

@@ -56,6 +56,9 @@ public enum ErrorCode {
     CATEGORY_ORDER_KEY_DUPLICATED(400, "카테고리의 orderKey가 중복됩니다."),
     CANNOT_DELETE_ASSOCIATED_POST(409, "해당 카테고리에 연관된 게시글이 존재합니다."),
 
+    // 투두
+    TODO_NOT_FOUND(404, "해당 투두가 존재하지 않습니다."),
+
     // 게시글 공통
     POST_NOT_FOUND(404, "해당 게시글이 존재하지 않습니다."),
 
