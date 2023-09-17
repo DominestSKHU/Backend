@@ -33,5 +33,9 @@ public interface CheckedRoomRepository extends JpaRepository<CheckedRoom, Long> 
     //  Todo 학기 정보 고려해야
     @Query("SELECT cr FROM CheckedRoom cr" +
             " WHERE cr.room.id = :roomId")
-    List<CheckedRoom> findAllByResidentId(@Param("roomId") Long roomId);
+    List<CheckedRoom> findAllByRoomId(@Param("roomId") Long roomId);
+
+    @Query("SELECT cr FROM CheckedRoom cr" +
+            " WHERE cr.resident.id = :residentId")
+    List<CheckedRoom> findAllByResidentId(@Param("residentId") Long residentId);
 }

@@ -91,7 +91,11 @@ public class CheckedRoomService {
     }
 
     public List<CheckedRoom> findAllByRoomId(Long roomId) {
-        return checkedRoomRepository.findAllByResidentId(roomId);
+        return checkedRoomRepository.findAllByRoomId(roomId);
+    }
+
+    public List<CheckedRoom> findAllByResidentId(Long residentId) {
+        return checkedRoomRepository.findAllByResidentId(residentId);
     }
 }
 

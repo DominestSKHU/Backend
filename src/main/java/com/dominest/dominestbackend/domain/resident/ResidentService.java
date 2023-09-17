@@ -211,6 +211,8 @@ public class ResidentService {
     @Transactional
     public void deleteById(Long id) {
         Resident resident = findById(id);
+        List<CheckedRoom> checkedRooms = checkedRoomService.findAllByResidentId(resident.getId());
+        checkedRooms.forEach(cr -> cr.setResident(null));
         residentRepository.delete(resident);
     }
 

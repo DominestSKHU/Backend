@@ -62,7 +62,7 @@ public class ResidentController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    // todo checkedRoom Update
+
     // 입사생 단건 등록. 단순 DTO 변환 후 저장만 하면 될듯
     @PostMapping("/residents")
     public ResponseEntity<RspTemplate<Void>> handleSaveResident(@RequestBody @Valid SaveResidentDto.Req reqDto){

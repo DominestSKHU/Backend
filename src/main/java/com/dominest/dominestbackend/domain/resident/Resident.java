@@ -100,7 +100,7 @@ public class Resident extends BaseEntity {
     @JoinColumn(name = "room_id")
     private Room room;
 
-    @OneToMany(mappedBy = "resident", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "resident", fetch = FetchType.LAZY)
     private List<CheckedRoom> checkedRooms = new ArrayList<>();
 
     @Builder
