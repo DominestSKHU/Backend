@@ -116,9 +116,14 @@ public class ResidentService {
         // 첫 3줄 제거 후 유효 데이터만 추출
         sheet.remove(0); sheet.remove(0);sheet.remove(0);
 
-        // 지정 차수에 이미 데이터가 있을 경우 전체삭제.
-        if (residentRepository.existsByResidenceSemester(residenceSemester)) {
-            residentRepository.deleteAllInBatch();
+        List<Resident> allByResidenceSemester = residentRepository.findAllByResidenceSemester(residenceSemester);
+        // 지정 차수에 이미 데이터가 있을 경우 차수의 입사생데이터를 전체삭제.
+        if (! allByResidenceSemester.isEmpty()) {
+            allByResidenceSemester.forEach(resident -> {
+                List<CheckedRoom> checkedRooms = checkedRoomService.findAllByResidentId(resident.getId());
+                checkedRooms.forEach(cr -> cr.setResident(null));
+            });
+            residentRepository.deleteAll(allByResidenceSemester);
         }
 
         // 데이터를 저장한다. 예외발생시 삭제나 저장 작업의 트랜잭션 롤백.
@@ -134,8 +139,8 @@ public class ResidentService {
         }
     }
 
-    public List<Resident> getAllResidentByResidenceSemester(ResidenceSemester residenceSemester) {
-        return residentRepository.findAllByResidenceSemester(residenceSemester);
+    public List<Resident> getAllResidentByResidenceSemesterFetchRoom(ResidenceSemester residenceSemester) {
+        return residentRepository.findAllByResidenceSemesterFetchRoom(residenceSemester);
     }
 
     // 테스트용 전체삭제 API
@@ -149,9 +154,10 @@ public class ResidentService {
     public void saveResident(SaveResidentDto.Req reqDto) {
         // 한 테이블에서 모든 차수의 데이터가 있어야 해서 Unique Check는 DB 제약이 아닌
         // Application 단에서 한다. 학기와 학번이 같은 데이터가 있으면 삭제 후 저장(원본 데이터 덮어쓰기)한다.
-        Resident existingResident = residentRepository.findByStudentIdAndResidenceSemester(reqDto.getStudentId(), reqDto.getResidenceSemester());
-        if (existingResident != null)
-            residentRepository.delete(existingResident);
+        // 아래 코드는 excelupload에서 중복여부를 미리 체크하기  때문에 불필요할 것으로 예상
+//        Resident existingResident = residentRepository.findByStudentIdAndResidenceSemester(reqDto.getStudentId(), reqDto.getResidenceSemester());
+//        if (existingResident != null)
+//            residentRepository.delete(existingResident);
 
         Room room = roomService.getByAssignedRoom(reqDto.getAssignedRoom());
         Resident resident = reqDto.toEntity(room);
@@ -176,8 +182,11 @@ public class ResidentService {
         // 한 테이블에서 모든 차수의 데이터가 있어야 해서 Unique Check는 DB 제약이 아닌
         // Application 단에서 한다. 학기와 학번이 같은 데이터가 있으면 삭제 후 저장(원본 데이터 덮어쓰기)한다.
         Resident existingResident = residentRepository.findByStudentIdAndResidenceSemester(resident.getStudentId(), resident.getResidenceSemester());
-        if (existingResident != null)
+        if (existingResident != null){
+            List<CheckedRoom> checkedRooms = checkedRoomService.findAllByResidentId(resident.getId());
+            checkedRooms.forEach(cr -> cr.setResident(null));
             residentRepository.delete(existingResident);
+        }
 
         try {
             // Sequence 방식의 기본 키 생성 전략을 사용할 땐 쓰기지연이 발생하여 트랜잭션이 끝날 때 insert 쿼리가 실행됨.

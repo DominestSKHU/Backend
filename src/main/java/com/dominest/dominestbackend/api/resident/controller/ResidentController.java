@@ -48,7 +48,7 @@ public class ResidentController {
     @GetMapping("/residents")
     public RspTemplate<ResidentListDto.Res> handleGetAllResident(@RequestParam(required = true) ResidenceSemester residenceSemester){
 
-        List<Resident> residents = residentService.getAllResidentByResidenceSemester(residenceSemester);
+        List<Resident> residents = residentService.getAllResidentByResidenceSemesterFetchRoom(residenceSemester);
 
         ResidentListDto.Res resDto = ResidentListDto.Res.from(residents);
         return new RspTemplate<>(HttpStatus.OK, "입사생 목록 조회 성공", resDto);
