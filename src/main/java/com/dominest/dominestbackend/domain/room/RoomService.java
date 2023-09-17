@@ -1,8 +1,8 @@
 package com.dominest.dominestbackend.domain.room;
 
-import com.dominest.dominestbackend.global.exception.ErrorCode;
 import com.dominest.dominestbackend.global.util.EntityUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,7 +17,7 @@ public class RoomService {
     public Room getByAssignedRoom(String assignedRoom) {
         return EntityUtil.mustNotNull(
                 roomRepository.findByAssignedRoom(assignedRoom)
-                , ErrorCode.ROOM_NOT_FOUND_BY_ROOM_CODE);
+                , String.format("방 코드 -> %s <- 로 방을 찾을 수 없습니다", assignedRoom), HttpStatus.NOT_FOUND);
     }
 
     public List<Room> getByFloorNo(Integer roomNo) {

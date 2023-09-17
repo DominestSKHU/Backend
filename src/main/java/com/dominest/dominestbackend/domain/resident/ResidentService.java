@@ -190,7 +190,7 @@ public class ResidentService {
         } catch (DataIntegrityViolationException e) {
             log.error("데이터 저장 실패. 학번: {}, 학기: {}, 방 번호: {}, 방 코드: {}", resident.getStudentId(), resident.getResidenceSemester(), resident.getRoom().getId(), resident.getRoom().getAssignedRoom());
             throw new BusinessException(
-                    String.format("입사생 저장 실패, 잘못된 입력값입니다. 데이터 누락 혹은 중복을 확인해주세요. 학번: {}, 학기: {}, 방 번호: {}, 방 코드: {}"
+                    String.format("입사생 저장 실패, 잘못된 입력값입니다. 데이터 누락 혹은 중복을 확인해주세요. 학번: %d, 학기: %s, 방 번호: %d, 방 코드: %s"
                             , resident.getStudentId(), resident.getResidenceSemester(), resident.getRoom().getId(), resident.getRoom().getAssignedRoom())
                     , HttpStatus.BAD_REQUEST);
         }
