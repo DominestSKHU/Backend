@@ -44,9 +44,9 @@ public class CalenderService {
         try {
             LocalDate date = LocalDate.parse(dateString);
             List<Calender> events = calenderRepository.findByDate(date);
-            if(events.isEmpty()){
-                throw new BusinessException(ErrorCode.DATA_NOT_FOUND);
-            }
+//            if(events.isEmpty()){
+//                throw new BusinessException(ErrorCode.DATA_NOT_FOUND);
+//            }
 
             return events;
         } catch (Exception e) {
