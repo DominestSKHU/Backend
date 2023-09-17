@@ -26,15 +26,7 @@ import java.util.List;
 })
 public class Resident extends BaseEntity {
     @Id
-    //한 번에 많은 데이터가 insert 될 수 있으므로 SEQUENCE 사용. 근데 300개 삽입으로는 별 차이가 없네
-    @SequenceGenerator(
-            name = "resident_seq_generator"
-            , sequenceName = "resident_seq"
-            , initialValue = 1
-            , allocationSize = 50)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE
-                                    , generator = "resident_seq_generator"
-    )
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     /** 학생 개인정보 */

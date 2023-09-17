@@ -12,20 +12,21 @@ spring:
     url:
     username:
     password:
-    driver-class-name: org.mariadb.jdbc.Driver
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: none
 
     properties:
       hibernate:
         default_batch_fetch_size: 1000 # where in ()
 
-    show-sql: false
+    show-sql: true
     open-in-view: false
+    database: mysql
 
 logging:
   level:
-    org.hibernate.type: INFO
+    org.hibernate.type: DEBUG
 
