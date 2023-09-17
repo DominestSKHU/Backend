@@ -153,8 +153,7 @@ public class ResidentService {
     // Room 업데이트. 단건 등록용
     @Transactional
     public void saveResident(SaveResidentDto.Req reqDto) {
-        // 한 테이블에서 모든 차수의 데이터가 있어야 해서 Unique Check는 DB 제약이 아닌
-        // Application 단에서 한다. 학기와 학번이 같은 데이터가 있으면 삭제 후 저장(원본 데이터 덮어쓰기)한다.
+        // 학기와 학번이 같은 데이터가 있으면 삭제 후 저장(원본 데이터 덮어쓰기)한다.
         Resident existingResident = residentRepository.findByStudentIdAndResidenceSemester(reqDto.getStudentId(), reqDto.getResidenceSemester());
         if (existingResident != null){
             List<CheckedRoom> checkedRooms = checkedRoomService.findAllByResidentId(existingResident.getId());
@@ -183,10 +182,7 @@ public class ResidentService {
     // 엑셀 업로드로 실행되는 메서드
     @Transactional
     public void saveResident(Resident resident) {
-        // 한 테이블에서 모든 차수의 데이터가 있어야 해서 Unique Check는 DB 제약이 아닌
-        // Application 단에서 한다. 학기와 학번이 같은 데이터가 있으면 삭제 후 저장(원본 데이터 덮어쓰기)한다.
         // existingResident 검증은 하지 않는다. 이미 excelUpload에서 이 메서드를 호출하기 전에 같은학기 데이터를 모두 비움.
-
         try {
             // Sequence 방식의 기본 키 생성 전략을 사용할 땐 쓰기지연이 발생하여 트랜잭션이 끝날 때 insert 쿼리가 실행됨.
             // 따라서 메서드 끝(트랜잭션 커밋) 에서 insert 쿼리가 실행되는데, 이 때 catch 블록의 예외처리 범위를 벗어나므로 saveAndFlush()를 사용한다.
