@@ -97,6 +97,7 @@ public class GlobalExceptionHandler {
         printLog(e, request);
         e.printStackTrace(); // 콘솔에 StackTrace 남기기
         String stackTrace = LoggingUtil.stackTraceToString(e);// 클라 반환용 StackTrace 생성
+        log.error(stackTrace); // stack trace error log 남기기
 
         return createErrorResponse(httpStatus.value(), httpStatus, e.getMessage() +", " + stackTrace);
     }
