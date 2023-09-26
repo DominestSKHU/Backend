@@ -5,11 +5,14 @@ import com.dominest.dominestbackend.api.todo.request.TodoSaveRequest;
 import com.dominest.dominestbackend.domain.todo.Todo;
 import com.dominest.dominestbackend.domain.todo.repository.TodoRepository;
 import com.dominest.dominestbackend.domain.todo.service.TodoService;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.security.Principal;
 import java.util.List;
 
@@ -31,11 +34,18 @@ public class TodoController {
 
     // 투두 상태 업데이트
     @PutMapping("/{todoId}/check")
-    public RspTemplate<String>updateTodoCheckStatus(@PathVariable Long todoId, @RequestParam("checkYn") boolean checkYn
+    public RspTemplate<String>updateTodoCheckStatus(@PathVariable Long todoId, @RequestBody @Valid BoolDto boolDto
     ) {
-        todoService.updateTodoCheckStatus(todoId, checkYn);
+        todoService.updateTodoCheckStatus(todoId, boolDto.getCheckYn());
         return new RspTemplate<>(HttpStatus.OK
-                , todoId + "번 Todo의 checkYn 상태를 " + checkYn + "로 업데이트했습니다.");
+                , todoId + "번 Todo의 checkYn 상태를 " + boolDto.getCheckYn() + "로 업데이트했습니다.");
+    }
+
+    @NoArgsConstructor
+    @Getter
+    public static class BoolDto {
+        @NotNull(message = "boolean 값이 null입니다")
+        Boolean checkYn;
     }
 
     @GetMapping("/list") // 투두리스트
