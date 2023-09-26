@@ -14,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ public class InitDB {
     private final RoomRepository roomRepository;
 
     @Transactional
-//    @PostConstruct
+    @PostConstruct
     public void init() {
         ArrayList<User> users = new ArrayList<>();
         User user1sj = User.builder()
