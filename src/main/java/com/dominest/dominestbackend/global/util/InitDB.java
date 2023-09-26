@@ -14,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -28,61 +29,62 @@ public class InitDB {
     private final RoomRepository roomRepository;
 
     @Transactional
-//    @PostConstruct
+    @PostConstruct
     public void init() {
         ArrayList<User> users = new ArrayList<>();
+
         User user1sj = User.builder()
-                .email("skhu1")
-                .password(passwordEncoder.encode("shku1"))
+                .email(System.getenv("DOMI_USER1"))
+                .password(passwordEncoder.encode(System.getenv("DOMI_USER1_PWD")))
                 .name("실장님")
                 .phoneNumber("1")
                 .role(Role.ROLE_ADMIN)
                 .build();
         User user2sg = User.builder()
-                .email("skhu2")
-                .password(passwordEncoder.encode("skhu2"))
+                .email(System.getenv("DOMI_USER2"))
+                .password(passwordEncoder.encode(System.getenv("DOMI_USER2_PWD")))
                 .name("사감님")
                 .phoneNumber("2")
                 .role(Role.ROLE_ADMIN)
                 .build();
         User user3bs = User.builder()
-                .email("skhu3")
-                .password(passwordEncoder.encode("skhu3"))
+                .email(System.getenv("DOMI_USER3"))
+                .password(passwordEncoder.encode(System.getenv("DOMI_USER3_PWD")))
                 .name("반병선")
                 .phoneNumber("3")
                 .role(Role.ROLE_ADMIN)
                 .build();
         User user4ji = User.builder()
-                .email("skhu4")
-                .password(passwordEncoder.encode("skhu4"))
+                .email(System.getenv("DOMI_USER4"))
+                .password(passwordEncoder.encode(System.getenv("DOMI_USER4_PWD")))
                 .name("정인")
                 .phoneNumber("4")
                 .role(Role.ROLE_ADMIN)
                 .build();
         User user5de = User.builder()
-                .email("skhu5")
-                .password(passwordEncoder.encode("skhu5"))
+                .email(System.getenv("DOMI_USER5"))
+                .password(passwordEncoder.encode(System.getenv("DOMI_USER5_PWD")))
                 .name("안다은")
                 .phoneNumber("5")
                 .role(Role.ROLE_ADMIN)
                 .build();
         User user6cl = User.builder()
-                .email("skhu6")
-                .password(passwordEncoder.encode("skhu6"))
+                .email(System.getenv("DOMI_USER6"))
+                .password(passwordEncoder.encode(System.getenv("DOMI_USER6_PWD")))
                 .name("류채림")
                 .phoneNumber("6")
                 .role(Role.ROLE_ADMIN)
                 .build();
         User user7cw = User.builder()
-                .email("skhu7")
-                .password(passwordEncoder.encode("skhu7"))
+                .email(System.getenv("DOMI_USER7"))
+                .password(passwordEncoder.encode(System.getenv("DOMI_USER7_PWD")))
                 .name("공채원")
                 .phoneNumber("7")
                 .role(Role.ROLE_ADMIN)
                 .build();
         User user8hn = User.builder()
-                .email("skhu8")
-                .password(passwordEncoder.encode("skhu8"))
+                .email(System.getenv("DOMI_USER8"))
+                .password(passwordEncoder.encode(System.getenv("DOMI_USER8_PWD")))
                 .name("윤하늘")
                 .phoneNumber("8")
                 .role(Role.ROLE_ADMIN)
