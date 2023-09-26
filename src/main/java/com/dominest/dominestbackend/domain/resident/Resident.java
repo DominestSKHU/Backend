@@ -19,8 +19,8 @@ import java.util.List;
 @Table(uniqueConstraints = {
         // 학번, 학기가 중복되면 안된다. 똑같은 학생이 한 학기에 둘 이상 있을 순 없다.
         // 방번호, 학기가 중복되면 안된다. 학기중 하나의 방, 하나의 구역에 둘 이상이 있을 순 없다.
-        @UniqueConstraint(name = "unique_resident_Info_for_semester",
-                                            columnNames = { "studentId", "residenceSemester" })
+        @UniqueConstraint(name = "unique_resident_Info_for_studentId_and_name",
+                                            columnNames = { "studentId", "name" ,"residenceSemester" })
         , @UniqueConstraint(name = "unique_resident_Info_for_room",
                                             columnNames = { "room_id", "residenceSemester" })
 })

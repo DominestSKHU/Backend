@@ -154,7 +154,7 @@ public class ResidentService {
     @Transactional
     public void saveResident(SaveResidentDto.Req reqDto) {
         // 학기와 학번이 같은 데이터가 있으면 삭제 후 저장(원본 데이터 덮어쓰기)한다.
-        Resident existingResident = residentRepository.findByStudentIdAndResidenceSemester(reqDto.getStudentId(), reqDto.getResidenceSemester());
+        Resident existingResident = residentRepository.findByStudentIdAndNameAndResidenceSemester(reqDto.getStudentId(), reqDto.getName(), reqDto.getResidenceSemester());
         if (existingResident != null){
             List<CheckedRoom> checkedRooms = checkedRoomService.findAllByResidentId(existingResident.getId());
             checkedRooms.forEach(cr -> cr.setResident(null));
@@ -190,7 +190,7 @@ public class ResidentService {
         } catch (DataIntegrityViolationException e) {
             log.error("데이터 저장 실패. 학번: {}, 학기: {}, 방 번호: {}, 방 코드: {}", resident.getStudentId(), resident.getResidenceSemester(), resident.getRoom().getId(), resident.getRoom().getAssignedRoom());
             throw new BusinessException(
-                    String.format("입사생 저장 실패, 잘못된 입력값입니다. 데이터 누락 혹은 중복을 확인해주세요. 학번: %d, 학기: %s, 방 번호: %d, 방 코드: %s"
+                    String.format("입사생 저장 실패, 잘못된 입력값입니다. 데이터 누락 혹은 중복을 확인해주세요. 학번: %s, 학기: %s, 방 번호: %d, 방 코드: %s"
                             , resident.getStudentId(), resident.getResidenceSemester(), resident.getRoom().getId(), resident.getRoom().getAssignedRoom())
                     , HttpStatus.BAD_REQUEST);
         }

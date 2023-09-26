@@ -14,11 +14,9 @@ public interface ResidentRepository extends JpaRepository<Resident, Long> {
             " where r.residenceSemester = :residenceSemester")
     List<Resident> findAllByResidenceSemesterFetchRoom(@Param("residenceSemester") ResidenceSemester residenceSemester);
 
-    boolean existsByResidenceSemester(ResidenceSemester residenceSemester);
-
     Resident findByNameAndResidenceSemester(String name, ResidenceSemester residenceSemester);
 
-    Resident findByStudentIdAndResidenceSemester(String studentId, ResidenceSemester residenceSemester);
+    Resident findByStudentIdAndNameAndResidenceSemester(String studentId, String name, ResidenceSemester residenceSemester);
 
     Resident findByResidenceSemesterAndRoom(ResidenceSemester residenceSemester, Room room);
 
