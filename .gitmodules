@@ -1,0 +1,3 @@
+[submodule "domidomi-secret"]
+	path = domidomi-secret
+	url = https://github.com/DominestSKHU/domidomi-secret.git
