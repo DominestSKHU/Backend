@@ -21,6 +21,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,6 +36,9 @@ public class ResidentService {
     private final FileService fileService;
     private final RoomService roomService;
     private final CheckedRoomService checkedRoomService;
+
+    @PersistenceContext
+    private EntityManager em;
 
     /** @return 저장한 파일명 */
     @Transactional
@@ -125,6 +130,7 @@ public class ResidentService {
                 checkedRooms.forEach(cr -> cr.setResident(null));
             });
             residentRepository.deleteAll(allByResidenceSemester);
+            em.flush();
         }
 
         // 데이터를 저장한다. 예외발생시 삭제나 저장 작업의 트랜잭션 롤백.
