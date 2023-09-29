@@ -9,96 +9,93 @@ import com.dominest.dominestbackend.domain.room.RoomRepository;
 import com.dominest.dominestbackend.domain.user.User;
 import com.dominest.dominestbackend.domain.user.component.Role;
 import com.dominest.dominestbackend.domain.user.repository.UserRepository;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
+import java.sql.Array;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-@RequiredArgsConstructor
+
 @Component
 public class InitDB {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final RoomRepository roomRepository;
+    private final List<InitUser> initUsers;
+    private final int INIT_USER_CNT = 8;
+
+    @Autowired
+    public InitDB(PasswordEncoder passwordEncoder, UserRepository userRepository
+            , CategoryRepository categoryRepository, RoomRepository roomRepository
+            , @Value("${init.user1.email}") String email1, @Value("${init.user1.pwd}") String pwd1, @Value("${init.user1.name}") String name1, @Value("${init.user1.phone}") String phone1, @Value("${init.user1.role}") Role role1
+            , @Value("${init.user2.email}") String email2, @Value("${init.user2.pwd}") String pwd2, @Value("${init.user2.name}") String name2, @Value("${init.user2.phone}") String phone2, @Value("${init.user2.role}") Role role2
+            , @Value("${init.user3.email}") String email3, @Value("${init.user3.pwd}") String pwd3, @Value("${init.user3.name}") String name3, @Value("${init.user3.phone}") String phone3, @Value("${init.user3.role}") Role role3
+            , @Value("${init.user4.email}") String email4, @Value("${init.user4.pwd}") String pwd4, @Value("${init.user4.name}") String name4, @Value("${init.user4.phone}") String phone4, @Value("${init.user4.role}") Role role4
+            , @Value("${init.user5.email}") String email5, @Value("${init.user5.pwd}") String pwd5, @Value("${init.user5.name}") String name5, @Value("${init.user5.phone}") String phone5, @Value("${init.user5.role}") Role role5
+            , @Value("${init.user6.email}") String email6, @Value("${init.user6.pwd}") String pwd6, @Value("${init.user6.name}") String name6, @Value("${init.user6.phone}") String phone6, @Value("${init.user6.role}") Role role6
+            , @Value("${init.user7.email}") String email7, @Value("${init.user7.pwd}") String pwd7, @Value("${init.user7.name}") String name7, @Value("${init.user7.phone}") String phone7, @Value("${init.user7.role}") Role role7
+            , @Value("${init.user8.email}") String email8, @Value("${init.user8.pwd}") String pwd8, @Value("${init.user8.name}") String name8, @Value("${init.user8.phone}") String phone8, @Value("${init.user8.role}") Role role8
+    ) {
+        this.passwordEncoder = passwordEncoder;
+        this.userRepository = userRepository;
+        this.categoryRepository = categoryRepository;
+        this.roomRepository = roomRepository;
+
+        List<InitUser> initUsers = new ArrayList<>();
+
+        InitUser user1 = InitUser.builder().email(email1).password(pwd1).name(name1).phoneNumber(phone1).role(role1).build();
+        InitUser user2 = InitUser.builder().email(email2).password(pwd2).name(name2).phoneNumber(phone2).role(role2).build();
+        InitUser user3 = InitUser.builder().email(email3).password(pwd3).name(name3).phoneNumber(phone3).role(role3).build();
+        InitUser user4 = InitUser.builder().email(email4).password(pwd4).name(name4).phoneNumber(phone4).role(role4).build();
+        InitUser user5 = InitUser.builder().email(email5).password(pwd5).name(name5).phoneNumber(phone5).role(role5).build();
+        InitUser user6 = InitUser.builder().email(email6).password(pwd6).name(name6).phoneNumber(phone6).role(role6).build();
+        InitUser user7 = InitUser.builder().email(email7).password(pwd7).name(name7).phoneNumber(phone7).role(role7).build();
+        InitUser user8 = InitUser.builder().email(email8).password(pwd8).name(name8).phoneNumber(phone8).role(role8).build();
+
+        initUsers.add(user1); initUsers.add(user2); initUsers.add(user3); initUsers.add(user4);
+        initUsers.add(user5); initUsers.add(user6); initUsers.add(user7); initUsers.add(user8);
+
+        this.initUsers = initUsers;
+    }
+
+    @Getter
+    @Builder
+    static class InitUser {
+        String email;
+        String password;
+        String name;
+        String phoneNumber;
+        Role role;
+    }
 
     @Transactional
     @PostConstruct
     public void init() {
         ArrayList<User> users = new ArrayList<>();
-        User user1sj = User.builder()
-                .email("skhu1")
-                .password(passwordEncoder.encode("shku1"))
-                .name("실장님")
-                .phoneNumber("1")
-                .role(Role.ROLE_ADMIN)
-                .build();
-        User user2sg = User.builder()
-                .email("skhu2")
-                .password(passwordEncoder.encode("skhu2"))
-                .name("사감님")
-                .phoneNumber("2")
-                .role(Role.ROLE_ADMIN)
-                .build();
-        User user3bs = User.builder()
-                .email("skhu3")
-                .password(passwordEncoder.encode("skhu3"))
-                .name("반병선")
-                .phoneNumber("3")
-                .role(Role.ROLE_ADMIN)
-                .build();
-        User user4ji = User.builder()
-                .email("skhu4")
-                .password(passwordEncoder.encode("skhu4"))
-                .name("정인")
-                .phoneNumber("4")
-                .role(Role.ROLE_ADMIN)
-                .build();
-        User user5de = User.builder()
-                .email("skhu5")
-                .password(passwordEncoder.encode("skhu5"))
-                .name("안다은")
-                .phoneNumber("5")
-                .role(Role.ROLE_ADMIN)
-                .build();
-        User user6cl = User.builder()
-                .email("skhu6")
-                .password(passwordEncoder.encode("skhu6"))
-                .name("류채림")
-                .phoneNumber("6")
-                .role(Role.ROLE_ADMIN)
-                .build();
-        User user7cw = User.builder()
-                .email("skhu7")
-                .password(passwordEncoder.encode("skhu7"))
-                .name("공채원")
-                .phoneNumber("7")
-                .role(Role.ROLE_ADMIN)
-                .build();
-        User user8hn = User.builder()
-                .email("skhu8")
-                .password(passwordEncoder.encode("skhu8"))
-                .name("윤하늘")
-                .phoneNumber("8")
-                .role(Role.ROLE_ADMIN)
-                .build();
-        users.add(user1sj);
-        users.add(user2sg);
-        users.add(user3bs);
-        users.add(user4ji);
-        users.add(user5de);
-        users.add(user6cl);
-        users.add(user7cw);
-        users.add(user8hn);
+
+        for (int i = 0; i < INIT_USER_CNT; i++) {
+            InitUser initUser = initUsers.get(i);
+            User user = User.builder()
+                    .email(initUser.getEmail())
+                    .password(passwordEncoder.encode(initUser.getPassword()))
+                    .name(initUser.getName())
+                    .phoneNumber(initUser.getPhoneNumber())
+                    .role(initUser.getRole())
+                    .build();
+            users.add(user);
+        }
         userRepository.saveAll(users);
-
-
 
         Category undelivCategoryNo1 = Category.builder()
                 .name("장기 미수령 택배 관리대장")
