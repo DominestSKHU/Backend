@@ -9,14 +9,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class TestController {
     private final RoomRepository roomRepository;
-    @GetMapping("/test/exception")
-    public String throwNPE(){
-        throw new NullPointerException();
-    }
 
-    @GetMapping("/test/room")
+    @GetMapping("/health")
     public String getRoom(){
-        return roomRepository.findAll().get(0).toString();
+        return "231004 1701";
     }
 
 }
