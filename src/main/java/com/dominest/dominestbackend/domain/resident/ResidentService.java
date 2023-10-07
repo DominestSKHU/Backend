@@ -121,17 +121,17 @@ public class ResidentService {
         // 첫 3줄 제거 후 유효 데이터만 추출
         sheet.remove(0); sheet.remove(0);sheet.remove(0);
 
-        List<Resident> allByResidenceSemester = residentRepository.findAllByResidenceSemester(residenceSemester);
-        // 지정 차수에 이미 데이터가 있을 경우 차수의 입사생데이터를 전체삭제.
-        if (! allByResidenceSemester.isEmpty()) {
-            log.warn("{} 학기에 이미 데이터가 있어 해당 학기의 전체 입사생 데이터를 삭제합니다.", residenceSemester);
-            allByResidenceSemester.forEach(resident -> {
-                List<CheckedRoom> checkedRooms = checkedRoomService.findAllByResidentId(resident.getId());
-                checkedRooms.forEach(cr -> cr.setResident(null));
-            });
-            residentRepository.deleteAll(allByResidenceSemester);
-            em.flush();
-        }
+//        List<Resident> allByResidenceSemester = residentRepository.findAllByResidenceSemester(residenceSemester);
+//        // 지정 차수에 이미 데이터가 있을 경우 차수의 입사생데이터를 전체삭제.
+//        if (! allByResidenceSemester.isEmpty()) {
+//            log.warn("{} 학기에 이미 데이터가 있어 해당 학기의 전체 입사생 데이터를 삭제합니다.", residenceSemester);
+//            allByResidenceSemester.forEach(resident -> {
+//                List<CheckedRoom> checkedRooms = checkedRoomService.findAllByResidentId(resident.getId());
+//                checkedRooms.forEach(cr -> cr.setResident(null));
+//            });
+//            residentRepository.deleteAll(allByResidenceSemester);
+//            em.flush();
+//        }
 
         // 데이터를 저장한다. 예외발생시 삭제나 저장 작업의 트랜잭션 롤백.
         for (List<String> row : sheet) {
@@ -190,8 +190,6 @@ public class ResidentService {
     public void saveResident(Resident resident) {
         // existingResident 검증은 하지 않는다. 이미 excelUpload에서 이 메서드를 호출하기 전에 같은학기 데이터를 모두 비움.
         try {
-            // Sequence 방식의 기본 키 생성 전략을 사용할 땐 쓰기지연이 발생하여 트랜잭션이 끝날 때 insert 쿼리가 실행됨.
-            // 따라서 메서드 끝(트랜잭션 커밋) 에서 insert 쿼리가 실행되는데, 이 때 catch 블록의 예외처리 범위를 벗어나므로 saveAndFlush()를 사용한다.
             residentRepository.saveAndFlush(resident);
         } catch (DataIntegrityViolationException e) {
             log.error("데이터 저장 실패. 학번: {}, 학기: {}, 방 번호: {}, 방 코드: {}", resident.getStudentId(), resident.getResidenceSemester(), resident.getRoom().getId(), resident.getRoom().getAssignedRoom());
