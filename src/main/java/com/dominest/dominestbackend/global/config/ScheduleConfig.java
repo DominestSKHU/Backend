@@ -1,34 +1,28 @@
-package com.dominest.dominestbackend.api;
+package com.dominest.dominestbackend.global.config;
 
-import com.dominest.dominestbackend.domain.room.RoomRepository;
-import lombok.RequiredArgsConstructor;
+
+import com.dominest.dominestbackend.global.exception.exceptions.file.FileIOException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 
 @Slf4j
-@RestController
-public class TestController {
+@EnableScheduling
+@Configuration
+public class ScheduleConfig {
 
-    public TestController(
-                          @Value("${script.backup-db}") final String dbBackupScriptFile
-    ) {
+    @Autowired
+    public ScheduleConfig(@Value("${script.backup-db}") String dbBackupScriptFile) {
         this.dbBackupScriptFile = dbBackupScriptFile;
     }
     private final String dbBackupScriptFile;
 
-    @GetMapping("/health")
-    public String getRoom(){
-        return LocalDateTime.now().toString();
-    }
-
-    @GetMapping("/test/back-up")
+    @Scheduled(cron = "0 0 9-18 * * *")
     public void runBatFile() {
         try {
             String filePath = dbBackupScriptFile;
