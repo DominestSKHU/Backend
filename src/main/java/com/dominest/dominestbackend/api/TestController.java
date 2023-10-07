@@ -28,7 +28,7 @@ public class TestController {
         return LocalDateTime.now().toString();
     }
 
-    @GetMapping("/test/back-up")
+    @GetMapping("/test/back-up-db")
     public void runBatFile() {
         try {
             String filePath = dbBackupScriptFile;
