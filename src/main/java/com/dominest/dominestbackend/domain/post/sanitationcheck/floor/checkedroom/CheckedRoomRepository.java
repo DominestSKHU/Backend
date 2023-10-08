@@ -21,19 +21,14 @@ public interface CheckedRoomRepository extends JpaRepository<CheckedRoom, Long> 
 
     // 방역점검 게시글에 연관된 모든 CheckedRoom을 가져온다. 3중 조인해야 하며, 미통과만 조회한다,
     @Query("SELECT cr FROM CheckedRoom cr" +
-            " JOIN FETCH cr.floor f" +
-            " JOIN FETCH f.sanitationCheckPost p" +
+            " JOIN cr.floor f" +
+            " JOIN f.sanitationCheckPost p" +
             " JOIN FETCH cr.room" +
             " LEFT JOIN FETCH cr.resident" +
 
             " WHERE p.id = :postId" +
             " AND cr.passed = :passState")
     List<CheckedRoom> findNotPassedAllByPostId(@Param("postId") Long postId, @Param("passState") CheckedRoom.PassState passState);
-
-    //  Todo 학기 정보 고려해야
-    @Query("SELECT cr FROM CheckedRoom cr" +
-            " WHERE cr.room.id = :roomId")
-    List<CheckedRoom> findAllByRoomId(@Param("roomId") Long roomId);
 
     @Query("SELECT cr FROM CheckedRoom cr" +
             " WHERE cr.resident.id = :residentId")
