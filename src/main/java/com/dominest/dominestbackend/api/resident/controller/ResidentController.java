@@ -31,8 +31,6 @@ public class ResidentController {
     private final ResidentService residentService;
     private final FileService fileService;
 
-
-    // todo checkedRoom Update
     // 엑셀로 업로드
     @PostMapping("/residents/upload-excel")
     public ResponseEntity<RspTemplate<ExcelUploadDto.Res>> handleFileUpload(@ModelAttribute @Valid ExcelUploadDto.Req reqDto){
@@ -67,10 +65,8 @@ public class ResidentController {
     @DeleteMapping("/residents")
     public ResponseEntity<RspTemplate<Void>> handleDeleteAllResident(){
         residentService.deleteAllResident();
-
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
-
 
     // 입사생 단건 등록. 단순 DTO 변환 후 저장만 하면 될듯
     @PostMapping("/residents")
@@ -152,7 +148,7 @@ public class ResidentController {
     @GetMapping("/residents/pdf")
     public RspTemplate<ResidentPdfListDto.Res> handleGetAllPdfs(@RequestParam(required = true) ResidenceSemester residenceSemester){
 
-        List<Resident> residents = residentService.getAllPdfs(residenceSemester);
+        List<Resident> residents = residentService.findAllByResidenceSemester(residenceSemester);
 
         ResidentPdfListDto.Res resDto = ResidentPdfListDto.Res.from(residents);
         return new RspTemplate<>(HttpStatus.OK

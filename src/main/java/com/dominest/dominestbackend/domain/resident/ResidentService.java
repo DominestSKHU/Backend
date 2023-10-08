@@ -3,6 +3,8 @@ package com.dominest.dominestbackend.domain.resident;
 import com.dominest.dominestbackend.api.resident.dto.ExcelUploadDto;
 import com.dominest.dominestbackend.api.resident.dto.PdfBulkUploadDto;
 import com.dominest.dominestbackend.api.resident.dto.SaveResidentDto;
+import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.checkedroom.CheckedRoom;
+import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.checkedroom.CheckedRoomService;
 import com.dominest.dominestbackend.domain.resident.component.ResidenceSemester;
 import com.dominest.dominestbackend.domain.room.Room;
 import com.dominest.dominestbackend.domain.room.RoomService;
@@ -33,6 +35,7 @@ public class ResidentService {
     private final ResidentRepository residentRepository;
     private final FileService fileService;
     private final RoomService roomService;
+    private final CheckedRoomService checkedRoomService;
 
     /** @return 저장한 파일명 */
     @Transactional
@@ -161,7 +164,9 @@ public class ResidentService {
     // 테스트용 전체삭제 API
     @Transactional
     public void deleteAllResident() {
-        residentRepository.deleteAllInBatch();
+        residentRepository.findAll().forEach(resident -> {
+            deleteById(resident.getId());
+        });
     }
 
     // 단건 등록용
@@ -205,12 +210,12 @@ public class ResidentService {
     @Transactional
     public void deleteById(Long id) {
         Resident resident = findById(id);
-//        List<CheckedRoom> checkedRooms = checkedRoomService.findAllByResidentId(resident.getId());
-//        checkedRooms.forEach(cr -> cr.setResident(null));
+        List<CheckedRoom> checkedRooms = checkedRoomService.findAllByResidentId(resident.getId());
+        checkedRooms.forEach(cr -> cr.setResident(null));
         residentRepository.delete(resident);
     }
 
-    public List<Resident> getAllPdfs(ResidenceSemester semester) {
+    public List<Resident> findAllByResidenceSemester(ResidenceSemester semester) {
         return residentRepository.findAllByResidenceSemester(semester);
     }
 

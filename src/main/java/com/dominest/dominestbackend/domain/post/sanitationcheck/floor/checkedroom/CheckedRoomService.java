@@ -45,7 +45,7 @@ public class CheckedRoomService {
     }
 
     @Transactional
-    public void update(Long checkedRoomId, UpdateCheckedRoomDto.Req reqDto) {
+    public void update(Long checkedRoomId, UpdateCheckedRoomDto.Req reqDto) { // api 호출 편의성을 위해 이 ReqDto는 값 검증하지 않았음.
         CheckedRoom checkedRoom = getByIdFetchResident(checkedRoomId);
         // Null이 아닌 값만 업데이트
         checkedRoom.updateValuesOnlyNotNull(
