@@ -31,16 +31,17 @@ public class Resident extends BaseEntity {
     private Long id;
 
     /** 학생 개인정보 */
-    @Column(nullable = false)
+    @Column(nullable = false, length = 50)
     private String name;
     @Column(nullable = false)
     private String gender; // 현재 'M' or 'F' 인데 확장성을 위해 String 쓰기로 함
-    @Column(nullable = false)
+    @Column(nullable = false, length = 50)
     private String studentId;
     @Column(nullable = false)
     private String major; // 전공. 매학년 바뀔 수도 있으니 enum 사용하지 않는 걸로
     @Column(nullable = false)
     private String grade; // '3학년' 과 같은 식으로 저장된다, //todo 이거 숫자로 바꿀 생각도 해보자
+    @Column(length = 30)
     private String phoneNumber; // '010-1234-5678' 형식으로 저장
     // 엑셀데이터는 6자리로 저장되긴 하는데, 날짜 필터링 걸려면 날짜타입 사용해야 할 듯
     // Todo: 날짜타입 유지하면서 6자리로 표시할 수 있는지?
@@ -79,6 +80,7 @@ public class Resident extends BaseEntity {
      * */
     //ResidenceSemester를 Room에도 둘까 했으나, 여기서 조인해서 쓰면 됨.
     @Enumerated(EnumType.STRING)
+    @Column(length = 30, nullable = false)
     private ResidenceSemester residenceSemester; // 거주학기. '2020-2' 와 같음
 
     @Column(nullable = true)
