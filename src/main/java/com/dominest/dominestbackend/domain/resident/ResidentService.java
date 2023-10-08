@@ -1,9 +1,8 @@
 package com.dominest.dominestbackend.domain.resident;
 
+import com.dominest.dominestbackend.api.resident.dto.ExcelUploadDto;
 import com.dominest.dominestbackend.api.resident.dto.PdfBulkUploadDto;
 import com.dominest.dominestbackend.api.resident.dto.SaveResidentDto;
-import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.checkedroom.CheckedRoom;
-import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.checkedroom.CheckedRoomService;
 import com.dominest.dominestbackend.domain.resident.component.ResidenceSemester;
 import com.dominest.dominestbackend.domain.room.Room;
 import com.dominest.dominestbackend.domain.room.RoomService;
@@ -22,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,10 +33,6 @@ public class ResidentService {
     private final ResidentRepository residentRepository;
     private final FileService fileService;
     private final RoomService roomService;
-    private final CheckedRoomService checkedRoomService;
-
-    @PersistenceContext
-    private EntityManager em;
 
     /** @return 저장한 파일명 */
     @Transactional
@@ -102,7 +96,7 @@ public class ResidentService {
     }
 
     @Transactional
-    public void excelUpload(MultipartFile file, ResidenceSemester residenceSemester) {
+    public ExcelUploadDto.Res excelUpload(MultipartFile file, ResidenceSemester residenceSemester) {
         // 예상 컬럼 개수
         int columnCount = ExcelUtil.RESIDENT_COLUMN_COUNT;
 
@@ -132,6 +126,8 @@ public class ResidentService {
 //            residentRepository.deleteAll(allByResidenceSemester);
 //            em.flush();
 //        }
+        int originalRow = sheet.size();
+        int successRow = 0;
 
         // 데이터를 저장한다. 예외발생시 삭제나 저장 작업의 트랜잭션 롤백.
         for (List<String> row : sheet) {
@@ -142,8 +138,20 @@ public class ResidentService {
 
             Room room = roomService.getByAssignedRoom(assignedRoom);
             Resident resident = Resident.from(row, residenceSemester, room);
-            saveResident(resident);
+
+            if (existsByUniqueKey(resident)) {
+                // 엑셀 데이터상 중복이 있을 시 로그만 남기고 다음 행으로 넘어간다.
+                log.warn("엑셀 데이터 저장 실패. 중복 데이터가 있어 다음으로 넘어감. 이름: {}, 학번: {}, 학기: {}" +
+                                ", 방 번호: {}, 방 코드: {}", resident.getName()
+                        , resident.getStudentId(), resident.getResidenceSemester()
+                        , resident.getRoom().getId(), resident.getRoom().getAssignedRoom());
+                continue;
+            }
+
+            save(resident);
+            successRow++;
         }
+        return ExcelUploadDto.Res.of(originalRow, successRow);
     }
 
     public List<Resident> getAllResidentByResidenceSemesterFetchRoom(ResidenceSemester residenceSemester) {
@@ -156,9 +164,9 @@ public class ResidentService {
         residentRepository.deleteAllInBatch();
     }
 
-    // Room 업데이트. 단건 등록용
+    // 단건 등록용
     @Transactional
-    public void saveResident(SaveResidentDto.Req reqDto) {
+    public void save(SaveResidentDto.Req reqDto) {
         // 학기와 학번이 같은 데이터가 있으면 삭제 후 저장(원본 데이터 덮어쓰기)한다.
 //        Resident existingResident = residentRepository.findByStudentIdAndNameAndResidenceSemester(reqDto.getStudentId(), reqDto.getName(), reqDto.getResidenceSemester());
 //        if (existingResident != null){
@@ -170,39 +178,7 @@ public class ResidentService {
         Room room = roomService.getByAssignedRoom(reqDto.getAssignedRoom());
         Resident resident = reqDto.toEntity(room);
 
-        try {
-            // Sequence 방식의 기본 키 생성 전략을 사용할 땐 쓰기지연이 발생하여 트랜잭션이 끝날 때 insert 쿼리가 실행됨.
-            // 따라서 메서드 끝(트랜잭션 커밋) 에서 insert 쿼리가 실행되는데, 이 때 catch 블록의 예외처리 범위를 벗어나므로 saveAndFlush()를 사용한다.
-//            Resident savedResident = residentRepository.saveAndFlush(resident);
-            residentRepository.saveAndFlush(resident);
-
-//            // 새로 등록된 입사생의 배정방을 대상으로 하는 CheckedRoom에 입사생 정보를 반영한다.
-//            // checkedRoom, Resident, Room 조인해서,
-//            List<CheckedRoom> checkedRooms = checkedRoomService.findAllByRoomId(savedResident.getRoom().getId());
-//            checkedRooms.forEach(checkedRoom -> checkedRoom.setResident(savedResident));
-
-        } catch (DataIntegrityViolationException e) {
-            log.error("데이터 저장 실패. 학번: {}, 학기: {}, 방 번호: {}, 방 코드: {}", resident.getStudentId(), resident.getResidenceSemester(), resident.getRoom().getId(), resident.getRoom().getAssignedRoom());
-            throw new BusinessException(
-                    String.format("입사생 저장 실패, 잘못된 입력값입니다. 데이터 누락 혹은 중복을 확인해주세요. 학번: %s, 학기: %s, 방 번호: %d, 방 코드: %s"
-                            , resident.getStudentId(), resident.getResidenceSemester(), resident.getRoom().getId(), resident.getRoom().getAssignedRoom())
-                    , HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    // 엑셀 업로드로 실행되는 메서드
-    @Transactional
-    public void saveResident(Resident resident) {
-        // existingResident 검증은 하지 않는다. 이미 excelUpload에서 이 메서드를 호출하기 전에 같은학기 데이터를 모두 비움.
-        try {
-            residentRepository.saveAndFlush(resident);
-        } catch (DataIntegrityViolationException e) {
-            log.error("데이터 저장 실패. 학번: {}, 학기: {}, 방 번호: {}, 방 코드: {}", resident.getStudentId(), resident.getResidenceSemester(), resident.getRoom().getId(), resident.getRoom().getAssignedRoom());
-            throw new BusinessException(
-                    String.format("입사생 저장 실패, 잘못된 입력값입니다. 데이터 누락 혹은 중복을 확인해주세요. 학번: %s, 학기: %s, 방 번호: %d, 방 코드: %s"
-                            , resident.getStudentId(), resident.getResidenceSemester(), resident.getRoom().getId(), resident.getRoom().getAssignedRoom())
-                    , HttpStatus.BAD_REQUEST);
-        }
+       save(resident);
     }
 
     @Transactional
@@ -238,52 +214,30 @@ public class ResidentService {
         return residentRepository.findAllByResidenceSemester(semester);
     }
 
-//    @Transactional
-//    public int uploadPdfZip(MultipartFile pdfZip, ResidenceSemester residenceSemester) {
-//        // 1. zip 확장자 검사
-//        if (! pdfZip.getOriginalFilename().endsWith(".zip")){
-//            throw new BusinessException(ErrorCode.FILE_NOT_ZIP);
-//        }
-//        // 2. 내부 파일 순회
-//        Path destinationPath = fileService.getUploadPath();
-//
-//        int uploadCount = 0;
-//        // 3. zip 파일의 inputStream을 추출해서 내부의 PDF 파일들을 저장
-//        try (ZipInputStream zipInputStream = new ZipInputStream(pdfZip.getInputStream(), StandardCharsets.UTF_8)) {
-////        try (ZipInputStream zipInputStream = new ZipInputStream(pdfZip.getInputStream(), StandardCharsets.ISO_8859_1)) {
-//            ZipEntry entry;
-//            while ((entry = zipInputStream.getNextEntry()) != null) {
-//                try {
-//                    String filename = entry.getName(); // 원본 파일명
-//                    // pdf 확장자가 아니라면 continue
-//                    if (! filename.endsWith(".pdf")){
-//                        continue;
-//                    }
-//                    // 2. 파일명으로 해당 차수의 학생이름을 찾는다. 파일명은 '학생이름.pdf' 여야 한다.
-//                    // 못 찾으면 continue, 찾았으면 저장(개별업로드 로직)
-//                    String residentName = fileService.extractFileNameNoExt(filename);
-//                    Resident resident = residentRepository.findByNameAndResidenceSemester(residentName, residenceSemester);
-//                    Resident resident2 = residentRepository.findByNameAndResidenceSemester("윤현우", residenceSemester);
-//
-//                    if (resident == null) continue;
-//
-//                    // 파일명에 해당하는 학생이 있으므로, 이제 파일명을 UUID로 변경하고 Path객체를 생성한다.
-//                    //  filename = UUID.randomUUID() + ".pdf";
-//                    Path filePath = destinationPath.resolve(filename);
-//
-//                    fileService.extractFile(zipInputStream, filePath);
-//                    uploadCount++;
-//                    resident.setPdfFileName(filename);
-//                } finally {
-//                    zipInputStream.closeEntry();
-//                }
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//
-//        return uploadCount;
-//    }
+    private boolean existsByUniqueKey(Resident resident) {
+        return residentRepository.existsByStudentIdAndPhoneNumberAndNameAndResidenceSemester(
+                resident.getStudentId(), resident.getPhoneNumber(), resident.getName(), resident.getResidenceSemester());
+    }
+
+    private void save(Resident resident) {
+        try {
+            residentRepository.saveAndFlush(resident);
+//            // 새로 등록된 입사생의 배정방을 대상으로 하는 CheckedRoom에 입사생 정보를 반영한다.
+//            // checkedRoom, Resident, Room 조인해서,
+//            List<CheckedRoom> checkedRooms = checkedRoomService.findAllByRoomId(savedResident.getRoom().getId());
+//            checkedRooms.forEach(checkedRoom -> checkedRoom.setResident(savedResident));
+        } catch (DataIntegrityViolationException e) {
+            log.error("데이터 저장 실패. 이름: {}, 학번: {}, 학기: {}, 방 번호: {}, 방 코드: {}"
+                    , resident.getName(), resident.getStudentId(), resident.getResidenceSemester()
+                    , resident.getRoom().getId(), resident.getRoom().getAssignedRoom());
+            throw new BusinessException(
+                    String.format("입사생 저장 실패, 잘못된 입력값입니다. 데이터 누락 혹은 중복을 확인해주세요. 이름: %s, 학번: %s, 학기: %s, 방 번호: %d, 방 코드: %s"
+                            , resident.getName(), resident.getStudentId(), resident.getResidenceSemester()
+                            , resident.getRoom().getId(), resident.getRoom().getAssignedRoom())
+                    , HttpStatus.BAD_REQUEST);
+        }
+    }
+
 }
 
 

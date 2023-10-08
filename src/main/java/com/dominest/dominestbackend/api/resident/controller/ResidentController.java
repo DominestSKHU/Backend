@@ -2,10 +2,7 @@ package com.dominest.dominestbackend.api.resident.controller;
 
 
 import com.dominest.dominestbackend.api.common.RspTemplate;
-import com.dominest.dominestbackend.api.resident.dto.PdfBulkUploadDto;
-import com.dominest.dominestbackend.api.resident.dto.ResidentListDto;
-import com.dominest.dominestbackend.api.resident.dto.ResidentPdfListDto;
-import com.dominest.dominestbackend.api.resident.dto.SaveResidentDto;
+import com.dominest.dominestbackend.api.resident.dto.*;
 import com.dominest.dominestbackend.api.resident.util.PdfType;
 import com.dominest.dominestbackend.domain.resident.Resident;
 import com.dominest.dominestbackend.domain.resident.ResidentService;
@@ -38,10 +35,22 @@ public class ResidentController {
     // todo checkedRoom Update
     // 엑셀로 업로드
     @PostMapping("/residents/upload-excel")
-    public ResponseEntity<RspTemplate<Void>> handleFileUpload(@RequestParam(required = true) MultipartFile file
-                                                                                                            , @RequestParam(required = true) ResidenceSemester residenceSemester){
-        residentService.excelUpload(file, residenceSemester);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    public ResponseEntity<RspTemplate<ExcelUploadDto.Res>> handleFileUpload(@ModelAttribute @Valid ExcelUploadDto.Req reqDto){
+        ExcelUploadDto.Res resDto = residentService.excelUpload(reqDto.getFile(), reqDto.getResidenceSemester());
+        String resultMsg = resDto.getResultMsg();
+
+        if (resDto.getSuccessRow() <= 0) {
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(
+                            new RspTemplate<>(HttpStatus.OK, resultMsg));
+        } else {
+            return ResponseEntity
+                    .status(HttpStatus.CREATED)
+                    .body(
+                            new RspTemplate<>(HttpStatus.CREATED, resultMsg)
+                    );
+        }
     }
 
     // 전체조회
@@ -66,7 +75,7 @@ public class ResidentController {
     // 입사생 단건 등록. 단순 DTO 변환 후 저장만 하면 될듯
     @PostMapping("/residents")
     public ResponseEntity<RspTemplate<Void>> handleSaveResident(@RequestBody @Valid SaveResidentDto.Req reqDto){
-        residentService.saveResident(reqDto);
+        residentService.save(reqDto);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
