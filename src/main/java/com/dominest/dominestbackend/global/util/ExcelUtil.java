@@ -11,6 +11,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.NumberToTextConverter;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.http.ContentDisposition;
@@ -155,6 +156,86 @@ public class ExcelUtil {
                 row.createCell(3).setCellValue(resident.getStudentId());
                 row.createCell(4).setCellValue(checkedRoom.getPassState().getPenalty());
                 row.createCell(5).setCellValue(checkedRoom.getPassState().getValue());
+            }
+
+            // 파일 내보내기
+            workbook.write(response.getOutputStream());
+        } catch (IOException e) {
+            throw new FileIOException(ErrorCode.FILE_CANNOT_BE_SENT);
+        }
+    }
+
+    public static void createAndRespondAllCheckedRoomData(String filename, String sheetName, HttpServletResponse response, List<CheckedRoom> checkedRoomsGotPenalty) {
+        if (! isExcelExt(filename)) {
+            throw new AppServiceException(ErrorCode.INVALID_FILE_EXTENSION);
+        }
+
+        ContentDisposition contentDisposition = ContentDisposition.builder("attachment")
+                .filename(filename, StandardCharsets.UTF_8)
+                .build();
+
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, contentDisposition.toString());
+
+        // try-with-resources를 사용하여 워크북 생성
+        try (Workbook workbook = new XSSFWorkbook()) {
+            // 새로운 워크시트 생성
+            Sheet sheet = workbook.createSheet(sheetName);
+
+            /* 첫 행에 부가정보 표시 START*/
+            Row firstRow = sheet.createRow(0);
+
+            // 셀 생성 및 데이터 입력
+            Cell mergedDataCell = firstRow.createCell(0);
+            mergedDataCell.setCellValue("입사생 정보가 비어있을 경우 빈 방입니다.");
+
+            // 1행의 1열부터 5열까지 셀을 병합
+            sheet.addMergedRegion(new CellRangeAddress(
+                    0, // first row (0-based)
+                    0, // last row
+                    0, // first column (0-based)
+                    4  // last column
+            ));
+            /* 첫 행에 부가정보 표시 END*/
+
+            // 헤더 행 작성
+            Row headerRow = sheet.createRow(1);
+            String[] headers = {"호실", "이름", "전화번호", "학번", "벌점", "통과차수", "실내", "쓰레기방치", "화장실", "샤워실", "보관금지", "기타"};
+
+            for (int i=0; i < headers.length; i++) {
+                Cell cell = headerRow.createCell(i);
+                cell.setCellValue(headers[i]);
+            }
+
+            // 보기 편하게끔, 전화번호, 학번 컬럼은 width를 따로 설정
+            int columnWidth14 = 14 * 256; // 14문자 너비
+            int columnWidth10 = 10 * 256; // 10문자 너비
+            sheet.setColumnWidth(2, columnWidth14);
+            sheet.setColumnWidth(3, columnWidth10);
+
+            // 데이터 작성
+            int dataStartRow = 2;
+            for (int rowNum = dataStartRow; rowNum <= checkedRoomsGotPenalty.size() + dataStartRow - 1; rowNum++) {
+                Row row = sheet.createRow(rowNum);
+
+                CheckedRoom checkedRoom = checkedRoomsGotPenalty.get(rowNum - dataStartRow);
+                Resident resident = checkedRoom.getResident();
+                Room room = checkedRoom.getRoom();
+                String assignedRoom = room != null ? room.getAssignedRoom() : "";
+
+                // 실내 쓰레기방치 화장실 샤워실 보관금지
+                //indoor leavedTrash toilet shower prohibitedItem
+                row.createCell(0).setCellValue(assignedRoom);
+                row.createCell(1).setCellValue(resident == null ? "" : resident.getName());
+                row.createCell(2).setCellValue(resident == null ? "" : resident.getPhoneNumber());
+                row.createCell(3).setCellValue(resident == null ? "" : resident.getStudentId());
+                row.createCell(4).setCellValue(checkedRoom.getPassState().getPenalty());
+                row.createCell(5).setCellValue(checkedRoom.getPassState().getValue());
+                row.createCell(6).setCellValue(checkedRoom.isIndoor() ? "O" : "X");
+                row.createCell(7).setCellValue(checkedRoom.isLeavedTrash() ? "O" : "X");
+                row.createCell(8).setCellValue(checkedRoom.isToilet() ? "O" : "X");
+                row.createCell(9).setCellValue(checkedRoom.isShower() ? "O" : "X");
+                row.createCell(10).setCellValue(checkedRoom.isProhibitedItem() ? "O" : "X");
+                row.createCell(11).setCellValue(checkedRoom.getEtc() == null ? "" : checkedRoom.getEtc());
             }
 
             // 파일 내보내기
