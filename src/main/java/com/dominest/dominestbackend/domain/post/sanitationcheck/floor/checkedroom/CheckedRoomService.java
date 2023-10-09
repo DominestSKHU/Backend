@@ -1,6 +1,7 @@
 package com.dominest.dominestbackend.domain.post.sanitationcheck.floor.checkedroom;
 
 import com.dominest.dominestbackend.api.post.sanitationcheck.dto.UpdateCheckedRoomDto;
+import com.dominest.dominestbackend.api.resident.dto.ResidentListDto;
 import com.dominest.dominestbackend.domain.resident.Resident;
 import com.dominest.dominestbackend.domain.resident.penalty.PenaltyHist;
 import com.dominest.dominestbackend.domain.resident.penalty.PenaltyHistService;
@@ -86,12 +87,12 @@ public class CheckedRoomService {
         checkedRoom.passAll();
     }
 
-    public List<CheckedRoom> getNotPassedAllByPostId(Long postId) {
+    public List<CheckedRoom> findNotPassedAllByPostId(Long postId) {
         return checkedRoomRepository.findNotPassedAllByPostId(postId, CheckedRoom.PassState.NOT_PASSED);
     }
 
-    public List<CheckedRoom> findAllByRoomId(Long roomId) {
-        return checkedRoomRepository.findAllByRoomId(roomId);
+    public List<Resident> findNotPassedResidentAllByPostId(Long postId) {
+        return checkedRoomRepository.findNotPassedResidentAllByPostId(postId, CheckedRoom.PassState.NOT_PASSED);
     }
 
     public List<CheckedRoom> findAllByResidentId(Long residentId) {

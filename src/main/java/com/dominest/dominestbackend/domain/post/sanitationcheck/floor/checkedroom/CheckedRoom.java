@@ -24,10 +24,6 @@ public class CheckedRoom extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "room_id", nullable = false)
-    private Room room;
-
     private Boolean indoor = false;
     private Boolean leavedTrash = false;
     private Boolean toilet = false;
@@ -36,12 +32,15 @@ public class CheckedRoom extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private PassState passed;
-
     private String etc;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "floor_id", nullable = false)
     private Floor floor;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "room_id", nullable = false)
+    private Room room;
 
     @Setter
     @ManyToOne(fetch = FetchType.LAZY)
