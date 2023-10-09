@@ -42,11 +42,11 @@ public class CheckedRoomListDto {
             String assignedRoom;
             ResidentDto resident;
 
-            Boolean indoor;
-            Boolean leavedTrash;
-            Boolean toilet;
-            Boolean shower;
-            Boolean prohibitedItem;
+            boolean indoor;
+            boolean leavedTrash;
+            boolean toilet;
+            boolean shower;
+            boolean prohibitedItem;
 
             CheckedRoom.PassState passState;
             String etc;
@@ -72,11 +72,11 @@ public class CheckedRoomListDto {
                         .emptyRoom(emptyRoom)
                         .assignedRoom(checkedRoom.getRoom().getAssignedRoom())
                         .resident(residentDto)
-                        .indoor(checkedRoom.getIndoor())
-                        .leavedTrash(checkedRoom.getLeavedTrash())
-                        .toilet(checkedRoom.getToilet())
-                        .shower(checkedRoom.getShower())
-                        .prohibitedItem(checkedRoom.getProhibitedItem())
+                        .indoor(checkedRoom.isIndoor())
+                        .leavedTrash(checkedRoom.isLeavedTrash())
+                        .toilet(checkedRoom.isToilet())
+                        .shower(checkedRoom.isShower())
+                        .prohibitedItem(checkedRoom.isProhibitedItem())
                         .passState(checkedRoom.getPassState())
                         .etc(checkedRoom.getEtc())
                         .auditLog(AuditLog.from(checkedRoom))

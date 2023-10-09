@@ -24,11 +24,11 @@ public class CheckedRoom extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Boolean indoor = false;
-    private Boolean leavedTrash = false;
-    private Boolean toilet = false;
-    private Boolean shower = false;
-    private Boolean prohibitedItem = false;
+    private boolean indoor = false;
+    private boolean leavedTrash = false;
+    private boolean toilet = false;
+    private boolean shower = false;
+    private boolean prohibitedItem = false;
 
     @Enumerated(EnumType.STRING)
     private PassState passState;
