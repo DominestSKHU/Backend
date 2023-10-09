@@ -88,18 +88,15 @@ public class GlobalExceptionHandler {
     }
 
     // 예상하지 못한 예외 발생 시, 예외 로그 전체를 서버에 남기고, 로그 자체를 모두 클라이언트에 전송한다.
-    // TODO 실제 서비스 시  전체 로그 클라이언트에 전송하지 않는다.
-    //  즉 CreateErrorResponseDto 에서 stackTrace 를 빼고 '알 수 없는 에러' 를 반환한다.
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDto<String>> handleException(Exception e, HttpServletRequest request){
         HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
         log.error("예외처리 범위 외의 오류 발생. " + httpStatus.toString()); // enum.name() enum.toString() 차이 기억하자. name은 단순 문자열변환, toString은 오버라이딩된 메서드 호출
         printLog(e, request);
-        e.printStackTrace(); // 콘솔에 StackTrace 남기기
         String stackTrace = LoggingUtil.stackTraceToString(e);// 클라 반환용 StackTrace 생성
         log.error(stackTrace); // stack trace error log 남기기
 
-        return createErrorResponse(httpStatus.value(), httpStatus, e.getMessage() +", " + stackTrace);
+        return createErrorResponse(httpStatus.value(), httpStatus, e.getMessage());
     }
 
     private <T> ResponseEntity<ErrorResponseDto<T>> createErrorResponse(int statusCode, HttpStatus httpStatus, T errorMessage) {
