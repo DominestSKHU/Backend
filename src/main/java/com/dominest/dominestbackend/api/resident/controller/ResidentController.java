@@ -8,7 +8,9 @@ import com.dominest.dominestbackend.domain.resident.Resident;
 import com.dominest.dominestbackend.domain.resident.ResidentService;
 import com.dominest.dominestbackend.domain.resident.component.ResidenceSemester;
 import com.dominest.dominestbackend.global.exception.ErrorCode;
+import com.dominest.dominestbackend.global.exception.exceptions.BusinessException;
 import com.dominest.dominestbackend.global.exception.exceptions.file.FileIOException;
+import com.dominest.dominestbackend.global.util.ExcelUtil;
 import com.dominest.dominestbackend.global.util.FileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,6 +25,7 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @RestController
@@ -34,7 +37,12 @@ public class ResidentController {
     // 엑셀로 업로드
     @PostMapping("/residents/upload-excel")
     public ResponseEntity<RspTemplate<ExcelUploadDto.Res>> handleFileUpload(@ModelAttribute @Valid ExcelUploadDto.Req reqDto){
-        ExcelUploadDto.Res resDto = residentService.excelUpload(reqDto.getFile(), reqDto.getResidenceSemester());
+
+        // 엑셀 파싱
+        List<List<String>> sheet= ExcelUtil.parseExcel(reqDto.getFile());
+        ExcelUtil.checkResidentColumnCount(sheet);
+
+        ExcelUploadDto.Res resDto = residentService.excelUpload(sheet, reqDto.getResidenceSemester());
         String resultMsg = resDto.getResultMsg();
 
         if (resDto.getSuccessRow() <= 0) {

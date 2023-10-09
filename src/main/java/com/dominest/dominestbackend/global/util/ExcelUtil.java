@@ -2,10 +2,12 @@ package com.dominest.dominestbackend.global.util;
 
 import com.dominest.dominestbackend.global.exception.ErrorCode;
 import com.dominest.dominestbackend.global.exception.exceptions.AppServiceException;
+import com.dominest.dominestbackend.global.exception.exceptions.BusinessException;
 import com.dominest.dominestbackend.global.exception.exceptions.file.FileIOException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.NumberToTextConverter;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -13,6 +15,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 public class ExcelUtil {
@@ -61,6 +64,17 @@ public class ExcelUtil {
             data.add(rowData);
         }
         return data;
+    }
+
+    public static void checkResidentColumnCount(List<List<String>> sheet) {
+        Integer sheetColumnCount = Optional.ofNullable(sheet.get(0))
+                .map(List::size)
+                .orElse(0);
+
+        if (sheetColumnCount != RESIDENT_COLUMN_COUNT){
+            throw new BusinessException("읽어들인 컬럼 개수가 " +
+                    RESIDENT_COLUMN_COUNT + "개가 아닙니다.", HttpStatus.BAD_REQUEST);
+        }
     }
 
     private static boolean isExcelFile(MultipartFile file) {
