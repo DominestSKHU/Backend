@@ -1,6 +1,7 @@
 package com.dominest.dominestbackend.domain.post.sanitationcheck.floor.checkedroom;
 
 import com.dominest.dominestbackend.api.post.sanitationcheck.dto.UpdateCheckedRoomDto;
+import com.dominest.dominestbackend.api.resident.dto.ResidentListDto;
 import com.dominest.dominestbackend.domain.resident.Resident;
 import com.dominest.dominestbackend.domain.resident.penalty.PenaltyHist;
 import com.dominest.dominestbackend.domain.resident.penalty.PenaltyHistService;
@@ -45,7 +46,7 @@ public class CheckedRoomService {
     }
 
     @Transactional
-    public void update(Long checkedRoomId, UpdateCheckedRoomDto.Req reqDto) {
+    public void update(Long checkedRoomId, UpdateCheckedRoomDto.Req reqDto) { // api 호출 편의성을 위해 이 ReqDto는 값 검증하지 않았음.
         CheckedRoom checkedRoom = getByIdFetchResident(checkedRoomId);
         // Null이 아닌 값만 업데이트
         checkedRoom.updateValuesOnlyNotNull(
@@ -84,18 +85,6 @@ public class CheckedRoomService {
     public void passAll(Long roomId) {
         CheckedRoom checkedRoom = getById(roomId);
         checkedRoom.passAll();
-    }
-
-    public List<CheckedRoom> getNotPassedAllByPostId(Long postId) {
-        return checkedRoomRepository.findNotPassedAllByPostId(postId, CheckedRoom.PassState.NOT_PASSED);
-    }
-
-    public List<CheckedRoom> findAllByRoomId(Long roomId) {
-        return checkedRoomRepository.findAllByRoomId(roomId);
-    }
-
-    public List<CheckedRoom> findAllByResidentId(Long residentId) {
-        return checkedRoomRepository.findAllByResidentId(residentId);
     }
 }
 

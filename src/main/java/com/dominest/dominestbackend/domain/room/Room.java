@@ -36,6 +36,7 @@ public class Room extends BaseEntity {
     @Column(nullable = false)
     private Integer floorNo; // 층수
 
+    // 한 방에 한 입사생만 입주할 수 있지만, 입사생은 여러 차수로 나뉘어져 있으므로 OneToMany
     @OneToMany(mappedBy = "room", fetch = FetchType.LAZY)
     private List<Resident> residents;
 

@@ -24,24 +24,23 @@ public class CheckedRoom extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "room_id", nullable = false)
-    private Room room;
-
-    private Boolean indoor = false;
-    private Boolean leavedTrash = false;
-    private Boolean toilet = false;
-    private Boolean shower = false;
-    private Boolean prohibitedItem = false;
+    private boolean indoor = false;
+    private boolean leavedTrash = false;
+    private boolean toilet = false;
+    private boolean shower = false;
+    private boolean prohibitedItem = false;
 
     @Enumerated(EnumType.STRING)
-    private PassState passed;
-
+    private PassState passState;
     private String etc;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "floor_id", nullable = false)
     private Floor floor;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "room_id", nullable = false)
+    private Room room;
 
     @Setter
     @ManyToOne(fetch = FetchType.LAZY)
@@ -49,7 +48,7 @@ public class CheckedRoom extends BaseEntity {
     private Resident resident;
 
     @Builder
-    private CheckedRoom(Room room, PassState passed
+    private CheckedRoom(Room room, PassState passState
             , String etc, Floor floor, Resident resident) {
         this.room = room;
         this.indoor = false;
@@ -57,7 +56,7 @@ public class CheckedRoom extends BaseEntity {
         this.toilet = false;
         this.shower = false;
         this.prohibitedItem = false;
-        this.passed = passed;
+        this.passState = passState;
         this.etc = etc;
         this.floor = floor;
         this.resident = resident;
@@ -71,7 +70,7 @@ public class CheckedRoom extends BaseEntity {
         if (toilet != null) {this.toilet = toilet;}
         if (shower != null) {this.shower = shower;}
         if (prohibitedItem != null) {this.prohibitedItem = prohibitedItem;}
-        if (passState != null) {this.passed = passState;}
+        if (passState != null) {this.passState = passState;}
         if (etc != null) {this.etc = etc;}
     }
 
@@ -89,7 +88,9 @@ public class CheckedRoom extends BaseEntity {
         NOT_PASSED("미통과", 0), FIRST_PASSED("1차 통과", 0)
         , SECOND_PASSED("2차 통과", 3), THIRD_PASSED("3차 통과", 6)
         , FOURTH_PASSED("4차 통과", 9), FIFTH_PASSED("5차 통과", 12)
-        , SIXTH_PASSED("6차 통과", 15)
+        , SIXTH_PASSED("6차 통과", 15), SEVENTH_PASSED("7차 통과", 18)
+        , EIGHTH_PASSED("8차 통과", 21), NINTH_PASSED("9차 통과", 24)
+        , TENTH_PASSED("10차 통과", 27)
         ;
 
         @JsonValue
