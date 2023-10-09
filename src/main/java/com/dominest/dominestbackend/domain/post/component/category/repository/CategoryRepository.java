@@ -15,6 +15,7 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
         // userEmail은 조회결과가 아니라 조건이므로 Fetch하지 않아도 될 듯?
     List<Long> findIdAllByUserEmailFetchCategory(@Param("email") String email);
 
+    // 첫째 인자가 NULL일 경우 1을 반환한다.
     @Query("SELECT COALESCE(MAX(c.orderKey) + 1, 1) FROM Category c")
     Integer getNewOrderKey();
 
