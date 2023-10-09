@@ -144,7 +144,7 @@ public class SanitationCheckController {
 
         CheckedRoomListDto.Res resDto = CheckedRoomListDto.Res.from(checkedRooms, category);
         return new RspTemplate<>(HttpStatus.OK
-                , postId + "번 게시글 " + floorId + "층의 점검표 조회"
+                , postId + "번 게시글, 층 ID: " + floorId + "의 점검표 조회"
                 ,resDto);
     }
 
