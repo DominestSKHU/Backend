@@ -102,7 +102,7 @@ public class ResidentController {
 
     // 특정 입사생의 PDF 조회
     @GetMapping("/residents/{id}/pdf")
-    public RspTemplate<Void> handleGetPdf(@PathVariable Long id, @RequestParam(required = true) PdfType pdfType,
+    public void handleGetPdf(@PathVariable Long id, @RequestParam(required = true) PdfType pdfType,
                                        HttpServletResponse response){
         // filename 가져오기.
         Resident resident = residentService.findById(id);
@@ -121,7 +121,6 @@ public class ResidentController {
         } catch (IOException e) {
             throw new FileIOException(ErrorCode.FILE_CANNOT_BE_SENT);
         }
-        return new RspTemplate<>(HttpStatus.OK, "pdf 조회 성공");
     }
 
     // PDF 단건 업로드
