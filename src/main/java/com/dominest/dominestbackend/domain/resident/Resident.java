@@ -31,7 +31,7 @@ public class Resident extends BaseEntity {
     private Long id;
 
     /** 학생 개인정보 */
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false, length = 30)
     private String name;
     @Column(nullable = false)
     private String gender; // 현재 'M' or 'F' 인데 확장성을 위해 String 쓰기로 함
