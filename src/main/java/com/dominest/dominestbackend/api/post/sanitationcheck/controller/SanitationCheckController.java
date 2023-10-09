@@ -20,6 +20,7 @@ import com.dominest.dominestbackend.domain.resident.component.ResidenceSemester;
 import com.dominest.dominestbackend.domain.room.Room;
 import com.dominest.dominestbackend.global.exception.ErrorCode;
 import com.dominest.dominestbackend.global.exception.exceptions.file.FileIOException;
+import com.dominest.dominestbackend.global.util.ExcelUtil;
 import com.dominest.dominestbackend.global.util.PageableUtil;
 import com.dominest.dominestbackend.global.util.PrincipalUtil;
 import lombok.Getter;
@@ -170,56 +171,15 @@ public class SanitationCheckController {
     ) {
         // 미통과자 목록 조회, Room 정보까지 Fetch Join함.
         String postTitle = sanitationCheckPostService.getById(postId).getTitle();
+        String filename = postTitle + " - 미통과자 명단" + ".xlsx";
+
         List<Resident> residentsNotPassed = checkedRoomService.findNotPassedResidentAllByPostId(postId);
 
-
+        // 파일명, 시트명, HttpServletResponse, List<Resident>
+        String sheetName = "미통과자 목록";
         // 파일 이름 설정
-        ContentDisposition contentDisposition = ContentDisposition.builder("attachment")
-                .filename(postTitle + " - 미통과자 명단" +".xlsx", StandardCharsets.UTF_8)
-                .build();
+        ExcelUtil.createAndRespondResidentData(filename, sheetName, response, residentsNotPassed);
 
-        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, contentDisposition.toString());
-
-        // try-with-resources를 사용하여 워크북 생성
-        try (Workbook workbook = new XSSFWorkbook()) {
-            // 새로운 워크시트 생성
-            Sheet sheet = workbook.createSheet("FirstSheet");
-            // 헤더 행 작성
-            Row headerRow = sheet.createRow(0);
-            String[] headers = {"호실", "이름", "전화번호", "학번", "벌점"};
-
-            for (int i=0; i < headers.length; i++) {
-                Cell cell = headerRow.createCell(i);
-                cell.setCellValue(headers[i]);
-            }
-
-            // 전화번호, 학번 컬럼은 width를 autoSize 설정
-            int columnWidth14 = 14 * 256; // 14문자 너비
-            int columnWidth10 = 10 * 256; // 10문자 너비
-            sheet.setColumnWidth(2, columnWidth14);
-            sheet.setColumnWidth(3, columnWidth10);
-
-            // 데이터 작성
-            for (int rowNum = 1; rowNum <= residentsNotPassed.size(); rowNum++) {
-                Row row = sheet.createRow(rowNum);
-
-                Resident resident = residentsNotPassed.get(rowNum - 1);
-                Room room = resident.getRoom();
-                String assignedRoom = room != null ? room.getAssignedRoom() : "";
-
-
-                row.createCell(0).setCellValue(assignedRoom);
-                row.createCell(1).setCellValue(resident.getName());
-                row.createCell(2).setCellValue(resident.getPhoneNumber());
-                row.createCell(3).setCellValue(resident.getStudentId());
-                row.createCell(4).setCellValue(resident.getPenalty());
-            }
-
-            // 파일 내보내기
-            workbook.write(response.getOutputStream());
-        } catch (IOException e) {
-            throw new FileIOException(ErrorCode.FILE_CANNOT_BE_SENT);
-        }
     }
 
 

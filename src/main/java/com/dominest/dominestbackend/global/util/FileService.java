@@ -32,7 +32,10 @@ public class FileService {
         List<String> storedFilePaths = new ArrayList<>();
         for (MultipartFile multipartFile : multipartFiles) {
             String storedFilePath = save(prefix, multipartFile);
-            if (storedFilePath == null) continue;
+            if (storedFilePath == null) {
+                log.warn("save() 메서드 null 반환, 파일이 비어있을 수 있음.");
+                continue;
+            }
             storedFilePaths.add(storedFilePath);
         }
         // 저장한 파일의 경로 리스트를 반환한다.
@@ -54,8 +57,7 @@ public class FileService {
             multipartFile.transferTo(storedFilePath);
         } catch (IOException e) {
             // FileIOException 발생시키기 전에, IOEXCEPTION 에 대한 로그를 남긴다.
-            log.error("IOEXCEPTION: " + originalFileName + " 저장 불가" );
-            e.printStackTrace();
+            log.error("IOEXCEPTION 발생: originalFile: {}, storedFilePath: {}", originalFileName, storedFilePath.toString());
             throw new FileIOException(ErrorCode.FILE_CANNOT_BE_STORED);
         }
 
@@ -88,7 +90,7 @@ public class FileService {
         try (InputStream imageStream = new FileInputStream(fileUploadPath + fullFilePath)) {
             return imageStream.readAllBytes();
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("IOEXCEPTION 발생: filePrefix: {}, fileName: {}", filePrefix, fileName);
             throw new FileIOException(ErrorCode.FILE_CANNOT_BE_READ);
         }
     }
@@ -112,17 +114,6 @@ public class FileService {
     public void deleteFile(FilePrefix filePrefix, List<String> fileNames) {
         fileNames.forEach(fileName -> deleteFile(filePrefix, fileName));
     }
-
-    // zipInputStream을 받아서 Path에 저장한다.
-//    public void extractFile(ZipInputStream zipInputStream, Path filePath) throws IOException {
-//        try (BufferedOutputStream bos = new BufferedOutputStream(Files.newOutputStream(filePath))) {
-//            byte[] bytesIn = new byte[4096];
-//            int read;
-//            while ((read = zipInputStream.read(bytesIn)) != -1) { // 끝까지 읽었을 경우 -1 반환, 끝이 아닐 경우 읽은 바이트 수 반환
-//                bos.write(bytesIn, 0, read);                // Is에서 읽어들인 byte배열의 length의 크기만큼 0부터 read까지 쓴다.
-//            }
-//        }
-//    }
 
     // fileUploadPath 내부에 저장될 directory 를 선택한다.
     // fileUplaodPath + FilePrefix + fileName 으로 저장된다.
