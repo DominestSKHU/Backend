@@ -26,7 +26,7 @@ public interface CheckedRoomRepository extends JpaRepository<CheckedRoom, Long> 
             " JOIN FETCH cr.room" +
             " LEFT JOIN FETCH cr.resident" +
             " WHERE f.sanitationCheckPost.id = :postId" +
-            " AND cr.passed = :passState")
+            " AND cr.passState = :passState")
     List<CheckedRoom> findNotPassedAllByPostId(@Param("postId") Long postId, @Param("passState") CheckedRoom.PassState passState);
 
     // 미통과 방의 입사생 목록을 가져온다.
@@ -36,10 +36,21 @@ public interface CheckedRoomRepository extends JpaRepository<CheckedRoom, Long> 
             " JOIN FETCH resi.room ro" +
 
             " WHERE f.sanitationCheckPost.id = :postId" +
-            " AND cr.passed = :passState")
+            " AND cr.passState = :passState")
     List<Resident> findNotPassedResidentAllByPostId(@Param("postId") Long postId, @Param("passState") CheckedRoom.PassState passState);
 
     @Query("SELECT cr FROM CheckedRoom cr" +
             " WHERE cr.resident.id = :residentId")
     List<CheckedRoom> findAllByResidentId(@Param("residentId") Long residentId);
+
+    // SaniCheckPost Id에 속한 CheckedRoom 전체를 조회한다.
+    // Resident와 Room을 Fetch Join하며, passState를 Not In으로 조회한다.
+    @Query("SELECT cr FROM CheckedRoom cr" +
+            " JOIN cr.floor f" + // floor를 거쳐야 sanitationCheckPost에 접근할 수 있다. floor 데이터가 필요하지는 않으므로 fetch하지 않는다.
+            " JOIN FETCH cr.resident resi" +
+            " JOIN FETCH cr.room ro" +
+
+            " WHERE f.sanitationCheckPost.id = :postId" +
+            " AND cr.passState NOT IN :passStates")
+    List<CheckedRoom> findAllByPostIdAndNotInPassState(@Param("postId")Long postId, @Param("passStates")List<CheckedRoom.PassState> passStates);
 }

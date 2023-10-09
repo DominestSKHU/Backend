@@ -48,7 +48,7 @@ public class CheckedRoomListDto {
             Boolean shower;
             Boolean prohibitedItem;
 
-            CheckedRoom.PassState passed;
+            CheckedRoom.PassState passState;
             String etc;
 
             AuditLog auditLog;
@@ -77,7 +77,7 @@ public class CheckedRoomListDto {
                         .toilet(checkedRoom.getToilet())
                         .shower(checkedRoom.getShower())
                         .prohibitedItem(checkedRoom.getProhibitedItem())
-                        .passed(checkedRoom.getPassed())
+                        .passState(checkedRoom.getPassState())
                         .etc(checkedRoom.getEtc())
                         .auditLog(AuditLog.from(checkedRoom))
                         .build();

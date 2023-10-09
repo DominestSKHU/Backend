@@ -99,7 +99,7 @@ public class SanitationCheckPostService {
                 CheckedRoom checkedRoom = CheckedRoom.builder()
                         .room(room)
                         .floor(floor)
-                        .passed(CheckedRoom.PassState.NOT_PASSED)
+                        .passState(CheckedRoom.PassState.NOT_PASSED)
                         .resident(resident) // null이든 아니든 그냥 저장.
                         .build();
                 checkedRooms.add(checkedRoom);

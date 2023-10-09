@@ -5,7 +5,6 @@ import com.dominest.dominestbackend.api.post.sanitationcheck.dto.CheckFloorListD
 import com.dominest.dominestbackend.api.post.sanitationcheck.dto.CheckPostListDto;
 import com.dominest.dominestbackend.api.post.sanitationcheck.dto.CheckedRoomListDto;
 import com.dominest.dominestbackend.api.post.sanitationcheck.dto.UpdateCheckedRoomDto;
-import com.dominest.dominestbackend.api.resident.dto.ResidentListDto;
 import com.dominest.dominestbackend.domain.post.component.category.Category;
 import com.dominest.dominestbackend.domain.post.component.category.component.Type;
 import com.dominest.dominestbackend.domain.post.component.category.service.CategoryService;
@@ -16,27 +15,16 @@ import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.FloorServi
 import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.checkedroom.CheckedRoom;
 import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.checkedroom.CheckedRoomRepository;
 import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.checkedroom.CheckedRoomService;
-import com.dominest.dominestbackend.domain.resident.Resident;
 import com.dominest.dominestbackend.domain.resident.component.ResidenceSemester;
-import com.dominest.dominestbackend.domain.room.Room;
-import com.dominest.dominestbackend.global.exception.ErrorCode;
-import com.dominest.dominestbackend.global.exception.exceptions.file.FileIOException;
 import com.dominest.dominestbackend.global.util.ExcelUtil;
 import com.dominest.dominestbackend.global.util.PageableUtil;
 import com.dominest.dominestbackend.global.util.PrincipalUtil;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.ContentDisposition;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -45,10 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.io.IOException;
 import java.net.URI;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.util.List;
 
@@ -174,16 +159,16 @@ public class SanitationCheckController {
         String postTitle = sanitationCheckPostService.getById(postId).getTitle();
 
         String filename = postTitle + " - 벌점 부여자 명단" + ".xlsx";
-        String sheetName = "미통과자 목록";
+        String sheetName = "벌점 부여자 명단";
 
         // N차 통과를 조회하려면 CheckedRoom까지 조회해야 함. Resident를 Inner Join해서 빈 방 조회를 피하자.
         // 2~10차 통과자 목록 조회, Room 정보까지 Fetch Join함.
         List<CheckedRoom.PassState> penalty0passStates =
                 List.of(CheckedRoom.PassState.NOT_PASSED, CheckedRoom.PassState.FIRST_PASSED);
-        List<CheckedRoom> residentsNotPassed = checkedRoomRepository.findAllByPostIdAndNotInPassState(postId, penalty0passStates);
+        List<CheckedRoom> checkedRoomsGotPenalty = checkedRoomRepository.findAllByPostIdAndNotInPassState(postId, penalty0passStates);
 
         // 파일 이름 설정
-        ExcelUtil.createAndRespondResidentData(filename, sheetName, response, residentsNotPassed);
+        ExcelUtil.createAndRespondCheckedRoomData(filename, sheetName, response, checkedRoomsGotPenalty);
     }
 
 

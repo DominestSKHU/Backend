@@ -1,5 +1,6 @@
 package com.dominest.dominestbackend.global.util;
 
+import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.checkedroom.CheckedRoom;
 import com.dominest.dominestbackend.domain.resident.Resident;
 import com.dominest.dominestbackend.domain.room.Room;
 import com.dominest.dominestbackend.global.exception.ErrorCode;
@@ -109,7 +110,7 @@ public class ExcelUtil {
         return originalFileName.substring(pos +1);
     }
 
-    public static void createAndRespondResidentData(String filename, String sheetName, HttpServletResponse response, List<Resident> residentsNotPassed) {
+    public static void createAndRespondCheckedRoomData(String filename, String sheetName, HttpServletResponse response, List<CheckedRoom> checkedRoomsGotPenalty) {
         if (! isExcelExt(filename)) {
             throw new AppServiceException(ErrorCode.INVALID_FILE_EXTENSION);
         }
@@ -126,7 +127,7 @@ public class ExcelUtil {
             Sheet sheet = workbook.createSheet(sheetName);
             // 헤더 행 작성
             Row headerRow = sheet.createRow(0);
-            String[] headers = {"호실", "이름", "전화번호", "학번", "벌점"};
+            String[] headers = {"호실", "이름", "전화번호", "학번", "벌점", "통과차수"};
 
             for (int i=0; i < headers.length; i++) {
                 Cell cell = headerRow.createCell(i);
@@ -140,19 +141,20 @@ public class ExcelUtil {
             sheet.setColumnWidth(3, columnWidth10);
 
             // 데이터 작성
-            for (int rowNum = 1; rowNum <= residentsNotPassed.size(); rowNum++) {
+            for (int rowNum = 1; rowNum <= checkedRoomsGotPenalty.size(); rowNum++) {
                 Row row = sheet.createRow(rowNum);
 
-                Resident resident = residentsNotPassed.get(rowNum - 1);
-                Room room = resident.getRoom();
+                CheckedRoom checkedRoom = checkedRoomsGotPenalty.get(rowNum - 1);
+                Resident resident = checkedRoom.getResident();
+                Room room = checkedRoom.getRoom();
                 String assignedRoom = room != null ? room.getAssignedRoom() : "";
-
 
                 row.createCell(0).setCellValue(assignedRoom);
                 row.createCell(1).setCellValue(resident.getName());
                 row.createCell(2).setCellValue(resident.getPhoneNumber());
                 row.createCell(3).setCellValue(resident.getStudentId());
-                row.createCell(4).setCellValue(resident.getPenalty());
+                row.createCell(4).setCellValue(checkedRoom.getPassState().getPenalty());
+                row.createCell(5).setCellValue(checkedRoom.getPassState().getValue());
             }
 
             // 파일 내보내기
