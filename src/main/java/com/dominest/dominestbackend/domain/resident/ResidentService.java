@@ -4,6 +4,7 @@ import com.dominest.dominestbackend.api.resident.dto.ExcelUploadDto;
 import com.dominest.dominestbackend.api.resident.dto.PdfBulkUploadDto;
 import com.dominest.dominestbackend.api.resident.dto.SaveResidentDto;
 import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.checkedroom.CheckedRoom;
+import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.checkedroom.CheckedRoomRepository;
 import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.checkedroom.CheckedRoomService;
 import com.dominest.dominestbackend.domain.resident.component.ResidenceSemester;
 import com.dominest.dominestbackend.domain.room.Room;
@@ -35,7 +36,7 @@ public class ResidentService {
     private final ResidentRepository residentRepository;
     private final FileService fileService;
     private final RoomService roomService;
-    private final CheckedRoomService checkedRoomService;
+    private final CheckedRoomRepository checkedRoomRepository;
 
     /** @return 저장한 파일명 */
     @Transactional
@@ -176,7 +177,7 @@ public class ResidentService {
     @Transactional
     public void deleteById(Long id) {
         Resident resident = findById(id);
-        List<CheckedRoom> checkedRooms = checkedRoomService.findAllByResidentId(resident.getId());
+        List<CheckedRoom> checkedRooms = checkedRoomRepository.findAllByResidentId(resident.getId());
         checkedRooms.forEach(cr -> cr.setResident(null));
         residentRepository.delete(resident);
     }

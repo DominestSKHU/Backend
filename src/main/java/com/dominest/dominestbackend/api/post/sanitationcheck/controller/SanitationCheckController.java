@@ -14,6 +14,7 @@ import com.dominest.dominestbackend.domain.post.sanitationcheck.SanitationCheckP
 import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.Floor;
 import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.FloorService;
 import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.checkedroom.CheckedRoom;
+import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.checkedroom.CheckedRoomRepository;
 import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.checkedroom.CheckedRoomService;
 import com.dominest.dominestbackend.domain.resident.Resident;
 import com.dominest.dominestbackend.domain.resident.component.ResidenceSemester;
@@ -58,6 +59,7 @@ public class SanitationCheckController {
     private final CategoryService categoryService;
     private final FloorService floorService;
     private final CheckedRoomService checkedRoomService;
+    private final CheckedRoomRepository checkedRoomRepository;
 
     // 게시글 생성(학기 지정)
     // category 4 posts sanitation-check
@@ -156,7 +158,7 @@ public class SanitationCheckController {
     ) {
         Category category = sanitationCheckPostService.getByIdFetchCategory(postId).getCategory();
         // 여기서 미통과자를 입사생과 함께 조회
-        List<CheckedRoom> checkedRooms = checkedRoomService.findNotPassedAllByPostId(postId);
+        List<CheckedRoom> checkedRooms = checkedRoomRepository.findNotPassedAllByPostId(postId, CheckedRoom.PassState.NOT_PASSED);
 
         CheckedRoomListDto.Res resDto = CheckedRoomListDto.Res.from(checkedRooms, category);
         return new RspTemplate<>(HttpStatus.OK
@@ -164,22 +166,24 @@ public class SanitationCheckController {
                 ,resDto);
     }
 
-    // 미통과자 엑셀파일로 추출
-    @GetMapping("/posts/sanitation-check/{postId}/not-passed/xlsx")
+    // 방호점 게시글에서 벌점이 부과된 입사생 목록
+    @GetMapping("/posts/sanitation-check/{postId}/penalty-residents/xlsx")
     public void handleNotPassedExcelDownload(
             @PathVariable Long postId, HttpServletResponse response
     ) {
-        // 미통과자 목록 조회, Room 정보까지 Fetch Join함.
         String postTitle = sanitationCheckPostService.getById(postId).getTitle();
-        String filename = postTitle + " - 미통과자 명단" + ".xlsx";
 
-        List<Resident> residentsNotPassed = checkedRoomService.findNotPassedResidentAllByPostId(postId);
-
-        // 파일명, 시트명, HttpServletResponse, List<Resident>
+        String filename = postTitle + " - 벌점 부여자 명단" + ".xlsx";
         String sheetName = "미통과자 목록";
+
+        // N차 통과를 조회하려면 CheckedRoom까지 조회해야 함. Resident를 Inner Join해서 빈 방 조회를 피하자.
+        // 2~10차 통과자 목록 조회, Room 정보까지 Fetch Join함.
+        List<CheckedRoom.PassState> penalty0passStates =
+                List.of(CheckedRoom.PassState.NOT_PASSED, CheckedRoom.PassState.FIRST_PASSED);
+        List<CheckedRoom> residentsNotPassed = checkedRoomRepository.findAllByPostIdAndNotInPassState(postId, penalty0passStates);
+
         // 파일 이름 설정
         ExcelUtil.createAndRespondResidentData(filename, sheetName, response, residentsNotPassed);
-
     }
 
 
