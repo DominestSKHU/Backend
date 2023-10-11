@@ -20,10 +20,10 @@ import java.util.List;
         // unique 제약에서 '학기' 는 기본적으로 깔고 간다.
         // 1. [학번, 전화번호, 이름] 중복제한:  똑같은 학생이 한 학기에 둘 이상 있을 순 없다.
         // 2. [방번호]가 중복되면 안된다. 학기중 하나의 방, 하나의 구역에 둘 이상이 있을 순 없다.
-       @UniqueConstraint(name = "unique_for_resident_Info",
-                columnNames = { "residenceSemester", "studentId", "phoneNumber", "name" })
-        , @UniqueConstraint(name = "unique_for_room",
-                                            columnNames = { "residenceSemester", "room_id"  })
+        @UniqueConstraint(name = "unique_resident_Info_for_studentId_and_name",
+                                            columnNames = { "studentId", "phoneNumber", "name" ,"residenceSemester" })
+        , @UniqueConstraint(name = "unique_resident_Info_for_room",
+                                            columnNames = { "room_id", "residenceSemester" })
 })
 public class Resident extends BaseEntity {
     @Id
