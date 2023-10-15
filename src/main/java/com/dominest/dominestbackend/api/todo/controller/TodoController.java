@@ -2,6 +2,7 @@ package com.dominest.dominestbackend.api.todo.controller;
 
 import com.dominest.dominestbackend.api.common.RspTemplate;
 import com.dominest.dominestbackend.api.todo.request.TodoSaveRequest;
+import com.dominest.dominestbackend.api.todo.response.TodoUserResponse;
 import com.dominest.dominestbackend.domain.todo.Todo;
 import com.dominest.dominestbackend.domain.todo.repository.TodoRepository;
 import com.dominest.dominestbackend.domain.todo.service.TodoService;
@@ -57,5 +58,11 @@ public class TodoController {
     public RspTemplate<Void> deleteEvaluation(@PathVariable Long todoId) {
         todoService.deleteTodo(todoId);
         return new RspTemplate<>(HttpStatus.OK, todoId + "번 투두가 성공적으로 삭제되었습니다.");
+    }
+
+    @GetMapping("/user-name")
+    public RspTemplate<List<TodoUserResponse>> getUserInfo() {
+        List<TodoUserResponse> nameResponse = todoService.getUserNameTodo();
+        return new RspTemplate<>(HttpStatus.OK, "유저의 이름을 모두 불러오는데 성공했습니다.", nameResponse);
     }
 }

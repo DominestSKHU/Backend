@@ -1,8 +1,11 @@
 package com.dominest.dominestbackend.domain.todo.service;
 
 import com.dominest.dominestbackend.api.todo.request.TodoSaveRequest;
+import com.dominest.dominestbackend.api.todo.response.TodoUserResponse;
 import com.dominest.dominestbackend.domain.todo.Todo;
 import com.dominest.dominestbackend.domain.todo.repository.TodoRepository;
+import com.dominest.dominestbackend.domain.user.User;
+import com.dominest.dominestbackend.domain.user.repository.UserRepository;
 import com.dominest.dominestbackend.global.exception.ErrorCode;
 import com.dominest.dominestbackend.global.exception.exceptions.BusinessException;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityNotFoundException;
 import java.security.Principal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -19,6 +24,8 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 public class TodoService {
     private final TodoRepository todoRepository;
+
+    private final UserRepository userRepository;
 
     @Transactional
     public void createTodo(TodoSaveRequest request, Principal principal){ // 투두 저장
@@ -59,6 +66,17 @@ public class TodoService {
         }
 
         todoRepository.delete(todo.get());
+    }
 
+    public List<TodoUserResponse> getUserNameTodo(){ // 투두 근로자 선택
+        List<User> user = userRepository.findAll();
+        List<TodoUserResponse> responses = new ArrayList<>();
+
+        for(User user1 : user){
+            TodoUserResponse userScheduleResponse = new TodoUserResponse(user1.getName());
+            responses.add(userScheduleResponse);
+        }
+
+        return responses;
     }
 }
