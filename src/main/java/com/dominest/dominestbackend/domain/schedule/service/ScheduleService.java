@@ -1,8 +1,12 @@
 package com.dominest.dominestbackend.domain.schedule.service;
 
+import com.dominest.dominestbackend.api.admin.response.JoinResponse;
 import com.dominest.dominestbackend.api.schedule.request.ScheduleSaveRequest;
+import com.dominest.dominestbackend.api.schedule.response.UserScheduleResponse;
 import com.dominest.dominestbackend.domain.schedule.Schedule;
 import com.dominest.dominestbackend.domain.schedule.repository.ScheduleRepository;
+import com.dominest.dominestbackend.domain.user.User;
+import com.dominest.dominestbackend.domain.user.repository.UserRepository;
 import com.dominest.dominestbackend.global.exception.ErrorCode;
 import com.dominest.dominestbackend.global.exception.exceptions.BusinessException;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +21,7 @@ import java.util.*;
 public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
+    private final UserRepository userRepository;
 
     @Transactional
     public void saveSchedule(ScheduleSaveRequest requests) {
@@ -76,5 +81,18 @@ public class ScheduleService {
         }
 
         return usernames;
+    }
+
+    // 유저 이름, 폰번호 가져오기
+    public List<UserScheduleResponse> getUserInfo(){
+        List<User> user = userRepository.findAll();
+        List<UserScheduleResponse> responses = new ArrayList<>();
+
+        for(User user1 : user){
+            UserScheduleResponse userScheduleResponse = new UserScheduleResponse(user1.getName(), user1.getPhoneNumber());
+            responses.add(userScheduleResponse);
+        }
+
+        return responses;
     }
 }
