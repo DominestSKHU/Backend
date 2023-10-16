@@ -37,9 +37,7 @@ public class UserController {
     private final UserRepository userRepository;
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
-    private final TokenManager tokenManager;
     private final TokenValidator tokenValidator;
-    private final EmailVerificationService emailVerificationService;
 
     @PostMapping("/join") // 회원가입
     public ResponseEntity<JoinResponse> signUp(@RequestBody @Valid final JoinRequest request){
