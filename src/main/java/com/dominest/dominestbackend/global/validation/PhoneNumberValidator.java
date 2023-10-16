@@ -1,8 +1,11 @@
 package com.dominest.dominestbackend.global.validation;
 
+import org.springframework.stereotype.Component;
+
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
+@Component
 public class PhoneNumberValidator implements ConstraintValidator<PhoneNumber, String> {
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
