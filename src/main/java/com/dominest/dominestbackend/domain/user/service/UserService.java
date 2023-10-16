@@ -11,11 +11,11 @@ import com.dominest.dominestbackend.domain.user.repository.UserRepository;
 import com.dominest.dominestbackend.global.exception.ErrorCode;
 import com.dominest.dominestbackend.global.exception.exceptions.BusinessException;
 import com.dominest.dominestbackend.global.util.EntityUtil;
+import com.dominest.dominestbackend.global.validation.PhoneNumberValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.Date;
 import java.util.Optional;
 
@@ -30,8 +30,13 @@ public class UserService {
 
     private final TokenManager tokenManager;
 
+    private final PhoneNumberValidator phoneNumberValidator;
+
     @Transactional
     public JoinResponse create(JoinRequest request){
+        if (!phoneNumberValidator.isValid(request.getPhoneNumber(), null)) {
+            throw new IllegalArgumentException("Invalid phone number");
+        }
         User user = User.builder()
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
@@ -129,15 +134,3 @@ public class UserService {
         user.logout();
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
