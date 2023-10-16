@@ -1,6 +1,5 @@
 spring:
 
-
   profiles:
     active:
   servlet:
@@ -13,25 +12,38 @@ spring:
     init:
       mode: always
 
-
   mail:
-    host: smtp.naver.com #smtp
-    port: 465
+    host: smtp.gmail.com
+    port: 587
     username: ${email.id}
     password: ${email.pw}
     properties:
       mail:
         smtp:
+          auth: true # 5
+          timeout: 5000 # 6
           starttls:
-            enable: true
-          #            required: true
-          auth: true
-          #          connectiontimeout: 5000
-          #          timeout: 5000
-          #          writetimeout: 5000
-          ssl:
-            trust: smtp.naver.com
-            enable: true
+            enable: true # 7
+
+
+#  mail:
+#    host: smtp.naver.com #smtp
+#    port: 465
+#    username: ${email.id}
+#    password: ${email.pw}
+#    properties:
+#      mail:
+#        smtp:
+#          starttls:
+#            enable: true
+#          #            required: true
+#          auth: true
+#          #          connectiontimeout: 5000
+#          #          timeout: 5000
+#          #          writetimeout: 5000
+#          ssl:
+#            trust: smtp.naver.com
+#            enable: true
 
 jwt:
   secret: ${token.secret}
