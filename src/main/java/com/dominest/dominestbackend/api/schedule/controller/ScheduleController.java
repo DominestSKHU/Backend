@@ -2,6 +2,7 @@ package com.dominest.dominestbackend.api.schedule.controller;
 
 import com.dominest.dominestbackend.api.common.RspTemplate;
 import com.dominest.dominestbackend.api.schedule.request.ScheduleSaveRequest;
+import com.dominest.dominestbackend.api.schedule.response.UserScheduleResponse;
 import com.dominest.dominestbackend.domain.schedule.repository.ScheduleRepository;
 import com.dominest.dominestbackend.domain.schedule.service.ScheduleService;
 import lombok.RequiredArgsConstructor;
@@ -30,5 +31,11 @@ public class ScheduleController {
     public ResponseEntity<List<Map<String, Object>>> getSchedule() {
         List<Map<String, Object>> scheduleInfo = scheduleService.getSchedule();
         return ResponseEntity.ok(scheduleInfo);
+    }
+
+    @GetMapping("/user-info")
+    public RspTemplate<List<UserScheduleResponse>> getUserInfo() {
+        List<UserScheduleResponse> userResponses = scheduleService.getUserInfo();
+        return new RspTemplate<>(HttpStatus.OK, "유저의 이름과 번호를 성공적으로 불러왔습니다.", userResponses);
     }
 }
