@@ -31,13 +31,8 @@ public class UserService {
 
     private final TokenManager tokenManager;
 
-    private final PhoneNumberValidator phoneNumberValidator;
-
     @Transactional
     public JoinResponse create(JoinRequest request){
-        if (!phoneNumberValidator.isValid(request.getPhoneNumber(), null)) {
-            throw new IllegalArgumentException("Invalid phone number");
-        }
         User user = User.builder()
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
