@@ -58,7 +58,7 @@ public class EmailService {
         n += "<p style='line-height: 13px; text-align: center; font-size: 12px;'>본 메일은 발신 전용입니다.</p>";
         n += "<p style='line-height: 13px; text-align: center; font-size: 12px;'>궁금하신 사항은 기숙사 행정실에 문의 바랍니다.</p>";
         n += "<p style='line-height: 13px; text-align: center; font-size: 12px;'>성공회대 IT 도미도미 팀 제작</p>";
-        n += "<p style='line-height: 13px; text-align: center; font-size: 12px;'>사업자 등록 이후 추가할 예정</p>";
+        n += "<p style='line-height: 13px; text-align: center; font-size: 12px;'>사업자 번호 : 405-06-30088</p>";
         n += "<p style='line-height: 13px; text-align: center; font-size: 12px;'>전화: 010-8408-9384 이메일: zzxx373014@gmail.com</p>";
         n += "<hr />";
         n += "</div>";
@@ -107,7 +107,7 @@ public class EmailService {
         n += "<p style='line-height: 13px; text-align: center; font-size: 12px;'>본 메일은 발신 전용입니다.</p>";
         n += "<p style='line-height: 13px; text-align: center; font-size: 12px;'>궁금하신 사항은 기숙사 행정실에 문의 바랍니다.</p>";
         n += "<p style='line-height: 13px; text-align: center; font-size: 12px;'>성공회대 IT 도미도미 팀 제작</p>";
-        n += "<p style='line-height: 13px; text-align: center; font-size: 12px;'>사업자 등록 이후 추가할 예정</p>";
+        n += "<p style='line-height: 13px; text-align: center; font-size: 12px;'>사업자 번호 : 405-06-30088</p>";
         n += "<p style='line-height: 13px; text-align: center; font-size: 12px;'>전화: 010-8408-9384 이메일: zzxx373014@gmail.com</p>";
         n += "<hr />";
         n += "</div>";
@@ -161,7 +161,7 @@ public class EmailService {
         n += "<p style='line-height: 13px; text-align: center; font-size: 12px;'>본 메일은 발신 전용입니다.</p>";
         n += "<p style='line-height: 13px; text-align: center; font-size: 12px;'>궁금하신 사항은 기숙사 행정실에 문의 바랍니다.</p>";
         n += "<p style='line-height: 13px; text-align: center; font-size: 12px;'>성공회대 IT 도미도미 팀 제작</p>";
-        n += "<p style='line-height: 13px; text-align: center; font-size: 12px;'>사업자 등록 이후 추가할 예정</p>";
+        n += "<p style='line-height: 13px; text-align: center; font-size: 12px;'>사업자 번호 : 405-06-30088</p>";
         n += "<p style='line-height: 13px; text-align: center; font-size: 12px;'>전화: 010-8408-9384 이메일: zzxx373014@gmail.com</p>";
         n += "<hr />";
         n += "</div>";
