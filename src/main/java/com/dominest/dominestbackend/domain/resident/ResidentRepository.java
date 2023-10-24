@@ -3,7 +3,6 @@ package com.dominest.dominestbackend.domain.resident;
 import com.dominest.dominestbackend.domain.resident.component.ResidenceSemester;
 import com.dominest.dominestbackend.domain.room.Room;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -23,7 +22,8 @@ public interface ResidentRepository extends JpaRepository<Resident, Long> {
     List<Resident> findAllByResidenceSemester(ResidenceSemester semester);
 
     // [학번, 전화번호, 이름] 중복제한:  똑같은 학생이 한 학기에 둘 이상 있을 순 없다.
-    boolean existsByStudentIdAndPhoneNumberAndNameAndResidenceSemester(String studentId, String phoneNumber, String name, ResidenceSemester residenceSemester);
+    boolean existsByResidenceSemesterAndStudentIdAndPhoneNumberAndName
+    (ResidenceSemester residenceSemester, String studentId, String phoneNumber, String name);
 
 
 }

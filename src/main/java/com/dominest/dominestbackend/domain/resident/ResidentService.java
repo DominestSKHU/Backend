@@ -139,9 +139,7 @@ public class ResidentService {
     // 테스트용 전체삭제 API
     @Transactional
     public void deleteAllResident() {
-        residentRepository.findAll().forEach(resident -> {
-            deleteById(resident.getId());
-        });
+        residentRepository.findAll().forEach(resident -> deleteById(resident.getId()));
     }
 
     // 단건 등록용
@@ -185,8 +183,8 @@ public class ResidentService {
     }
 
     private boolean existsByUniqueKey(Resident resident) {
-        return residentRepository.existsByStudentIdAndPhoneNumberAndNameAndResidenceSemester(
-                resident.getStudentId(), resident.getPhoneNumber(), resident.getName(), resident.getResidenceSemester());
+        return residentRepository.existsByResidenceSemesterAndStudentIdAndPhoneNumberAndName(
+                resident.getResidenceSemester(), resident.getStudentId(), resident.getPhoneNumber(), resident.getName());
     }
 
 
