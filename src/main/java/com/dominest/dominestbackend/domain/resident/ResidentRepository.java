@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ResidentRepository extends JpaRepository<Resident, Long> {
     @Query("SELECT r FROM Resident r" +
@@ -17,7 +18,7 @@ public interface ResidentRepository extends JpaRepository<Resident, Long> {
 
     Resident findByNameAndResidenceSemester(String name, ResidenceSemester residenceSemester);
 
-    Resident findByResidenceSemesterAndRoom(ResidenceSemester residenceSemester, Room room);
+    Optional<Resident> findByResidenceSemesterAndRoom(ResidenceSemester residenceSemester, Room room);
 
     List<Resident> findAllByResidenceSemester(ResidenceSemester semester);
 

@@ -11,13 +11,11 @@ public interface CheckedRoomRepository extends JpaRepository<CheckedRoom, Long> 
     // CheckedRoom의 Resident Id는 Null일 수 있다. 모든 CheckedRoom을 조회해야 하므로 Left Join Resident로 조회한다.
     @Query("SELECT cr FROM CheckedRoom cr " +
             "JOIN FETCH cr.room " +
-            "LEFT JOIN FETCH cr.resident " +
             "WHERE cr.floor.id = :floorId")
     List<CheckedRoom> findAllByFloorIdFetchResidentAndRoom(@Param("floorId") Long floorId);
 
     //모든 CheckedRoom을 조회해야 하므로 Left Join Resident로 조회한다.
     @Query("SELECT cr FROM CheckedRoom cr" +
-            " LEFT JOIN FETCH cr.resident " +
             " WHERE cr.id = :id")
     CheckedRoom findByIdFetchResident(@Param("id") Long id);
 
@@ -26,21 +24,15 @@ public interface CheckedRoomRepository extends JpaRepository<CheckedRoom, Long> 
     @Query("SELECT cr FROM CheckedRoom cr" +
             " JOIN cr.floor f" +
             " JOIN FETCH cr.room" +
-            " LEFT JOIN FETCH cr.resident" +
             " WHERE f.sanitationCheckPost.id = :postId" +
             " AND cr.passState = :passState")
     List<CheckedRoom> findNotPassedAllByPostId(@Param("postId") Long postId, @Param("passState") CheckedRoom.PassState passState);
-
-    @Query("SELECT cr FROM CheckedRoom cr" +
-            " WHERE cr.resident.id = :residentId")
-    List<CheckedRoom> findAllByResidentId(@Param("residentId") Long residentId);
 
     // SaniCheckPost Id에 속한 CheckedRoom 전체를 조회한다.
     //모든 CheckedRoom을 조회해야 하므로 Left Join Resident로 조회한다.
     @Query("SELECT cr FROM CheckedRoom cr" +
             " JOIN cr.floor f" + // floor를 거쳐야 sanitationCheckPost에 접근할 수 있다. floor 데이터가 필요하지는 않으므로 fetch하지 않는다.
             " JOIN FETCH cr.room ro" +
-            " LEFT JOIN FETCH cr.resident resi" +
 
             " WHERE f.sanitationCheckPost.id = :postId")
     List<CheckedRoom> findAllByPostId(@Param("postId")Long postId);
@@ -50,7 +42,6 @@ public interface CheckedRoomRepository extends JpaRepository<CheckedRoom, Long> 
     // Resident와 Room을 Fetch Join하며, passState를 Not In으로 조회한다.
     @Query("SELECT cr FROM CheckedRoom cr" +
             " JOIN cr.floor f" + // floor를 거쳐야 sanitationCheckPost에 접근할 수 있다. floor 데이터가 필요하지는 않으므로 fetch하지 않는다.
-            " JOIN FETCH cr.resident resi" +
             " JOIN FETCH cr.room ro" +
 
             " WHERE f.sanitationCheckPost.id = :postId" +
@@ -62,7 +53,6 @@ public interface CheckedRoomRepository extends JpaRepository<CheckedRoom, Long> 
     // Resident와 Room을 Fetch Join한다.
     @Query("SELECT cr FROM CheckedRoom cr" +
             " JOIN cr.floor f" + // floor를 거쳐야 sanitationCheckPost에 접근할 수 있다. floor 데이터가 필요하지는 않으므로 fetch하지 않는다.
-            " JOIN FETCH cr.resident resi" +
             " JOIN FETCH cr.room ro" +
 
             " WHERE f.sanitationCheckPost.id = :postId" +

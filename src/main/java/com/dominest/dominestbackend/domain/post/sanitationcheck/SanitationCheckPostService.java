@@ -9,6 +9,7 @@ import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.Floor;
 import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.FloorService;
 import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.checkedroom.CheckedRoom;
 import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.checkedroom.CheckedRoomService;
+import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.checkedroom.component.ResidentInfo;
 import com.dominest.dominestbackend.domain.resident.Resident;
 import com.dominest.dominestbackend.domain.resident.ResidentRepository;
 import com.dominest.dominestbackend.domain.resident.component.ResidenceSemester;
@@ -94,13 +95,15 @@ public class SanitationCheckPostService {
             Integer floorNumber = floor.getFloorNumber();
             List<Room> rooms = roomService.getByFloorNo(floorNumber);
             for (Room room : rooms) { // CheckedRoom 은 Room 만큼 생성되어야 한다.
-                Resident resident = residentRepository.findByResidenceSemesterAndRoom(residenceSemester, room);
+                ResidentInfo residentInfo = residentRepository.findByResidenceSemesterAndRoom(residenceSemester, room)
+                        .map(ResidentInfo::from)
+                        .orElse(null);
 
                 CheckedRoom checkedRoom = CheckedRoom.builder()
                         .room(room)
                         .floor(floor)
                         .passState(CheckedRoom.PassState.NOT_PASSED)
-                        .resident(resident) // null이든 아니든 그냥 저장.
+                        .residentInfo(residentInfo) // null이든 아니든 그냥 저장.
                         .build();
                 checkedRooms.add(checkedRoom);
             }

@@ -1,6 +1,7 @@
 package com.dominest.dominestbackend.global.util;
 
 import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.checkedroom.CheckedRoom;
+import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.checkedroom.component.ResidentInfo;
 import com.dominest.dominestbackend.domain.resident.Resident;
 import com.dominest.dominestbackend.domain.room.Room;
 import com.dominest.dominestbackend.global.exception.ErrorCode;
@@ -146,14 +147,14 @@ public class ExcelUtil {
                 Row row = sheet.createRow(rowNum);
 
                 CheckedRoom checkedRoom = checkedRoomsGotPenalty.get(rowNum - 1);
-                Resident resident = checkedRoom.getResident();
+                ResidentInfo residentInfo = checkedRoom.getResidentInfo();
                 Room room = checkedRoom.getRoom();
                 String assignedRoom = room != null ? room.getAssignedRoom() : "";
 
                 row.createCell(0).setCellValue(assignedRoom);
-                row.createCell(1).setCellValue(resident.getName());
-                row.createCell(2).setCellValue(resident.getPhoneNumber());
-                row.createCell(3).setCellValue(resident.getStudentId());
+                row.createCell(1).setCellValue(residentInfo.getName());
+                row.createCell(2).setCellValue(residentInfo.getPhoneNo());
+                row.createCell(3).setCellValue(residentInfo.getStudentId());
                 row.createCell(4).setCellValue(checkedRoom.getPassState().getPenalty());
                 row.createCell(5).setCellValue(checkedRoom.getPassState().getValue());
             }
@@ -218,16 +219,16 @@ public class ExcelUtil {
                 Row row = sheet.createRow(rowNum);
 
                 CheckedRoom checkedRoom = checkedRoomsGotPenalty.get(rowNum - dataStartRow);
-                Resident resident = checkedRoom.getResident();
+                ResidentInfo residentInfo = checkedRoom.getResidentInfo();
                 Room room = checkedRoom.getRoom();
                 String assignedRoom = room != null ? room.getAssignedRoom() : "";
 
                 // 실내 쓰레기방치 화장실 샤워실 보관금지
                 //indoor leavedTrash toilet shower prohibitedItem
                 row.createCell(0).setCellValue(assignedRoom);
-                row.createCell(1).setCellValue(resident == null ? "" : resident.getName());
-                row.createCell(2).setCellValue(resident == null ? "" : resident.getPhoneNumber());
-                row.createCell(3).setCellValue(resident == null ? "" : resident.getStudentId());
+                row.createCell(1).setCellValue(residentInfo == null ? "" : residentInfo.getName());
+                row.createCell(2).setCellValue(residentInfo == null ? "" : residentInfo.getPhoneNo());
+                row.createCell(3).setCellValue(residentInfo == null ? "" : residentInfo.getStudentId());
                 row.createCell(4).setCellValue(checkedRoom.getPassState().getPenalty());
                 row.createCell(5).setCellValue(checkedRoom.getPassState().getValue());
                 row.createCell(6).setCellValue(checkedRoom.isIndoor() ? "O" : "X");

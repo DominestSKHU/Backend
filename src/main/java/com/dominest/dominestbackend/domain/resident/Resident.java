@@ -73,8 +73,6 @@ public class Resident extends BaseEntity {
     private String zipCode; // 우편번호
     private String address; // 주소. 이거 거주지별로 분류할 일이 생기나?
 
-    private Integer penalty; // 벌점.
-
     /** 아래는 학생정보 페이지에 표시되지 않는 정보들
      *
      * */
@@ -94,9 +92,6 @@ public class Resident extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id")
     private Room room;
-
-    @OneToMany(mappedBy = "resident", fetch = FetchType.LAZY)
-    private List<CheckedRoom> checkedRooms = new ArrayList<>();
 
     @Builder
     private Resident(String name, String gender, String studentId, String major, String grade,
@@ -124,7 +119,6 @@ public class Resident extends BaseEntity {
         this.socialName = socialName;
         this.zipCode = zipCode;
         this.address = address;
-        this.penalty = 0;
     }
 
     public static Resident from(List<String> data, ResidenceSemester residenceSemester, Room room) {
@@ -180,13 +174,5 @@ public class Resident extends BaseEntity {
         this.address = resident.getAddress();
     }
 
-    public void increasePenalty(int penalty) {
-        this.penalty += penalty;
-    }
-
-    public void changePenalty(Integer oldPenalty, int newPenalty) {
-        this.penalty -= oldPenalty;
-        this.penalty += newPenalty;
-    }
 }
 

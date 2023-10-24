@@ -2,6 +2,7 @@ package com.dominest.dominestbackend.domain.post.sanitationcheck.floor.checkedro
 
 import com.dominest.dominestbackend.domain.common.BaseEntity;
 import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.Floor;
+import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.checkedroom.component.ResidentInfo;
 import com.dominest.dominestbackend.domain.resident.Resident;
 import com.dominest.dominestbackend.domain.room.Room;
 import com.fasterxml.jackson.annotation.JsonValue;
@@ -34,6 +35,9 @@ public class CheckedRoom extends BaseEntity {
     private PassState passState;
     private String etc;
 
+    @Embedded
+    private ResidentInfo residentInfo;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "floor_id", nullable = false)
     private Floor floor;
@@ -42,24 +46,21 @@ public class CheckedRoom extends BaseEntity {
     @JoinColumn(name = "room_id", nullable = false)
     private Room room;
 
-    @Setter
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "resident_id", nullable = true)
-    private Resident resident;
-
     @Builder
-    private CheckedRoom(Room room, PassState passState
-            , String etc, Floor floor, Resident resident) {
-        this.room = room;
+    private CheckedRoom(PassState passState, String etc, ResidentInfo residentInfo, Room room
+            , Floor floor) {
         this.indoor = false;
         this.leavedTrash = false;
         this.toilet = false;
         this.shower = false;
         this.prohibitedItem = false;
+
+        this.residentInfo = residentInfo;
         this.passState = passState;
         this.etc = etc;
+
+        this.room = room;
         this.floor = floor;
-        this.resident = resident;
     }
 
     public void updateValuesOnlyNotNull(Boolean indoor, Boolean leavedTrash
