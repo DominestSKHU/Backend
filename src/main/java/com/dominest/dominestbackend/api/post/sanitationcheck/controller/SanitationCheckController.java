@@ -91,6 +91,17 @@ public class SanitationCheckController {
         String title;
     }
 
+    // 게시글 삭제
+    @DeleteMapping("/posts/sanitation-check/{postId}")
+    public ResponseEntity<RspTemplate<Void>> handleDeletePost(
+            @PathVariable Long postId
+    ) {
+        sanitationCheckPostService.delete(postId);
+
+        RspTemplate<Void> rspTemplate = new RspTemplate<>(HttpStatus.OK, "방역호실점검 게시글 삭제 완료");
+        return ResponseEntity.ok(rspTemplate);
+    }
+
     // 게시글 목록
     // category 4 posts sanitation-check
     @GetMapping("/categories/{categoryId}/posts/sanitation-check")

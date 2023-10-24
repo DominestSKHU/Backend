@@ -121,11 +121,10 @@ public class SanitationCheckPostService {
         return saniChkPost.getId();
     }
 
-    private String createTitle() {
-        // 원하는 형식의 문자열로 변환
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        String formattedDate = LocalDateTime.now().format(formatter);
-        return formattedDate + "방역호실점검";
+    @Transactional
+    public void delete(Long postId) {
+        SanitationCheckPost post = getById(postId);
+        sanitationCheckPostRepository.delete(post);
     }
 
     @Transactional
@@ -141,6 +140,13 @@ public class SanitationCheckPostService {
 
     public SanitationCheckPost getByIdFetchCategory(Long postId) {
         return EntityUtil.mustNotNull(sanitationCheckPostRepository.findByIdFetchCategory(postId), ErrorCode.POST_NOT_FOUND);
+    }
+
+    private String createTitle() {
+        // 원하는 형식의 문자열로 변환
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String formattedDate = LocalDateTime.now().format(formatter);
+        return formattedDate + "방역호실점검";
     }
 }
 

@@ -18,7 +18,7 @@ import java.util.List;
 @Entity
 public class SanitationCheckPost extends Post {
     @OneToMany(mappedBy = "sanitationCheckPost"
-            , fetch = FetchType.LAZY)
+            , fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Floor> floors;
 
     @Enumerated(EnumType.STRING)
