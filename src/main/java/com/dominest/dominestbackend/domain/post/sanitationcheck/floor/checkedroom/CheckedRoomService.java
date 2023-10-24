@@ -1,10 +1,6 @@
 package com.dominest.dominestbackend.domain.post.sanitationcheck.floor.checkedroom;
 
 import com.dominest.dominestbackend.api.post.sanitationcheck.dto.UpdateCheckedRoomDto;
-import com.dominest.dominestbackend.api.resident.dto.ResidentListDto;
-import com.dominest.dominestbackend.domain.resident.Resident;
-import com.dominest.dominestbackend.domain.resident.penalty.PenaltyHist;
-import com.dominest.dominestbackend.domain.resident.penalty.PenaltyHistService;
 import com.dominest.dominestbackend.global.exception.ErrorCode;
 import com.dominest.dominestbackend.global.exception.exceptions.BusinessException;
 import com.dominest.dominestbackend.global.util.EntityUtil;
@@ -21,7 +17,6 @@ import java.util.List;
 @Service
 public class CheckedRoomService {
     private final CheckedRoomRepository checkedRoomRepository;
-    private final PenaltyHistService penaltyHistService;
 
     @Transactional
     public List<CheckedRoom> create(List<CheckedRoom> checkedRooms) {
@@ -58,27 +53,6 @@ public class CheckedRoomService {
                 , reqDto.getPassState()
                 , reqDto.getEtc()
         );
-
-        Resident resident = checkedRoom.getResident();
-        CheckedRoom.PassState passState = reqDto.getPassState();
-
-        // 벌점이 매겨진 기록이 있는지 확인한 후 벌점증가처리.
-        // 입사생 정보가 없거나, PassState가 null이면 벌점증가를 신경쓸 필요가 없다.
-        if (resident != null && passState != null) {
-            PenaltyHist penaltyHist = penaltyHistService.findByResidentIdAndCheckedRoomId(resident.getId(), checkedRoomId);
-            if (penaltyHist != null) { // 입사생도 존재하고, State도 변경되었고, 기록이 있다면 기록을 변경하고 벌점반영
-                resident.changePenalty(penaltyHist.getPenalty(), passState.getPenalty());
-                penaltyHist.setPenalty(passState.getPenalty());
-            } else { // 기록이 없다면 벌점을 반영하고 기록 생성
-                resident.increasePenalty(passState.getPenalty());
-                PenaltyHist newPenaltyHist = PenaltyHist.builder()
-                        .resident(resident)
-                        .checkedRoom(checkedRoom)
-                        .penalty(passState.getPenalty())
-                        .build();
-                penaltyHistService.create(newPenaltyHist);
-            }
-        }
     }
 
     @Transactional

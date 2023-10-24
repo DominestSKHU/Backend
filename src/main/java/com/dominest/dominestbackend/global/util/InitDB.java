@@ -1,9 +1,20 @@
 package com.dominest.dominestbackend.global.util;
 
 
+import com.dominest.dominestbackend.domain.favorite.Favorite;
+import com.dominest.dominestbackend.domain.post.cardkey.CardKey;
+import com.dominest.dominestbackend.domain.post.cardkey.CardKeyRepository;
+import com.dominest.dominestbackend.domain.post.complaint.Complaint;
+import com.dominest.dominestbackend.domain.post.complaint.ComplaintRepository;
 import com.dominest.dominestbackend.domain.post.component.category.Category;
 import com.dominest.dominestbackend.domain.post.component.category.component.Type;
 import com.dominest.dominestbackend.domain.post.component.category.repository.CategoryRepository;
+import com.dominest.dominestbackend.domain.post.image.ImageType;
+import com.dominest.dominestbackend.domain.post.image.ImageTypeRepository;
+import com.dominest.dominestbackend.domain.post.undeliveredparcel.UndeliveredParcelPost;
+import com.dominest.dominestbackend.domain.post.undeliveredparcel.UndeliveredParcelPostRepository;
+import com.dominest.dominestbackend.domain.post.undeliveredparcel.component.UndeliveredParcel;
+import com.dominest.dominestbackend.domain.post.undeliveredparcel.component.UndeliveredParcelRepository;
 import com.dominest.dominestbackend.domain.room.Room;
 import com.dominest.dominestbackend.domain.room.RoomRepository;
 import com.dominest.dominestbackend.domain.user.User;
@@ -11,7 +22,6 @@ import com.dominest.dominestbackend.domain.user.component.Role;
 import com.dominest.dominestbackend.domain.user.repository.UserRepository;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,7 +29,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
-import java.sql.Array;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -34,6 +44,11 @@ public class InitDB {
     private final RoomRepository roomRepository;
     private final List<InitUser> initUsers;
     private final int INIT_USER_CNT = 8;
+    private final UndeliveredParcelPostRepository undelivParcelPostRepository;
+    private final UndeliveredParcelRepository undelivParcelRepository;
+    private final ImageTypeRepository imageTypeRepository;
+    private final ComplaintRepository complaintRepository;
+    private final CardKeyRepository cardKeyRepository;
 
     @Autowired
     public InitDB(PasswordEncoder passwordEncoder, UserRepository userRepository
@@ -45,8 +60,8 @@ public class InitDB {
             , @Value("${init.user5.email}") String email5, @Value("${init.user5.pwd}") String pwd5, @Value("${init.user5.name}") String name5, @Value("${init.user5.phone}") String phone5, @Value("${init.user5.role}") Role role5
             , @Value("${init.user6.email}") String email6, @Value("${init.user6.pwd}") String pwd6, @Value("${init.user6.name}") String name6, @Value("${init.user6.phone}") String phone6, @Value("${init.user6.role}") Role role6
             , @Value("${init.user7.email}") String email7, @Value("${init.user7.pwd}") String pwd7, @Value("${init.user7.name}") String name7, @Value("${init.user7.phone}") String phone7, @Value("${init.user7.role}") Role role7
-            , @Value("${init.user8.email}") String email8, @Value("${init.user8.pwd}") String pwd8, @Value("${init.user8.name}") String name8, @Value("${init.user8.phone}") String phone8, @Value("${init.user8.role}") Role role8
-    ) {
+            , @Value("${init.user8.email}") String email8, @Value("${init.user8.pwd}") String pwd8, @Value("${init.user8.name}") String name8, @Value("${init.user8.phone}") String phone8, @Value("${init.user8.role}") Role role8,
+                  UndeliveredParcelPostRepository undeliveredParcelPostRepository, UndeliveredParcelRepository undeliveredParcelRepository, ImageTypeRepository imageTypeRepository, ComplaintRepository complaintRepository, CardKeyRepository cardKeyRepository) {
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
         this.categoryRepository = categoryRepository;
@@ -67,6 +82,11 @@ public class InitDB {
         initUsers.add(user5); initUsers.add(user6); initUsers.add(user7); initUsers.add(user8);
 
         this.initUsers = initUsers;
+        this.undelivParcelPostRepository = undeliveredParcelPostRepository;
+        this.undelivParcelRepository = undeliveredParcelRepository;
+        this.imageTypeRepository = imageTypeRepository;
+        this.complaintRepository = complaintRepository;
+        this.cardKeyRepository = cardKeyRepository;
     }
 
     @Getter
@@ -95,6 +115,7 @@ public class InitDB {
                     .build();
             users.add(user);
         }
+        User firstUser = users.get(0);
         userRepository.saveAll(users);
 
         Category undelivCategoryNo1 = Category.builder()
@@ -137,100 +158,77 @@ public class InitDB {
                 .build();
         categoryRepository.save(imageCategoryNo5);
         
-//        UndeliveredParcelPost unDeliParcelPost = UndeliveredParcelPost.builder()
-//                .titleWithCurrentDate(createTitle())
-//                .category(undelivCategoryNo1)
-//                .writer(user1sj)
-//                .build();
-//        undelivParcelPostRepository.save(unDeliParcelPost);
-//
-//        UndeliveredParcel parcel = UndeliveredParcel.builder()
-//                .recipientName("받는사람")
-//                .recipientPhoneNum("010-1234-5678")
-//                .instruction("배송지시사항")
-//                .processState(UndeliveredParcel.ProcessState.MESSAGE_SENT)
-//                .post(unDeliParcelPost)
-//                .build();
-//        UndeliveredParcel parcel2 = UndeliveredParcel.builder()
-//                .recipientName("받는사람")
-//                .recipientPhoneNum("010-1234-5678")
-//                .instruction("배송지시사항")
-//                .processState(UndeliveredParcel.ProcessState.MESSAGE_SENT)
-//                .post(unDeliParcelPost)
-//                .build();
-//        undelivParcelRepository.save(parcel);
-//        undelivParcelRepository.save(parcel2);
+        UndeliveredParcelPost unDeliParcelPost = UndeliveredParcelPost.builder()
+                .titleWithCurrentDate(createTitle())
+                .category(undelivCategoryNo1)
+                .writer(firstUser)
+                .build();
+        undelivParcelPostRepository.save(unDeliParcelPost);
+
+        UndeliveredParcel parcel = UndeliveredParcel.builder()
+                .recipientName("받는사람")
+                .recipientPhoneNum("010-1234-5678")
+                .instruction("배송지시사항")
+                .processState(UndeliveredParcel.ProcessState.MESSAGE_SENT)
+                .post(unDeliParcelPost)
+                .build();
+        UndeliveredParcel parcel2 = UndeliveredParcel.builder()
+                .recipientName("받는사람")
+                .recipientPhoneNum("010-1234-5678")
+                .instruction("배송지시사항")
+                .processState(UndeliveredParcel.ProcessState.MESSAGE_SENT)
+                .post(unDeliParcelPost)
+                .build();
+        undelivParcelRepository.save(parcel);
+        undelivParcelRepository.save(parcel2);
 
 
-//        ArrayList<Category> categories = new ArrayList<>();
-//        int categoryCount = 7;
-//        for (int i = 1; i <= categoryCount; i++) {
-//            Category category = Category.builder()
-//                    .name("categoryName" + i)
-//                    .type(Type.IMAGE)
-//                    .explanation("explanation")
-//                    .orderKey(categoryCount + i)
-//                    .build();
-//            categories.add(category);
-//        }
-//        categoryRepository.saveAll(categories);
-//
-//
-//        ArrayList<ImageType> imageTypes = new ArrayList<>();
-//        int postCount = 100;
-//        for (int i = 1; i <= postCount; i++) {
-//            ImageType imageType = ImageType.builder()
-//                    .title("title" + i)
-//                    .writer(user1sj)
-//                    .category(categories.get(2)) // 3번째 카테고리
-//                    .build();
-//            imageTypes.add(imageType);
-//        }
-//        imageTypeRepository.saveAll(imageTypes);
-//
-//        ArrayList<Favorite> favorites = new ArrayList<>();
-//        for (int i = 1; i <= categoryCount; i++) {
-//            Favorite favorite = Favorite.builder()
-//                    .user(user1sj)
-//                    .category(categories.get(i - 1))
-//                    .build();
-//            favorites.add(favorite);
-//        }
-//        favoriteRepository.saveAll(favorites);
-//
-//        ArrayList<Complaint> complaints = new ArrayList<>();
-//        int complaintCount = 23;
-//        for (int i = 1; i <= complaintCount; i++) {
-//            Complaint complaint = Complaint.builder()
-//                    .name("고세구먼트" + i)
-//                    .roomNo("101")
-//                    .complaintCause("난방 불가")
-//                    .complaintResolution("난방 수으리 완무료")
-//                    .processState(Complaint.ProcessState.PROCESSING)
-//                    .date(LocalDate.now())
-//                    .writer(user1sj)
-//                    .category(complaintCategoryNO2) // 민원접수내역
-//                    .build();
-//            complaints.add(complaint);
-//        }
-//        complaintRepository.saveAll(complaints);
-//
-//        ArrayList<CardKey> cardKeys = new ArrayList<>();
-//        int cardKeyCount = 23;
-//        for (int i = 1; i <= cardKeyCount; i++) {
-//            CardKey cardKey = CardKey.builder()
-//                    .issuedDate(LocalDate.now())
-//                    .roomNo("10" + i)
-//                    .name("송승헌" + i)
-//                    .dateOfBirth(LocalDate.of(1999, 1, i))
-//                    .reIssueCnt(i)
-//                    .etc(i + "번 안아줘요")
-//                    .writer(user1sj)
-//                    .category(cardKeyCategoryNO3)
-//                    .build();
-//            cardKeys.add(cardKey);
-//        }
-//        cardKeyRepository.saveAll(cardKeys);
+
+        ArrayList<ImageType> imageTypes = new ArrayList<>();
+        int postCount = 100;
+        for (int i = 1; i <= postCount; i++) {
+            ImageType imageType = ImageType.builder()
+                    .title("title" + i)
+                    .writer(firstUser)
+                    .category(imageCategoryNo5) // 3번째 카테고리
+                    .build();
+            imageTypes.add(imageType);
+        }
+        imageTypeRepository.saveAll(imageTypes);
+
+        ArrayList<Complaint> complaints = new ArrayList<>();
+        int complaintCount = 23;
+        for (int i = 1; i <= complaintCount; i++) {
+            Complaint complaint = Complaint.builder()
+                    .name("고세구먼트" + i)
+                    .roomNo("101")
+                    .complaintCause("난방 불가")
+                    .complaintResolution("난방 수으리 완무료")
+                    .processState(Complaint.ProcessState.PROCESSING)
+                    .date(LocalDate.now())
+                    .writer(firstUser)
+                    .category(complaintCategoryNO2) // 민원접수내역
+                    .build();
+            complaints.add(complaint);
+        }
+        complaintRepository.saveAll(complaints);
+
+        ArrayList<CardKey> cardKeys = new ArrayList<>();
+        int cardKeyCount = 23;
+        for (int i = 1; i <= cardKeyCount; i++) {
+            CardKey cardKey = CardKey.builder()
+                    .issuedDate(LocalDate.now())
+                    .roomNo("10" + i)
+                    .name("송승헌" + i)
+                    .dateOfBirth(LocalDate.of(1999, 1, i))
+                    .reIssueCnt(i)
+                    .etc(i + "번 안아줘요")
+                    .writer(firstUser)
+                    .category(cardKeyCategoryNO3)
+                    .build();
+            cardKeys.add(cardKey);
+        }
+        cardKeyRepository.saveAll(cardKeys);
 
         // 2~3층은 26호실까지, 4~10층은 17호실까지 있음
         List<Room> rooms = createRooms();

@@ -3,14 +3,10 @@ package com.dominest.dominestbackend.domain.resident;
 import com.dominest.dominestbackend.api.resident.dto.ExcelUploadDto;
 import com.dominest.dominestbackend.api.resident.dto.PdfBulkUploadDto;
 import com.dominest.dominestbackend.api.resident.dto.SaveResidentDto;
-import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.checkedroom.CheckedRoom;
-import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.checkedroom.CheckedRoomRepository;
-import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.checkedroom.CheckedRoomService;
 import com.dominest.dominestbackend.domain.resident.component.ResidenceSemester;
 import com.dominest.dominestbackend.domain.room.Room;
 import com.dominest.dominestbackend.domain.room.RoomService;
 import com.dominest.dominestbackend.global.exception.ErrorCode;
-import com.dominest.dominestbackend.global.exception.exceptions.AppServiceException;
 import com.dominest.dominestbackend.global.exception.exceptions.BusinessException;
 import com.dominest.dominestbackend.global.exception.exceptions.domain.EntityNotFoundException;
 import com.dominest.dominestbackend.global.util.ExcelUtil;
@@ -23,9 +19,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.persistence.EntityManager;
 import java.util.List;
-import java.util.Optional;
+
 
 
 @Slf4j
@@ -36,7 +31,6 @@ public class ResidentService {
     private final ResidentRepository residentRepository;
     private final FileService fileService;
     private final RoomService roomService;
-    private final CheckedRoomRepository checkedRoomRepository;
 
     /** @return 저장한 파일명 */
     @Transactional
@@ -139,9 +133,7 @@ public class ResidentService {
     // 테스트용 전체삭제 API
     @Transactional
     public void deleteAllResident() {
-        residentRepository.findAll().forEach(resident -> {
-            deleteById(resident.getId());
-        });
+        residentRepository.findAll().forEach(resident -> deleteById(resident.getId()));
     }
 
     // 단건 등록용
@@ -177,8 +169,6 @@ public class ResidentService {
     @Transactional
     public void deleteById(Long id) {
         Resident resident = findById(id);
-        List<CheckedRoom> checkedRooms = checkedRoomRepository.findAllByResidentId(resident.getId());
-        checkedRooms.forEach(cr -> cr.setResident(null));
         residentRepository.delete(resident);
     }
 
@@ -187,8 +177,8 @@ public class ResidentService {
     }
 
     private boolean existsByUniqueKey(Resident resident) {
-        return residentRepository.existsByStudentIdAndPhoneNumberAndNameAndResidenceSemester(
-                resident.getStudentId(), resident.getPhoneNumber(), resident.getName(), resident.getResidenceSemester());
+        return residentRepository.existsByResidenceSemesterAndStudentIdAndPhoneNumberAndName(
+                resident.getResidenceSemester(), resident.getStudentId(), resident.getPhoneNumber(), resident.getName());
     }
 
 

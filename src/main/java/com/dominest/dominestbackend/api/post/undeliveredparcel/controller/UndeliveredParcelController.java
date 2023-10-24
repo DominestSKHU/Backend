@@ -13,6 +13,8 @@ import com.dominest.dominestbackend.domain.post.undeliveredparcel.UndeliveredPar
 import com.dominest.dominestbackend.domain.post.undeliveredparcel.component.UndeliveredParcelService;
 import com.dominest.dominestbackend.global.util.PageableUtil;
 import com.dominest.dominestbackend.global.util.PrincipalUtil;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import java.net.URI;
 import java.security.Principal;
 
@@ -64,6 +67,33 @@ public class UndeliveredParcelController {
                 ,resDto);
     }
 
+    // 게시글 상세 조회
+    @GetMapping("/posts/undelivered-parcel/{undelivParcelPostId}")
+    public RspTemplate<UndelivParcelPostDetailDto.Res> handleGetParcels(
+            @PathVariable Long undelivParcelPostId
+    ) {
+        UndeliveredParcelPost undelivParcelPost = undelivParcelPostService.getByIdFetchParcels(undelivParcelPostId);
+
+        UndelivParcelPostDetailDto.Res resDto = UndelivParcelPostDetailDto.Res.from(undelivParcelPost);
+        return new RspTemplate<>(HttpStatus.OK, "택배 관리대장 게시물 상세조회", resDto);
+    }
+
+    // 제목 변경
+    @PatchMapping("/posts/undelivered-parcel/{undelivParcelPostId}")
+    public RspTemplate<UndelivParcelPostDetailDto.Res> handleRenamePost(
+            @PathVariable Long undelivParcelPostId, @RequestBody @Valid PostTitleDto reqDto
+    ) {
+        undelivParcelPostService.renameTitle(undelivParcelPostId, reqDto.getTitle());
+        return new RspTemplate<>(HttpStatus.OK, String.format("제목 변경 -> %s", reqDto.getTitle())) ;
+    }
+
+    @NoArgsConstructor
+    @Getter
+    static class PostTitleDto {
+        @NotBlank(message = "변경할 제목을 입력해주세요.")
+        private String title;
+    }
+
     // 게시글 삭제
     @DeleteMapping("/posts/undelivered-parcel/{undelivParcelPostId}")
     public ResponseEntity<RspTemplate<Void>> handleDeleteParcelPost(
@@ -85,17 +115,6 @@ public class UndeliveredParcelController {
         RspTemplate<Void> rspTemplate = new RspTemplate<>(HttpStatus.CREATED,
                 undelivParcelPostId + "번 관리대장 게시글에" +  undelivParcelId + "번 관리물품 작성");
         return ResponseEntity.status(HttpStatus.CREATED).body(rspTemplate);
-    }
-
-    // 게시글 상세 조회
-    @GetMapping("/posts/undelivered-parcel/{undelivParcelPostId}")
-    public RspTemplate<UndelivParcelPostDetailDto.Res> handleGetParcels(
-            @PathVariable Long undelivParcelPostId
-    ) {
-        UndeliveredParcelPost undelivParcelPost = undelivParcelPostService.getByIdFetchParcels(undelivParcelPostId);
-
-        UndelivParcelPostDetailDto.Res resDto = UndelivParcelPostDetailDto.Res.from(undelivParcelPost);
-        return new RspTemplate<>(HttpStatus.OK, "택배 관리대장 게시물 상세조회", resDto);
     }
 
     // 관리물품 단건 수정

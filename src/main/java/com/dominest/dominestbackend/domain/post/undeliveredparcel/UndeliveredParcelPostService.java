@@ -54,6 +54,12 @@ public class UndeliveredParcelPostService {
         return post.getId();
     }
 
+    @Transactional
+    public void renameTitle(Long id, String title) {
+        UndeliveredParcelPost post = getById(id);
+        post.setTitle(title);
+    }
+
     public UndeliveredParcelPost getById(Long undelivParcelPostId) {
         return EntityUtil.mustNotNull(undelivParcelPostRepository.findById(undelivParcelPostId), ErrorCode.POST_NOT_FOUND);
     }

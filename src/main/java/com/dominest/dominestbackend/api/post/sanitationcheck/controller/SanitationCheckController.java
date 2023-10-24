@@ -91,6 +91,17 @@ public class SanitationCheckController {
         String title;
     }
 
+    // 게시글 삭제
+    @DeleteMapping("/posts/sanitation-check/{postId}")
+    public ResponseEntity<RspTemplate<Void>> handleDeletePost(
+            @PathVariable Long postId
+    ) {
+        sanitationCheckPostService.delete(postId);
+
+        RspTemplate<Void> rspTemplate = new RspTemplate<>(HttpStatus.OK, "방역호실점검 게시글 삭제 완료");
+        return ResponseEntity.ok(rspTemplate);
+    }
+
     // 게시글 목록
     // category 4 posts sanitation-check
     @GetMapping("/categories/{categoryId}/posts/sanitation-check")
@@ -174,7 +185,7 @@ public class SanitationCheckController {
         return ResponseEntity.ok(rspTemplate);
     }
 
-    // 방호점 게시글에서 벌점이 부과된 입사생 목록
+    // (엑셀 다운로드) 방호점 게시글에서 벌점이 부과된 입사생 목록
     @GetMapping("/posts/sanitation-check/{postId}/xlsx-penalty-residents")
     public void handlePenaltyCheckedRoomExcelDownload(
             @PathVariable Long postId, HttpServletResponse response
@@ -194,7 +205,7 @@ public class SanitationCheckController {
         ExcelUtil.createAndRespondCheckedRoomData(filename, sheetName, response, checkedRoomsGotPenalty);
     }
 
-    // 방호점 게시글의 특정 통과차수에 해당하는 입사생 목록
+    // (엑셀 다운로드) 방호점 게시글의 특정 통과차수에 해당하는 입사생 목록
     @GetMapping("/posts/sanitation-check/{postId}/xlsx-residents")
     public void handleCheckedRoomExcelDownload(
             @PathVariable Long postId, HttpServletResponse response
@@ -214,7 +225,7 @@ public class SanitationCheckController {
         ExcelUtil.createAndRespondCheckedRoomData(filename, sheetName, response, checkedRooms);
     }
 
-    // 방호점 게시글의 전체 데이터 엑셀로 다운로드
+    // (엑셀 다운로드) 방호점 게시글의 전체 데이터
     @GetMapping("/posts/sanitation-check/{postId}/xlsx-all-data")
     public void handleExcelDownloadAll(
             @PathVariable Long postId, HttpServletResponse response

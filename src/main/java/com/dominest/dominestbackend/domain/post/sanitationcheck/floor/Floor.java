@@ -20,7 +20,7 @@ public class Floor extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(mappedBy = "floor", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "floor", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<CheckedRoom> checkedRoom;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -9,6 +9,7 @@ import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.Floor;
 import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.FloorService;
 import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.checkedroom.CheckedRoom;
 import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.checkedroom.CheckedRoomService;
+import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.checkedroom.component.ResidentInfo;
 import com.dominest.dominestbackend.domain.resident.Resident;
 import com.dominest.dominestbackend.domain.resident.ResidentRepository;
 import com.dominest.dominestbackend.domain.resident.component.ResidenceSemester;
@@ -94,13 +95,15 @@ public class SanitationCheckPostService {
             Integer floorNumber = floor.getFloorNumber();
             List<Room> rooms = roomService.getByFloorNo(floorNumber);
             for (Room room : rooms) { // CheckedRoom 은 Room 만큼 생성되어야 한다.
-                Resident resident = residentRepository.findByResidenceSemesterAndRoom(residenceSemester, room);
+                ResidentInfo residentInfo = residentRepository.findByResidenceSemesterAndRoom(residenceSemester, room)
+                        .map(ResidentInfo::from)
+                        .orElse(null);
 
                 CheckedRoom checkedRoom = CheckedRoom.builder()
                         .room(room)
                         .floor(floor)
                         .passState(CheckedRoom.PassState.NOT_PASSED)
-                        .resident(resident) // null이든 아니든 그냥 저장.
+                        .residentInfo(residentInfo) // null이든 아니든 그냥 저장.
                         .build();
                 checkedRooms.add(checkedRoom);
             }
@@ -118,11 +121,10 @@ public class SanitationCheckPostService {
         return saniChkPost.getId();
     }
 
-    private String createTitle() {
-        // 원하는 형식의 문자열로 변환
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        String formattedDate = LocalDateTime.now().format(formatter);
-        return formattedDate + "방역호실점검";
+    @Transactional
+    public void delete(Long postId) {
+        SanitationCheckPost post = getById(postId);
+        sanitationCheckPostRepository.delete(post);
     }
 
     @Transactional
@@ -138,6 +140,13 @@ public class SanitationCheckPostService {
 
     public SanitationCheckPost getByIdFetchCategory(Long postId) {
         return EntityUtil.mustNotNull(sanitationCheckPostRepository.findByIdFetchCategory(postId), ErrorCode.POST_NOT_FOUND);
+    }
+
+    private String createTitle() {
+        // 원하는 형식의 문자열로 변환
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String formattedDate = LocalDateTime.now().format(formatter);
+        return formattedDate + "방역호실점검";
     }
 }
 

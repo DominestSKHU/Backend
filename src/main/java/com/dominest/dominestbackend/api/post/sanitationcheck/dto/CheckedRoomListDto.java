@@ -4,6 +4,7 @@ import com.dominest.dominestbackend.api.common.AuditLog;
 import com.dominest.dominestbackend.api.common.CategoryDto;
 import com.dominest.dominestbackend.domain.post.component.category.Category;
 import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.checkedroom.CheckedRoom;
+import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.checkedroom.component.ResidentInfo;
 import com.dominest.dominestbackend.domain.resident.Resident;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AccessLevel;
@@ -54,15 +55,16 @@ public class CheckedRoomListDto {
             AuditLog auditLog;
 
             static CheckedRoomDto from(CheckedRoom checkedRoom){
-                Resident resident = checkedRoom.getResident();
+                ResidentInfo residentInfo = checkedRoom.getResidentInfo();
                 ResidentDto residentDto = null;
                 boolean emptyRoom = true;
-                if (resident != null) {
+
+                if (residentInfo != null) {
                      residentDto = ResidentDto.builder()
-                            .name(resident.getName())
-                            .studentId(resident.getStudentId())
-                            .phoneNo(resident.getPhoneNumber())
-                            .penalty(resident.getPenalty())
+                            .name(residentInfo.getName())
+                            .studentId(residentInfo.getStudentId())
+                            .phoneNo(residentInfo.getPhoneNo())
+                            .penalty(checkedRoom.getPassState().getPenalty())
                             .build();
                      emptyRoom = false;
                 }

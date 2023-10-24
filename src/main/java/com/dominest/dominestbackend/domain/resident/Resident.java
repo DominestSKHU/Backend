@@ -20,9 +20,9 @@ import java.util.List;
         // unique 제약에서 '학기' 는 기본적으로 깔고 간다.
         // 1. [학번, 전화번호, 이름] 중복제한:  똑같은 학생이 한 학기에 둘 이상 있을 순 없다.
         // 2. [방번호]가 중복되면 안된다. 학기중 하나의 방, 하나의 구역에 둘 이상이 있을 순 없다.
-        @UniqueConstraint(name = "unique_resident_Info_for_studentId_and_name",
-                                            columnNames = { "studentId", "phoneNumber", "name" ,"residenceSemester" })
-        , @UniqueConstraint(name = "unique_resident_Info_for_room",
+        @UniqueConstraint(name = "unique_for_resident_info",
+                                            columnNames = { "residenceSemester", "studentId", "phoneNumber", "name"})
+        , @UniqueConstraint(name = "unique_for_room",
                                             columnNames = { "room_id", "residenceSemester" })
 })
 public class Resident extends BaseEntity {
@@ -73,8 +73,6 @@ public class Resident extends BaseEntity {
     private String zipCode; // 우편번호
     private String address; // 주소. 이거 거주지별로 분류할 일이 생기나?
 
-    private Integer penalty; // 벌점.
-
     /** 아래는 학생정보 페이지에 표시되지 않는 정보들
      *
      * */
@@ -94,9 +92,6 @@ public class Resident extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id")
     private Room room;
-
-    @OneToMany(mappedBy = "resident", fetch = FetchType.LAZY)
-    private List<CheckedRoom> checkedRooms = new ArrayList<>();
 
     @Builder
     private Resident(String name, String gender, String studentId, String major, String grade,
@@ -124,7 +119,6 @@ public class Resident extends BaseEntity {
         this.socialName = socialName;
         this.zipCode = zipCode;
         this.address = address;
-        this.penalty = 0;
     }
 
     public static Resident from(List<String> data, ResidenceSemester residenceSemester, Room room) {
@@ -180,13 +174,5 @@ public class Resident extends BaseEntity {
         this.address = resident.getAddress();
     }
 
-    public void increasePenalty(int penalty) {
-        this.penalty += penalty;
-    }
-
-    public void changePenalty(Integer oldPenalty, int newPenalty) {
-        this.penalty -= oldPenalty;
-        this.penalty += newPenalty;
-    }
 }
 
