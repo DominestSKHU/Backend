@@ -1,6 +1,7 @@
 package com.dominest.dominestbackend.api.calendar.controller;
 
 import com.dominest.dominestbackend.api.calendar.request.CalenderSaveRequest;
+import com.dominest.dominestbackend.api.calendar.response.CalendarMonthResponse;
 import com.dominest.dominestbackend.api.common.RspTemplate;
 import com.dominest.dominestbackend.domain.calender.Calender;
 import com.dominest.dominestbackend.domain.calender.service.CalenderService;
@@ -22,8 +23,13 @@ public class CalenderController {
     }
 
     @GetMapping("/get/{date}") // 날짜 들어오면 일정 내보내기 없을 때 처리
-    public List<Calender> getEventsByDate(@PathVariable("date") String dateString) {
+    public RspTemplate<List<Calender>> getEventsByDate(@PathVariable("date") String dateString) {
         return calenderService.getByDate(dateString);
+    }
+
+    @GetMapping("/list/{date}") // 날짜 들어오면 일정 내보내기 없을 때 처리
+    public RspTemplate<List<CalendarMonthResponse>> getEventsByMonth(@PathVariable("date") String dateString) {
+        return calenderService.getByMonth(dateString);
     }
 
     @DeleteMapping("/delete/{date}")

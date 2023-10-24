@@ -27,15 +27,11 @@ public class ScheduleService {
     public void saveSchedule(ScheduleSaveRequest requests) {
         List<String> usernames = requests.getUsernames();
 
-        try{
-            Schedule schedule = scheduleRepository.findByDayOfWeekAndTimeSlot(requests.getDayOfWeek(), requests.getTimeSlot()).get(0);
+        Schedule schedule = scheduleRepository.findByDayOfWeekAndTimeSlot(requests.getDayOfWeek(), requests.getTimeSlot()).get(0);
 
-            schedule.getUsernames().addAll(usernames);
+        schedule.getUsernames().addAll(usernames);
 
-            scheduleRepository.save(schedule);
-        } catch (Exception e){
-            throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR);
-        }
+        scheduleRepository.save(schedule);
     }
 
     public List<Map<String, Object>> getSchedule() {
