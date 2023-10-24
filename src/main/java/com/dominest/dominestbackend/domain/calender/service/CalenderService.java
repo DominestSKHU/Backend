@@ -54,6 +54,7 @@ public class CalenderService {
         int daysInMonth = yearMonth.lengthOfMonth();
         List<CalendarMonthResponse> events = new ArrayList<>();
 
+        // 1일부터 해당 월의 마지막 날까지 반복하며 일정이 있는지 확인
         for (int day = 1; day <= daysInMonth; day++) {
             LocalDate date = LocalDate.of(yearMonth.getYear(), yearMonth.getMonthValue(), day);
             List<Calender> dailyEvents = calenderRepository.findByDate(date);
