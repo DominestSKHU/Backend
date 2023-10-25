@@ -158,77 +158,77 @@ public class InitDB {
                 .build();
         categoryRepository.save(imageCategoryNo5);
         
-        UndeliveredParcelPost unDeliParcelPost = UndeliveredParcelPost.builder()
-                .titleWithCurrentDate(createTitle())
-                .category(undelivCategoryNo1)
-                .writer(firstUser)
-                .build();
-        undelivParcelPostRepository.save(unDeliParcelPost);
-
-        UndeliveredParcel parcel = UndeliveredParcel.builder()
-                .recipientName("받는사람")
-                .recipientPhoneNum("010-1234-5678")
-                .instruction("배송지시사항")
-                .processState(UndeliveredParcel.ProcessState.MESSAGE_SENT)
-                .post(unDeliParcelPost)
-                .build();
-        UndeliveredParcel parcel2 = UndeliveredParcel.builder()
-                .recipientName("받는사람")
-                .recipientPhoneNum("010-1234-5678")
-                .instruction("배송지시사항")
-                .processState(UndeliveredParcel.ProcessState.MESSAGE_SENT)
-                .post(unDeliParcelPost)
-                .build();
-        undelivParcelRepository.save(parcel);
-        undelivParcelRepository.save(parcel2);
-
-
-
-        ArrayList<ImageType> imageTypes = new ArrayList<>();
-        int postCount = 100;
-        for (int i = 1; i <= postCount; i++) {
-            ImageType imageType = ImageType.builder()
-                    .title("title" + i)
-                    .writer(firstUser)
-                    .category(imageCategoryNo5) // 3번째 카테고리
-                    .build();
-            imageTypes.add(imageType);
-        }
-        imageTypeRepository.saveAll(imageTypes);
-
-        ArrayList<Complaint> complaints = new ArrayList<>();
-        int complaintCount = 23;
-        for (int i = 1; i <= complaintCount; i++) {
-            Complaint complaint = Complaint.builder()
-                    .name("고세구먼트" + i)
-                    .roomNo("101")
-                    .complaintCause("난방 불가")
-                    .complaintResolution("난방 수으리 완무료")
-                    .processState(Complaint.ProcessState.PROCESSING)
-                    .date(LocalDate.now())
-                    .writer(firstUser)
-                    .category(complaintCategoryNO2) // 민원접수내역
-                    .build();
-            complaints.add(complaint);
-        }
-        complaintRepository.saveAll(complaints);
-
-        ArrayList<CardKey> cardKeys = new ArrayList<>();
-        int cardKeyCount = 23;
-        for (int i = 1; i <= cardKeyCount; i++) {
-            CardKey cardKey = CardKey.builder()
-                    .issuedDate(LocalDate.now())
-                    .roomNo("10" + i)
-                    .name("송승헌" + i)
-                    .dateOfBirth(LocalDate.of(1999, 1, i))
-                    .reIssueCnt(i)
-                    .etc(i + "번 안아줘요")
-                    .writer(firstUser)
-                    .category(cardKeyCategoryNO3)
-                    .build();
-            cardKeys.add(cardKey);
-        }
-        cardKeyRepository.saveAll(cardKeys);
+//        UndeliveredParcelPost unDeliParcelPost = UndeliveredParcelPost.builder()
+//                .titleWithCurrentDate(createTitle())
+//                .category(undelivCategoryNo1)
+//                .writer(firstUser)
+//                .build();
+//        undelivParcelPostRepository.save(unDeliParcelPost);
+//
+//        UndeliveredParcel parcel = UndeliveredParcel.builder()
+//                .recipientName("받는사람")
+//                .recipientPhoneNum("010-1234-5678")
+//                .instruction("배송지시사항")
+//                .processState(UndeliveredParcel.ProcessState.MESSAGE_SENT)
+//                .post(unDeliParcelPost)
+//                .build();
+//        UndeliveredParcel parcel2 = UndeliveredParcel.builder()
+//                .recipientName("받는사람")
+//                .recipientPhoneNum("010-1234-5678")
+//                .instruction("배송지시사항")
+//                .processState(UndeliveredParcel.ProcessState.MESSAGE_SENT)
+//                .post(unDeliParcelPost)
+//                .build();
+//        undelivParcelRepository.save(parcel);
+//        undelivParcelRepository.save(parcel2);
+//
+//
+//
+//        ArrayList<ImageType> imageTypes = new ArrayList<>();
+//        int postCount = 100;
+//        for (int i = 1; i <= postCount; i++) {
+//            ImageType imageType = ImageType.builder()
+//                    .title("title" + i)
+//                    .writer(firstUser)
+//                    .category(imageCategoryNo5) // 3번째 카테고리
+//                    .build();
+//            imageTypes.add(imageType);
+//        }
+//        imageTypeRepository.saveAll(imageTypes);
+//
+//        ArrayList<Complaint> complaints = new ArrayList<>();
+//        int complaintCount = 23;
+//        for (int i = 1; i <= complaintCount; i++) {
+//            Complaint complaint = Complaint.builder()
+//                    .name("고세구먼트" + i)
+//                    .roomNo("101")
+//                    .complaintCause("난방 불가")
+//                    .complaintResolution("난방 수으리 완무료")
+//                    .processState(Complaint.ProcessState.PROCESSING)
+//                    .date(LocalDate.now())
+//                    .writer(firstUser)
+//                    .category(complaintCategoryNO2) // 민원접수내역
+//                    .build();
+//            complaints.add(complaint);
+//        }
+//        complaintRepository.saveAll(complaints);
+//
+//        ArrayList<CardKey> cardKeys = new ArrayList<>();
+//        int cardKeyCount = 23;
+//        for (int i = 1; i <= cardKeyCount; i++) {
+//            CardKey cardKey = CardKey.builder()
+//                    .issuedDate(LocalDate.now())
+//                    .roomNo("10" + i)
+//                    .name("송승헌" + i)
+//                    .dateOfBirth(LocalDate.of(1999, 1, i))
+//                    .reIssueCnt(i)
+//                    .etc(i + "번 안아줘요")
+//                    .writer(firstUser)
+//                    .category(cardKeyCategoryNO3)
+//                    .build();
+//            cardKeys.add(cardKey);
+//        }
+//        cardKeyRepository.saveAll(cardKeys);
 
         // 2~3층은 26호실까지, 4~10층은 17호실까지 있음
         List<Room> rooms = createRooms();
