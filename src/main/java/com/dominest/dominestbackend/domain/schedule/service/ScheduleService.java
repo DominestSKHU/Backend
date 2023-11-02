@@ -6,12 +6,11 @@ import com.dominest.dominestbackend.domain.schedule.Schedule;
 import com.dominest.dominestbackend.domain.schedule.repository.ScheduleRepository;
 import com.dominest.dominestbackend.domain.user.User;
 import com.dominest.dominestbackend.domain.user.repository.UserRepository;
-import com.dominest.dominestbackend.global.exception.ErrorCode;
-import com.dominest.dominestbackend.global.exception.exceptions.BusinessException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalTime;
 import java.util.*;
 
 @Service
@@ -24,15 +23,31 @@ public class ScheduleService {
     private final UserRepository userRepository;
 
     @Transactional
-    public void saveSchedule(ScheduleSaveRequest requests) {
-        List<String> usernames = requests.getUsernames();
+    public void saveSchedule(ScheduleSaveRequest request) {
+        String username = request.getUsername();
+        String dayOfWeek = request.getDayOfWeek();
+        String startTime = request.getStartTime();
+        String endTime = request.getEndTime();
 
-        Schedule schedule = scheduleRepository.findByDayOfWeekAndTimeSlot(requests.getDayOfWeek(), requests.getTimeSlot()).get(0);
+        // 주어진 시간대를 1시간 단위로 나누어 처리
+        for (LocalTime time = LocalTime.parse(startTime); time.isBefore(LocalTime.parse(endTime)); time = time.plusHours(1)) {
+            String timeSlot = createTimeSlot(time);
 
-        schedule.getUsernames().addAll(usernames);
-
-        scheduleRepository.save(schedule);
+            // 해당하는 스케쥴 찾아 유저 이름을 추가 및 저장
+            scheduleRepository.findByDayOfWeekAndTimeSlot(dayOfWeek, timeSlot)
+                    .stream()
+                    .findFirst()
+                    .ifPresent(schedule -> {
+                        schedule.getUsernames().add(username);
+                        scheduleRepository.save(schedule);
+                    });
+        }
     }
+
+    private String createTimeSlot(LocalTime time) {
+        return time.toString() + " ~ " + time.plusHours(1).toString();
+    }
+
 
     public List<Map<String, Object>> getSchedule() {
         List<Map<String, Object>> scheduleInfo = new ArrayList<>();

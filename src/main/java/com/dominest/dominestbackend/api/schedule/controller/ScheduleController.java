@@ -23,8 +23,8 @@ public class ScheduleController {
     public RspTemplate<Void> addOrUpdateSchedules(@RequestBody ScheduleSaveRequest requests) {
         scheduleService.saveSchedule(requests);
         return new RspTemplate<>(HttpStatus.OK
-                , requests.getDayOfWeek()+ "의 " + requests.getTimeSlot() + "시간대에 "
-                +requests.getUsernames() + "님의 스케줄을 성공적으로 저장하였습니다.");
+                , requests.getDayOfWeek()+ "의 " + requests.getStartTime() + " ~ " + requests.getEndTime() + "시간대에 "
+                +requests.getUsername() + "님의 스케줄을 성공적으로 저장하였습니다.");
     }
 
     @GetMapping("/all")
