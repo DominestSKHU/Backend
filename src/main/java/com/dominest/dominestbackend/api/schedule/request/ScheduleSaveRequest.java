@@ -11,7 +11,9 @@ import java.util.List;
 public class ScheduleSaveRequest {
     private String dayOfWeek; // 요일
 
-    private String timeSlot;  // 시간
+    private String startTime;  // 시작 시간
 
-    private List<String> usernames;
+    private String endTime;  // 끝나는 시간
+
+    private String username; // 유저 이름
 }
