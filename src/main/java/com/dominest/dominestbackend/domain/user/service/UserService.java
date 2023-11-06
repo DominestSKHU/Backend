@@ -11,7 +11,6 @@ import com.dominest.dominestbackend.domain.user.repository.UserRepository;
 import com.dominest.dominestbackend.global.exception.ErrorCode;
 import com.dominest.dominestbackend.global.exception.exceptions.BusinessException;
 import com.dominest.dominestbackend.global.util.EntityUtil;
-import com.dominest.dominestbackend.global.validation.PhoneNumberValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -50,7 +49,7 @@ public class UserService {
     public TokenDto login(String email, String rawPassword){
         // loadUserByUsername() 을 사용하지 않는다.
         Optional<User> optionalUser = userRepository.findByEmail(email);
-        User user = EntityUtil.mustNotNull(optionalUser, ErrorCode.RESIDENT_NOT_FOUND);
+        User user = EntityUtil.mustNotNull(optionalUser, ErrorCode.USER_NOT_FOUND);
 
         if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
             throw new BusinessException(ErrorCode.MISMATCHED_SIGNIN_INFO);
@@ -72,7 +71,7 @@ public class UserService {
     public TokenDto loginTemp(String email, String rawPassword){
         // loadUserByUsername() 을 사용하지 않는다.
         Optional<User> optionalUser = userRepository.findByEmail(email);
-        User user = EntityUtil.mustNotNull(optionalUser, ErrorCode.RESIDENT_NOT_FOUND);
+        User user = EntityUtil.mustNotNull(optionalUser, ErrorCode.USER_NOT_FOUND);
 
         if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
             throw new BusinessException(ErrorCode.MISMATCHED_SIGNIN_INFO);
@@ -126,7 +125,7 @@ public class UserService {
     @Transactional
     public void logout(String email) {
         Optional<User> optionalUser = userRepository.findByEmail(email);
-        User user = EntityUtil.mustNotNull(optionalUser, ErrorCode.RESIDENT_NOT_FOUND);
+        User user = EntityUtil.mustNotNull(optionalUser, ErrorCode.USER_NOT_FOUND);
         user.logout();
     }
 }
