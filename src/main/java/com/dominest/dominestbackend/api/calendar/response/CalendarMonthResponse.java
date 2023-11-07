@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Getter
 public class CalendarMonthResponse {
-    private int day; // 1일 ~ 31일에 해당하는 id
+    private int day;
     private boolean content; // 내용 유무
 }
