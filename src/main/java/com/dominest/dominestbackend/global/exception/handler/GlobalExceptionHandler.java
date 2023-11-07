@@ -93,8 +93,6 @@ public class GlobalExceptionHandler {
         HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
         log.error("예외처리 범위 외의 오류 발생. " + httpStatus.toString()); // enum.name() enum.toString() 차이 기억하자. name은 단순 문자열변환, toString은 오버라이딩된 메서드 호출
         printLog(e, request);
-        String stackTrace = LoggingUtil.stackTraceToString(e);// 클라 반환용 StackTrace 생성
-        log.error(stackTrace); // stack trace error log 남기기
 
         return createErrorResponse(httpStatus.value(), httpStatus, e.getMessage());
     }
