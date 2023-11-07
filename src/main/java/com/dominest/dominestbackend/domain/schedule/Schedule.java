@@ -34,8 +34,7 @@ public class Schedule {
 
     private String timeSlot;  // 시간
 
-    @ElementCollection
-    @CollectionTable(name = "Schedule_Usernames", joinColumns = @JoinColumn(name = "schedule_id"))
+    @ElementCollection(fetch = FetchType.EAGER)
     @Column(name = "username")
     private List<String> usernames;
 
