@@ -73,8 +73,12 @@ public class ResidentService {
                 continue;
             }
 
-            // 로컬에 파일 저장
-            String uploadedFileName = fileService.save(filePrefix, pdf);
+            // 로컬에 파일 저장. // 이름-UUID.pdf 형식으로 저장한다.
+            String uploadedFileName = new StringBuilder()
+                    .append(resident.getName())
+                    .append("-")
+                    .append(fileService.save(filePrefix, pdf))
+                    .toString();
 
             // filePrefix에 맞는 파일명을 가져온다.
             String prevFileName = filePrefix.getPdfFileName(resident);
