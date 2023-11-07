@@ -18,7 +18,7 @@ public class CalendarController {
 
     private final CalendarService calendarService;
 
-    @PostMapping("/content") // 일정 저장 postMapping이므로 url에 save 삭제
+    @PostMapping // 일정 저장 postMapping이므로 url에 save 삭제
     public RspTemplate<String> saveCalendar(@RequestBody @Valid CalendarSaveRequest request) {
         calendarService.addCalendar(request);
         return new RspTemplate<>(HttpStatus.OK
