@@ -49,7 +49,7 @@ public class UserService {
     public TokenDto login(String email, String rawPassword) {
         // loadUserByUsername() 을 사용하지 않는다.
         Optional<User> optionalUser = userRepository.findByEmail(email);
-        User user = EntityUtil.mustNotNull(optionalUser, ErrorCode.RESIDENT_NOT_FOUND);
+        User user = EntityUtil.mustNotNull(optionalUser, ErrorCode.USER_NOT_FOUND);
 
         if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
             throw new BusinessException(ErrorCode.MISMATCHED_SIGNIN_INFO);
@@ -71,7 +71,7 @@ public class UserService {
     public TokenDto loginTemp(String email, String rawPassword) {
         // loadUserByUsername() 을 사용하지 않는다.
         Optional<User> optionalUser = userRepository.findByEmail(email);
-        User user = EntityUtil.mustNotNull(optionalUser, ErrorCode.RESIDENT_NOT_FOUND);
+        User user = EntityUtil.mustNotNull(optionalUser, ErrorCode.USER_NOT_FOUND);
 
         if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
             throw new BusinessException(ErrorCode.MISMATCHED_SIGNIN_INFO);
@@ -121,7 +121,7 @@ public class UserService {
     @Transactional
     public void logout(String email) {
         Optional<User> optionalUser = userRepository.findByEmail(email);
-        User user = EntityUtil.mustNotNull(optionalUser, ErrorCode.RESIDENT_NOT_FOUND);
+        User user = EntityUtil.mustNotNull(optionalUser, ErrorCode.USER_NOT_FOUND);
         user.logout();
     }
 

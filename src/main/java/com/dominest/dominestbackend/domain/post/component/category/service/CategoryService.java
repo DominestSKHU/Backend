@@ -42,7 +42,7 @@ public class CategoryService {
         try {
             return categoryRepository.save(category); // Identity 전략이므로 즉시 flush
         } catch (DataIntegrityViolationException e) {
-            throw new BusinessException("카테고리 저장 실패, name 중복 혹은 값의 누락을 확인해주세요", HttpStatus.BAD_REQUEST);
+            throw new BusinessException("카테고리 저장 실패, name 중복 혹은 값의 누락을 확인해주세요", HttpStatus.BAD_REQUEST, e);
         }
     }
 

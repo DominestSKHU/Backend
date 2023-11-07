@@ -7,7 +7,7 @@ import lombok.Getter;
 
 @Getter
 public class FileIOException extends AppServiceException {
-    public FileIOException(ErrorCode errorCode) {
-        super(errorCode);
+    public FileIOException(ErrorCode errorCode, Throwable cause) {
+        super(errorCode, cause);
     }
 }

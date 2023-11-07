@@ -1,7 +1,6 @@
 package com.dominest.dominestbackend.global.config;
 
 
-import com.dominest.dominestbackend.global.exception.exceptions.file.FileIOException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,16 +13,16 @@ import java.io.IOException;
 @Slf4j
 @EnableScheduling
 @Configuration
-public class ScheduleConfig {
+public class SchedulerConfig {
 
     @Autowired
-    public ScheduleConfig(@Value("${script.backup-db}") String dbBackupScriptFile) {
+    public SchedulerConfig(@Value("${script.backup-db}") String dbBackupScriptFile) {
         this.dbBackupScriptFile = dbBackupScriptFile;
     }
     private final String dbBackupScriptFile;
 
     @Scheduled(cron = "0 0 9-18 * * *")
-    public void runBatFile() {
+    public void runDbBackupBatFile() {
         try {
             String filePath = dbBackupScriptFile;
             // 외부 파일이므로 JVM이 아닌 독립적인 프로세스에서 실행

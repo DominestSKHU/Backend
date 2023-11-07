@@ -2,7 +2,6 @@ package com.dominest.dominestbackend.global.util;
 
 import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.checkedroom.CheckedRoom;
 import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.checkedroom.component.ResidentInfo;
-import com.dominest.dominestbackend.domain.resident.Resident;
 import com.dominest.dominestbackend.domain.room.Room;
 import com.dominest.dominestbackend.global.exception.ErrorCode;
 import com.dominest.dominestbackend.global.exception.exceptions.AppServiceException;
@@ -81,8 +80,7 @@ public class ExcelUtil {
             }
             return data;
         } catch (IOException e) {
-            log.error("ExcelUtil.parseExcel() : Excel  to Sheet Error ", e);
-            throw new FileIOException(ErrorCode.MULTIPART_FILE_CANNOT_BE_READ);
+            throw new FileIOException(ErrorCode.MULTIPART_FILE_CANNOT_BE_READ, e);
         }
     }
 
@@ -162,7 +160,7 @@ public class ExcelUtil {
             // 파일 내보내기
             workbook.write(response.getOutputStream());
         } catch (IOException e) {
-            throw new FileIOException(ErrorCode.FILE_CANNOT_BE_SENT);
+            throw new FileIOException(ErrorCode.FILE_CANNOT_BE_SENT, e);
         }
     }
 
@@ -242,7 +240,7 @@ public class ExcelUtil {
             // 파일 내보내기
             workbook.write(response.getOutputStream());
         } catch (IOException e) {
-            throw new FileIOException(ErrorCode.FILE_CANNOT_BE_SENT);
+            throw new FileIOException(ErrorCode.FILE_CANNOT_BE_SENT, e);
         }
     }
 }
