@@ -11,6 +11,7 @@ import com.dominest.dominestbackend.domain.user.repository.UserRepository;
 import com.dominest.dominestbackend.global.exception.ErrorCode;
 import com.dominest.dominestbackend.global.exception.exceptions.BusinessException;
 import com.dominest.dominestbackend.global.util.EntityUtil;
+import com.dominest.dominestbackend.global.validation.PhoneNumberValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -31,7 +32,7 @@ public class UserService {
     private final TokenManager tokenManager;
 
     @Transactional
-    public JoinResponse create(JoinRequest request) {
+    public JoinResponse create(JoinRequest request){
         User user = User.builder()
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
@@ -46,7 +47,7 @@ public class UserService {
     }
 
     @Transactional
-    public TokenDto login(String email, String rawPassword) {
+    public TokenDto login(String email, String rawPassword){
         // loadUserByUsername() 을 사용하지 않는다.
         Optional<User> optionalUser = userRepository.findByEmail(email);
         User user = EntityUtil.mustNotNull(optionalUser, ErrorCode.RESIDENT_NOT_FOUND);
@@ -68,7 +69,7 @@ public class UserService {
 
     @Transactional
     // 테스트용 14일 유효기간 토큰 발급
-    public TokenDto loginTemp(String email, String rawPassword) {
+    public TokenDto loginTemp(String email, String rawPassword){
         // loadUserByUsername() 을 사용하지 않는다.
         Optional<User> optionalUser = userRepository.findByEmail(email);
         User user = EntityUtil.mustNotNull(optionalUser, ErrorCode.RESIDENT_NOT_FOUND);
@@ -89,7 +90,7 @@ public class UserService {
     }
 
     @Transactional
-    public TokenDto reassureByRefreshToken(String refreshToken) {
+    public TokenDto reassureByRefreshToken(String refreshToken){
         // Member 객체를 찾아온 후 토큰 검증
         User user = findByRefreshToken(refreshToken); // 여기서 토큰 유효성과 토큰타입(refresh) 가 검증된다.
         user.validateRefreshTokenExp();
@@ -109,6 +110,10 @@ public class UserService {
         return EntityUtil.mustNotNull(userRepository.findByRefreshToken(refreshToken), ErrorCode.REFRESH_TOKEN_NOT_FOUND);
     }
 
+    public boolean checkDuplicateEmail(String email){
+        return userRepository.findByEmail(email).isPresent();
+    }
+
     public boolean validateUserPassword(String currentPassword, String loggedInUserPassword) {
         return passwordEncoder.matches(currentPassword, loggedInUserPassword);
     }
@@ -124,15 +129,16 @@ public class UserService {
         User user = EntityUtil.mustNotNull(optionalUser, ErrorCode.RESIDENT_NOT_FOUND);
         user.logout();
     }
-
-    public void changePassword(String email, String oldPassword, String newPassword) {
-        User user = EntityUtil.mustNotNull(userRepository.findByEmail(email), ErrorCode.USER_NOT_FOUND);
-
-        if (validateUserPassword(oldPassword, user.getPassword())) {
-            user.changePassword(passwordEncoder.encode(newPassword));
-            userRepository.save(user);
-        } else {
-            throw new BusinessException(ErrorCode.EMAIL_VERIFICATION_CODE_MISMATCHED);
-        }
-    }
 }
+
+
+
+
+
+
+
+
+
+
+
+

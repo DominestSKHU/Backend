@@ -3,9 +3,9 @@ package com.dominest.dominestbackend.domain.schedule.repository;
 import com.dominest.dominestbackend.domain.schedule.Schedule;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.Optional;
+import java.util.List;
 
 public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
-    Optional<Schedule> findByDayOfWeekAndTimeSlot(Schedule.Weekday dayOfWeek, String timeSlot);
+    List<Schedule> findByDayOfWeekAndTimeSlot(String dayOfWeek, String timeSlot);
 
 }

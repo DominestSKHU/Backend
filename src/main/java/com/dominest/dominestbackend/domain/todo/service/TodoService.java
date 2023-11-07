@@ -15,9 +15,9 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityNotFoundException;
 import java.security.Principal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -31,17 +31,21 @@ public class TodoService {
     public void createTodo(TodoSaveRequest request, Principal principal){ // 투두 저장
         String[] parts = principal.getName().split(":");
         if (parts.length > 1) {
-            String username = parts[1];
+            String desiredValue = parts[1];
 
-            Todo todo = Todo.builder()
-                    .date(LocalDateTime.now()) // 날짜
-                    .task(request.getTask()) // 할 일
-                    .requester(username) // 할 일을 부여하는 사람
-                    .requestReceiver(request.getRequestReceiver()) // 할 일을 부여받은 (요청받은) 사람
-                    .checkYn(false) // 기본적으로 false 처리
-                    .build();
+            try {
+                Todo todo = Todo.builder()
+                        .date(LocalDateTime.now())
+                        .task(request.getTask())
+                        .userName(desiredValue)
+                        .receiveRequest(request.getReceiveRequest())
+                        .checkYn(false) // 기본적으로 false 처리
+                        .build();
 
-            todoRepository.save(todo);
+                todoRepository.save(todo);
+            } catch (Exception e) {
+                throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR);
+            }
         }
     }
 
@@ -53,21 +57,8 @@ public class TodoService {
         todo.updateCheckYn(checkYn);
     }
 
-    public List<Todo> getTodos() { // 모든 투두리스트 불러오기
-        List<Todo> todos = todoRepository.findAll();
-
-        todos.sort((a, b) -> {
-            if (Boolean.compare(a.isCheckYn(), b.isCheckYn()) == 0) {
-                return Long.compare(b.getTodoId(), a.getTodoId());  // todoId 역순으로 정렬
-            } else {
-                return Boolean.compare(a.isCheckYn(), b.isCheckYn());  // 체크되지 않은 할 일이 먼저 오도록 정렬
-            }
-        });
-        return todos;
-    }
-
     @Transactional
-    public void deleteTodo(Long todoId) { // 투두 삭제
+    public void deleteTodo(Long todoId) {
         Optional<Todo> todo = todoRepository.findById(todoId);
 
         if (todo.isEmpty()) {
@@ -78,11 +69,15 @@ public class TodoService {
 
     }
 
-    public List<TodoUserResponse> getUserNameTodo() { // 투두 근로자 선택
-        List<User> users = userRepository.findAll();
+    public List<TodoUserResponse> getUserNameTodo(){ // 투두 근로자 선택
+        List<User> user = userRepository.findAll();
+        List<TodoUserResponse> responses = new ArrayList<>();
 
-        return users.stream()
-                .map(user -> new TodoUserResponse(user.getName()))
-                .collect(Collectors.toList());
+        for(User user1 : user){
+            TodoUserResponse userScheduleResponse = new TodoUserResponse(user1.getName());
+            responses.add(userScheduleResponse);
+        }
+
+        return responses;
     }
 }

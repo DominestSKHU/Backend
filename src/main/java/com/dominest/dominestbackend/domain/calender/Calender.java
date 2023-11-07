@@ -1,4 +1,4 @@
-package com.dominest.dominestbackend.domain.calendar;
+package com.dominest.dominestbackend.domain.calender;
 
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -11,10 +11,11 @@ import java.time.LocalDate;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class Calendar {
+@Table(name = "Calender")
+public class Calender {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long calenderId;
 
     @Column(nullable = false)
     private LocalDate date; // 날짜
@@ -23,7 +24,7 @@ public class Calendar {
     private String content; // 내용 작성
 
     @Builder
-    private Calendar(LocalDate date, String content) {
+    private Calender(LocalDate date, String content) {
         this.date = date;
         this.content = content;
     }
