@@ -89,7 +89,7 @@ public class UserService {
     }
 
     @Transactional
-    public TokenDto reassureByRefreshToken(String refreshToken) {
+    public TokenDto reissueByRefreshToken(String refreshToken) {
         // Member 객체를 찾아온 후 토큰 검증
         User user = findByRefreshToken(refreshToken); // 여기서 토큰 유효성과 토큰타입(refresh) 가 검증된다.
         user.validateRefreshTokenExp();

@@ -75,7 +75,7 @@ public class UserController {
         tokenValidator.validateBearer(authorizationHeader);
 
         String refreshToken = authorizationHeader.split(" ")[1];
-        TokenDto tokenDto = userService.reassureByRefreshToken(refreshToken);
+        TokenDto tokenDto = userService.reissueByRefreshToken(refreshToken);
 
         return new RspTemplate<>(HttpStatus.OK, "토큰 재발급", tokenDto);
     }
