@@ -20,10 +20,13 @@ import java.util.List;
         // unique 제약에서 '학기' 는 기본적으로 깔고 간다.
         // 1. [학번, 전화번호, 이름] 중복제한:  똑같은 학생이 한 학기에 둘 이상 있을 순 없다.
         // 2. [방번호]가 중복되면 안된다. 학기중 하나의 방, 하나의 구역에 둘 이상이 있을 순 없다.
+        // 3. [이름] 이 학기마다 중복되면 안된다. PDF 검색관련 로직 때문에 이름+학기가 Unique해야 함.
         @UniqueConstraint(name = "unique_for_resident_info",
                                             columnNames = { "residenceSemester", "studentId", "phoneNumber", "name"})
         , @UniqueConstraint(name = "unique_for_room",
                                             columnNames = { "room_id", "residenceSemester" })
+        , @UniqueConstraint(name = "unique_for_pdf",
+                                            columnNames = { "name", "residenceSemester" })
 })
 public class Resident extends BaseEntity {
     @Id
