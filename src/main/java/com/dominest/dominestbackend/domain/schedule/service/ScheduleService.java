@@ -32,7 +32,7 @@ public class ScheduleService {
     @Transactional
     public void saveSchedule(ScheduleSaveRequest request) { // 스케줄 저장
         String username = request.getUsername();
-        String dayOfWeek = request.getDayOfWeek();
+        Schedule.Weekday dayOfWeek = Schedule.Weekday.fromString(request.getDayOfWeek()); // 문자열을 Weekday 열거형으로 변환
         String startTime = request.getStartTime();
         String endTime = request.getEndTime();
 
@@ -40,10 +40,8 @@ public class ScheduleService {
         for (LocalTime time = LocalTime.parse(startTime); time.isBefore(LocalTime.parse(endTime)); time = time.plusHours(1)) {
             String timeSlot = createTimeSlot(time);
 
-            // 해당하는 스케쥴 찾아 유저 이름을 추가 및 저장
-            scheduleRepository.findByDayOfWeekAndTimeSlot(dayOfWeek, timeSlot)
-                    .stream()
-                    .findFirst()
+            // 해당하는 스케쥴 찾아 유저 이름을 추가 및 저장, 없는 경우 새로 생성
+            scheduleRepository.findByDayOfWeekAndTimeSlot(dayOfWeek, timeSlot) // dayOfWeek 타입 변경
                     .ifPresent(schedule -> {
                         schedule.getUsernames().add(username);
                         scheduleRepository.save(schedule);
@@ -59,19 +57,19 @@ public class ScheduleService {
     public List<ScheduleInfo> getSchedule() {
         Map<String, ScheduleInfo> scheduleInfoMap = new LinkedHashMap<>();
 
-        List<String> weekdays = Arrays.asList("월요일", "화요일", "수요일", "목요일", "금요일");
+        Schedule.Weekday[] weekdays = Schedule.Weekday.values();
 
         // 빈 스케줄 정보를 요일 순서대로 초기화
-        for (String dayOfWeek : weekdays) {
-            scheduleInfoMap.put(dayOfWeek, new ScheduleInfo(dayOfWeek, new ArrayList<>()));
+        for (Schedule.Weekday dayOfWeek : weekdays) {
+            scheduleInfoMap.put(dayOfWeek.name(), new ScheduleInfo(dayOfWeek.name(), new ArrayList<>()));
         }
 
-        // db에서 스케줄 정보를 가져옴 (요일과 시간 순으로 정렬)
+        // DB에서 스케줄 정보를 가져옴 (요일과 시간 순으로 정렬)
         List<Schedule> schedules = scheduleRepository.findAll(Sort.by(Sort.Order.asc("dayOfWeek"), Sort.Order.asc("timeSlot")));
 
         // 가져온 스케줄 정보를 요일별로 분류
         for (Schedule schedule : schedules) {
-            String dayOfWeek = schedule.getDayOfWeek();
+            String dayOfWeek = schedule.getDayOfWeek().name();
             String timeSlot = schedule.getTimeSlot();
             String username = schedule.getUsernames().isEmpty() ? "" : schedule.getUsernames().get(0);
 
@@ -81,12 +79,14 @@ public class ScheduleService {
 
         // 요일 순서대로 결과 리스트를 생성
         List<ScheduleInfo> result = new ArrayList<>();
-        for (String dayOfWeek : weekdays) {
-            result.add(scheduleInfoMap.get(dayOfWeek));
+
+        for (Schedule.Weekday dayOfWeek : weekdays) {
+            result.add(scheduleInfoMap.get(dayOfWeek.name()));
         }
 
         return result;
     }
+
 
 
     public List<UserScheduleResponse> getUserInfo(){ // 유저 이름, 폰번호 가져오기
@@ -104,13 +104,13 @@ public class ScheduleService {
         String dayOfWeek = request.getDayOfWeek();
         String timeSlot = request.getTimeSlot();
 
-        // 요일과 시간대로 스케줄 리스트 조회
-        List<Schedule> schedules = scheduleRepository.findByDayOfWeekAndTimeSlot(dayOfWeek, timeSlot);
-        if (schedules.isEmpty()) {  // 결과가 없다면
+        // 요일과 시간대로 스케줄 조회
+        Optional<Schedule> optionalSchedule = scheduleRepository.findByDayOfWeekAndTimeSlot(Schedule.Weekday.valueOf(dayOfWeek), timeSlot);
+        if (!optionalSchedule.isPresent()) {  // 결과가 없다면
             throw new BusinessException(ErrorCode.SCHEDULE_NOT_FOUND);
         }
 
-        Schedule schedule = schedules.get(0);
+        Schedule schedule = optionalSchedule.get();
 
         boolean removed = schedule.getUsernames().remove(username); // 스케줄에서 사용자 제거
 
@@ -118,5 +118,6 @@ public class ScheduleService {
             throw new BusinessException(ErrorCode.USER_NOT_FOUND_IN_SCHEDULE);
         }
     }
+
 
 }
