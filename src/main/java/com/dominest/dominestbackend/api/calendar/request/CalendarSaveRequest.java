@@ -1,4 +1,4 @@
-package com.dominest.dominestbackend.api.dar.request;
+package com.dominest.dominestbackend.api.calendar.request;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -7,7 +7,7 @@ import java.time.LocalDate;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class DarSaveRequest {
+public class CalendarSaveRequest {
     private LocalDate date; // 날짜
 
     private String content; // 내용 작성
