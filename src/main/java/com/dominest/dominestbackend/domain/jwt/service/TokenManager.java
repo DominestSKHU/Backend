@@ -111,10 +111,6 @@ public class TokenManager {
         }
     }
 
-    public String getMemberEmail(String accessToken) {
-        return getTokenClaims(accessToken).getAudience(); // aud == email
-    }
-
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder()

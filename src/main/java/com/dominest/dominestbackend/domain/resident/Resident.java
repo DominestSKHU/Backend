@@ -1,7 +1,6 @@
 package com.dominest.dominestbackend.domain.resident;
 
 import com.dominest.dominestbackend.domain.common.BaseEntity;
-import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.checkedroom.CheckedRoom;
 import com.dominest.dominestbackend.domain.resident.component.ResidenceSemester;
 import com.dominest.dominestbackend.domain.room.Room;
 import com.dominest.dominestbackend.global.util.TimeUtil;
@@ -10,7 +9,6 @@ import lombok.*;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter

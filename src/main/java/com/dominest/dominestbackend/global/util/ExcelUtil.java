@@ -2,7 +2,6 @@ package com.dominest.dominestbackend.global.util;
 
 import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.checkedroom.CheckedRoom;
 import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.checkedroom.component.ResidentInfo;
-import com.dominest.dominestbackend.domain.resident.Resident;
 import com.dominest.dominestbackend.domain.room.Room;
 import com.dominest.dominestbackend.global.exception.ErrorCode;
 import com.dominest.dominestbackend.global.exception.exceptions.AppServiceException;

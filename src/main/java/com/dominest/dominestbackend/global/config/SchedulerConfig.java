@@ -22,7 +22,7 @@ public class SchedulerConfig {
     private final String dbBackupScriptFile;
 
     @Scheduled(cron = "0 0 9-18 * * *")
-    public void runBatFile() {
+    public void runDbBackupBatFile() {
         try {
             String filePath = dbBackupScriptFile;
             // 외부 파일이므로 JVM이 아닌 독립적인 프로세스에서 실행
