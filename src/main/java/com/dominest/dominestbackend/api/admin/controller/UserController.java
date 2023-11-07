@@ -5,40 +5,40 @@ import com.dominest.dominestbackend.api.admin.request.JoinRequest;
 import com.dominest.dominestbackend.api.admin.request.LoginRequest;
 import com.dominest.dominestbackend.api.admin.response.JoinResponse;
 import com.dominest.dominestbackend.api.common.RspTemplate;
+import com.dominest.dominestbackend.api.schedule.response.UserScheduleResponse;
+import com.dominest.dominestbackend.api.todo.response.TodoUserResponse;
 import com.dominest.dominestbackend.domain.jwt.dto.TokenDto;
 import com.dominest.dominestbackend.domain.jwt.service.TokenValidator;
-import com.dominest.dominestbackend.domain.user.User;
-import com.dominest.dominestbackend.domain.user.repository.UserRepository;
+import com.dominest.dominestbackend.domain.schedule.service.ScheduleService;
+import com.dominest.dominestbackend.domain.todo.service.TodoService;
 import com.dominest.dominestbackend.domain.user.service.UserService;
-import com.dominest.dominestbackend.global.apiResponse.ApiResponseDto;
-import com.dominest.dominestbackend.global.apiResponse.SuccessStatus;
-import com.dominest.dominestbackend.global.exception.ErrorCode;
-import com.dominest.dominestbackend.global.exception.exceptions.BusinessException;
-import com.dominest.dominestbackend.global.util.EntityUtil;
 import com.dominest.dominestbackend.global.util.PrincipalUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.Principal;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/user")
 public class UserController {
-    private final UserRepository userRepository;
     private final UserService userService;
-    private final PasswordEncoder passwordEncoder;
     private final TokenValidator tokenValidator;
 
+    private final ScheduleService scheduleService;
+
+    private final TodoService todoService;
+
     @PostMapping("/join") // 회원가입
-    public ResponseEntity<JoinResponse> signUp(@RequestBody @Valid final JoinRequest request){
+    public RspTemplate<JoinResponse> signUp(@RequestBody @Valid final JoinRequest request){
         JoinResponse joinResponse = userService.create(request);
-        return ResponseEntity.status(HttpStatus.OK).body(joinResponse);
+
+        return new RspTemplate<>(HttpStatus.OK, "회원가입에 성공하였습니다.", joinResponse);
+
     }
 
     @PostMapping("/login") // 로그인
@@ -81,18 +81,25 @@ public class UserController {
     }
 
     @PostMapping("/myPage/password") // 비밀번호 변경
-    public ResponseEntity<ApiResponseDto<Void>> changePassword(@RequestBody ChangePasswordRequest request
-                                                                                                                , Principal principal) {
+    public RspTemplate<Void> changePassword(@RequestBody ChangePasswordRequest request
+            , Principal principal) {
         String logInUserEmail = PrincipalUtil.toEmail(principal);
-        User user = EntityUtil.mustNotNull(userRepository.findByEmail(logInUserEmail), ErrorCode.USER_NOT_FOUND);
 
-        // 현재 비밀번호와 입력한 비밀번호가 일치하는지 확인
-        if (userService.validateUserPassword(request.getPassword(), user.getPassword())) {
-            user.changePassword(passwordEncoder.encode(request.getNewPassword())); // 비밀번호 변경
-            userRepository.save(user);
-            return ResponseEntity.ok(ApiResponseDto.success(SuccessStatus.CHANGE_PASSWORD_SUCCESS));
-        } else {
-            throw new BusinessException(ErrorCode.EMAIL_VERIFICATION_CODE_MISMATCHED);
-        }
+        userService.changePassword(logInUserEmail, request.getPassword(), request.getNewPassword());
+
+        return new RspTemplate<>(HttpStatus.OK, "비밀번호를 성공적으로 변경하였습니다.");
     }
+
+    @GetMapping("/schedule-userinfo") // 유저 이름, 번호 가져오기
+    public RspTemplate<List<UserScheduleResponse>> getUserInfoSchedule() {
+        List<UserScheduleResponse> userResponses = scheduleService.getUserInfo();
+        return new RspTemplate<>(HttpStatus.OK, "유저의 이름과 번호를 성공적으로 불러왔습니다.", userResponses);
+    }
+
+    @GetMapping("/todo-userinfo") // 투두 근로자 불러오기
+    public RspTemplate<List<TodoUserResponse>> getUserInfoTodo() {
+        List<TodoUserResponse> nameResponse = todoService.getUserNameTodo();
+        return new RspTemplate<>(HttpStatus.OK, "유저의 이름을 모두 불러오는데 성공했습니다.", nameResponse);
+    }
+
 }
