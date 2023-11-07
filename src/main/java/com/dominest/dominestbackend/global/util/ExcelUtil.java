@@ -81,8 +81,7 @@ public class ExcelUtil {
             }
             return data;
         } catch (IOException e) {
-            log.error("ExcelUtil.parseExcel() : Excel  to Sheet Error ", e);
-            throw new FileIOException(ErrorCode.MULTIPART_FILE_CANNOT_BE_READ);
+            throw new FileIOException(ErrorCode.MULTIPART_FILE_CANNOT_BE_READ, e);
         }
     }
 
@@ -162,7 +161,7 @@ public class ExcelUtil {
             // 파일 내보내기
             workbook.write(response.getOutputStream());
         } catch (IOException e) {
-            throw new FileIOException(ErrorCode.FILE_CANNOT_BE_SENT);
+            throw new FileIOException(ErrorCode.FILE_CANNOT_BE_SENT, e);
         }
     }
 
@@ -242,7 +241,7 @@ public class ExcelUtil {
             // 파일 내보내기
             workbook.write(response.getOutputStream());
         } catch (IOException e) {
-            throw new FileIOException(ErrorCode.FILE_CANNOT_BE_SENT);
+            throw new FileIOException(ErrorCode.FILE_CANNOT_BE_SENT, e);
         }
     }
 }

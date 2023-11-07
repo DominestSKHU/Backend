@@ -107,7 +107,7 @@ public class TokenManager {
                     .setSigningKey(key).build()
                     .parseClaimsJws(token).getBody();
         } catch (JwtException e) {
-            throw new JwtAuthException(ErrorCode.NOT_VALID_TOKEN);
+            throw new JwtAuthException(ErrorCode.NOT_VALID_TOKEN, e);
         }
     }
 

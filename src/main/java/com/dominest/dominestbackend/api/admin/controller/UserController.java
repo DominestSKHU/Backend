@@ -5,19 +5,15 @@ import com.dominest.dominestbackend.api.admin.request.JoinRequest;
 import com.dominest.dominestbackend.api.admin.request.LoginRequest;
 import com.dominest.dominestbackend.api.admin.response.JoinResponse;
 import com.dominest.dominestbackend.api.common.RspTemplate;
-import com.dominest.dominestbackend.domain.email.service.EmailVerificationService;
 import com.dominest.dominestbackend.domain.jwt.dto.TokenDto;
-import com.dominest.dominestbackend.domain.jwt.service.TokenManager;
 import com.dominest.dominestbackend.domain.jwt.service.TokenValidator;
 import com.dominest.dominestbackend.domain.user.User;
 import com.dominest.dominestbackend.domain.user.repository.UserRepository;
 import com.dominest.dominestbackend.domain.user.service.UserService;
 import com.dominest.dominestbackend.global.apiResponse.ApiResponseDto;
-import com.dominest.dominestbackend.global.apiResponse.ErrorStatus;
 import com.dominest.dominestbackend.global.apiResponse.SuccessStatus;
 import com.dominest.dominestbackend.global.exception.ErrorCode;
 import com.dominest.dominestbackend.global.exception.exceptions.BusinessException;
-import com.dominest.dominestbackend.global.exception.exceptions.auth.JwtAuthException;
 import com.dominest.dominestbackend.global.util.EntityUtil;
 import com.dominest.dominestbackend.global.util.PrincipalUtil;
 import lombok.RequiredArgsConstructor;
@@ -83,25 +79,6 @@ public class UserController {
 
         return new RspTemplate<>(HttpStatus.OK, "토큰 재발급", tokenDto);
     }
-
-//    @GetMapping("/login-test") // accesstoken으로 유저정보 가져오기
-//    public ResponseEntity<ApiResponseDto<String>> loginTest(@RequestHeader(value = "Authorization") String authHeader) {
-//        try {
-//            if (authHeader != null && authHeader.startsWith("Bearer ")) {
-//                String accessToken = authHeader.substring(7); // "Bearer " 접두사 제거
-//                if (tokenManager.validateToken(accessToken)) {
-//                    return ResponseEntity.ok(ApiResponseDto.success(SuccessStatus.TOKEN_USER_INFO, tokenManager.getMemberEmail(accessToken)));
-//                } else {
-//                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponseDto.error(ErrorStatus.USER_CERTIFICATION_FAILED)); // 401 Unauthorized 상태로 실패 응답 반환
-//                }
-//            } else {
-//                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponseDto.error(ErrorStatus.USER_CERTIFICATION_FAILED)); // 401 Unauthorized 상태로 실패 응답 반환
-//            }
-//        } catch (JwtAuthException e) {
-//            e.printStackTrace();
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponseDto.error(ErrorStatus.USER_CERTIFICATION_FAILED)); // 401 Unauthorized 상태로 실패 응답 반환
-//        }
-//    }
 
     @PostMapping("/myPage/password") // 비밀번호 변경
     public ResponseEntity<ApiResponseDto<Void>> changePassword(@RequestBody ChangePasswordRequest request

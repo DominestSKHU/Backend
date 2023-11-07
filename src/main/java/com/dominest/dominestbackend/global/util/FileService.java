@@ -56,9 +56,8 @@ public class FileService {
             // transferTo()는 내부적으로 알아서 is, os close를 해준다.
             multipartFile.transferTo(storedFilePath);
         } catch (IOException e) {
-            // FileIOException 발생시키기 전에, IOEXCEPTION 에 대한 로그를 남긴다.
             log.error("IOEXCEPTION 발생: originalFile: {}, storedFilePath: {}", originalFileName, storedFilePath.toString());
-            throw new FileIOException(ErrorCode.FILE_CANNOT_BE_STORED);
+            throw new FileIOException(ErrorCode.FILE_CANNOT_BE_STORED, e);
         }
 
         return storedFileName;
@@ -91,7 +90,7 @@ public class FileService {
             return imageStream.readAllBytes();
         } catch (IOException e) {
             log.error("IOEXCEPTION 발생: filePrefix: {}, fileName: {}", filePrefix, fileName);
-            throw new FileIOException(ErrorCode.FILE_CANNOT_BE_READ);
+            throw new FileIOException(ErrorCode.FILE_CANNOT_BE_READ, e);
         }
     }
 
@@ -107,7 +106,7 @@ public class FileService {
         try {
             Files.delete(pathToDelete);
         } catch (IOException e) {
-            throw new FileIOException(ErrorCode.FILE_CANNOT_BE_DELETED);
+            throw new FileIOException(ErrorCode.FILE_CANNOT_BE_DELETED, e);
         }
     }
 

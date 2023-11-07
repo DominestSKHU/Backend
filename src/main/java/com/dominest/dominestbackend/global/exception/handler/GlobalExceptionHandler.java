@@ -116,7 +116,8 @@ public class GlobalExceptionHandler {
     }
 
     private void printLog(Exception e, HttpServletRequest request) {
-        log.error(e.getClass().getSimpleName() + ": 발생, 에러 메시지: "+ e.getMessage() + ",요청 METHOD " + request.getMethod() + ", 요청 url + " + request.getRequestURI());
+        log.error("발생 예외: {}, 에러 메시지: {}, 요청 Method: {}, 요청 url: {}",
+                e.getClass().getSimpleName(), e.getMessage(), request.getMethod(), request.getRequestURI(), e);
     }
 
 

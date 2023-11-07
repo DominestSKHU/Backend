@@ -24,7 +24,7 @@ public class CheckedRoomService {
             return checkedRoomRepository.saveAll(checkedRooms);
         } catch (DataIntegrityViolationException e) {
             throw new BusinessException("CheckedRoom 저장 실패, 중복 혹은 값의 누락을 확인해주세요"
-                    , HttpStatus.BAD_REQUEST);
+                    , HttpStatus.BAD_REQUEST, e);
         }
     }
 

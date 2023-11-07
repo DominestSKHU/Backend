@@ -16,6 +16,12 @@ public class AppServiceException extends RuntimeException{
         this.httpStatus = HttpStatus.valueOf(errorCode.getStatusCode());
     }
 
+    public AppServiceException(ErrorCode errorCode, Throwable cause) {
+        super(errorCode.getMessage(), cause);
+        this.statusCode = errorCode.getStatusCode();
+        this.httpStatus = HttpStatus.valueOf(errorCode.getStatusCode());
+    }
+
     public AppServiceException(String message, HttpStatus httpStatus) {
         super(message);
         this.statusCode = httpStatus.value();

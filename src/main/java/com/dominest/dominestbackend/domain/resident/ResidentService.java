@@ -103,7 +103,7 @@ public class ResidentService {
 
         // 데이터를 저장한다. 예외발생시 삭제나 저장 작업의 트랜잭션 롤백.
         for (List<String> row : sheet) {
-            if ("".equals(row.get(ExcelUtil.RESIDENT_COLUMN_COUNT - 1))) // 빈 row 발견 시 continue;
+            if ("".equals(row.get(ExcelUtil.RESIDENT_COLUMN_COUNT - 1))) // 빈 row 발견 시 continue
                 continue;
             // Room 객체를 찾아서 넣어줘야 함
             String assignedRoom = row.get(11);
@@ -157,7 +157,7 @@ public class ResidentService {
             residentRepository.saveAndFlush(residentToUpdate);
         } catch (DataIntegrityViolationException e) {
             throw new BusinessException("입사생 정보 변경 실패, 잘못된 입력값입니다. 데이터 누락 혹은 중복을 확인해주세요." +
-                    " 지정 학기에 같은 학번을 가졌거나, 같은 방을 사용중인 입사생이 있을 수 있습니다.", HttpStatus.BAD_REQUEST);
+                    " 지정 학기에 같은 학번을 가졌거나, 같은 방을 사용중인 입사생이 있을 수 있습니다.", HttpStatus.BAD_REQUEST, e);
         }
     }
 
@@ -187,14 +187,11 @@ public class ResidentService {
             // CheckedRoom 등 Resident를 참조하는 테이블에 결과를 반영하지 않는다.
             residentRepository.saveAndFlush(resident);
         } catch (DataIntegrityViolationException e) {
-            log.error("데이터 저장 실패. 이름: {}, 학번: {}, 학기: {}, 방 번호: {}, 방 코드: {}"
-                    , resident.getName(), resident.getStudentId(), resident.getResidenceSemester()
-                    , resident.getRoom().getId(), resident.getRoom().getAssignedRoom());
             throw new BusinessException(
                     String.format("입사생 저장 실패, 잘못된 입력값입니다. 데이터 누락 혹은 중복을 확인해주세요. 이름: %s, 학번: %s, 학기: %s, 방 번호: %d, 방 코드: %s"
                             , resident.getName(), resident.getStudentId(), resident.getResidenceSemester()
                             , resident.getRoom().getId(), resident.getRoom().getAssignedRoom())
-                    , HttpStatus.BAD_REQUEST);
+                    , HttpStatus.BAD_REQUEST, e);
         }
     }
 

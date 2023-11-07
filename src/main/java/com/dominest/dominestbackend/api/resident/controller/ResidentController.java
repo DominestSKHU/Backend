@@ -119,7 +119,7 @@ public class ResidentController {
         try(ServletOutputStream outputStream = response.getOutputStream()) {
             outputStream.write(bytes);
         } catch (IOException e) {
-            throw new FileIOException(ErrorCode.FILE_CANNOT_BE_SENT);
+            throw new FileIOException(ErrorCode.FILE_CANNOT_BE_SENT, e);
         }
     }
 

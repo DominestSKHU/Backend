@@ -1,7 +1,6 @@
 package com.dominest.dominestbackend.global.config;
 
 
-import com.dominest.dominestbackend.global.exception.exceptions.file.FileIOException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,10 +13,10 @@ import java.io.IOException;
 @Slf4j
 @EnableScheduling
 @Configuration
-public class ScheduleConfig {
+public class SchedulerConfig {
 
     @Autowired
-    public ScheduleConfig(@Value("${script.backup-db}") String dbBackupScriptFile) {
+    public SchedulerConfig(@Value("${script.backup-db}") String dbBackupScriptFile) {
         this.dbBackupScriptFile = dbBackupScriptFile;
     }
     private final String dbBackupScriptFile;
