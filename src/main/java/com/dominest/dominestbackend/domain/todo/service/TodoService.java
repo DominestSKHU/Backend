@@ -31,12 +31,12 @@ public class TodoService {
     public void createTodo(TodoSaveRequest request, Principal principal){ // 투두 저장
         String[] parts = principal.getName().split(":");
         if (parts.length > 1) {
-            String desiredValue = parts[1];
+            String username = parts[1];
 
             Todo todo = Todo.builder()
                     .date(LocalDateTime.now()) // 날짜
                     .task(request.getTask()) // 할 일
-                    .userName(desiredValue) // 할 일을 부여하는 사람
+                    .requester(username) // 할 일을 부여하는 사람
                     .requestReceiver(request.getRequestReceiver()) // 할 일을 부여받은 (요청받은) 사람
                     .checkYn(false) // 기본적으로 false 처리
                     .build();

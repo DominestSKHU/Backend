@@ -24,7 +24,7 @@ public class Todo {
     private String task;// 할일 작성
 
     @Column(nullable = false)
-    private String userName; // 요청 하는 사람
+    private String requester; // 요청 하는 사람
 
     private String requestReceiver; // 요청 받는 사람
 
@@ -32,10 +32,10 @@ public class Todo {
     private boolean checkYn; // 투두 달성 true, false
 
     @Builder
-    private Todo(LocalDateTime date, String task, String userName, String requestReceiver, boolean checkYn) {
+    private Todo(LocalDateTime date, String task, String requester, String requestReceiver, boolean checkYn) {
         this.date = LocalDateTime.now();
         this.task = task;
-        this.userName = userName;
+        this.requester = requester;
         this.requestReceiver = requestReceiver;
         this.checkYn = checkYn;
     }
