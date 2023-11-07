@@ -71,9 +71,9 @@ public class ScheduleService {
         for (Schedule schedule : schedules) {
             String dayOfWeek = schedule.getDayOfWeek().name();
             String timeSlot = schedule.getTimeSlot();
-            String username = schedule.getUsernames().isEmpty() ? "" : schedule.getUsernames().get(0);
+            List<String> usernames = schedule.getUsernames(); // 모든 사용자 이름 가져오기
 
-            TimeSlotInfo timeSlotInfo = new TimeSlotInfo(timeSlot, username);
+            TimeSlotInfo timeSlotInfo = new TimeSlotInfo(timeSlot, usernames); // 사용자 이름 리스트를 TimeSlotInfo에 전달
             scheduleInfoMap.get(dayOfWeek).getTimeSlotInfos().add(timeSlotInfo);
         }
 
