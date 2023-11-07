@@ -133,7 +133,7 @@ public class ResidentService {
     // 테스트용 전체삭제 API
     @Transactional
     public void deleteAllResident() {
-        residentRepository.findAll().forEach(resident -> deleteById(resident.getId()));
+        residentRepository.deleteAllInBatch();
     }
 
     // 단건 등록용
