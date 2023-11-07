@@ -61,6 +61,7 @@ public enum ErrorCode {
 
     // 스케줄
     SCHEDULE_NOT_FOUND(404, "해당하는 스케줄이 존재하지 않습니다."),
+    DAY_NOT_FOUND(404, "해당 요일이 존재하지 않습니다."),
     USER_NOT_FOUND_IN_SCHEDULE(404, "해당 시간대에 저장된 유저가 존재하지 않습니다."),
 
     // 게시글 공통
@@ -80,7 +81,7 @@ public enum ErrorCode {
 
 
     // 캘린터
-    , DATA_NOT_FOUND(404, "데이터가 존재하지 않습니다.")
+    , CALENDAR_NOT_FOUND(404, "데이터가 존재하지 않습니다.")
 
     // 500
     , INTERNAL_SERVER_ERROR(500, "서버 오류가 발생하였습니다.");
