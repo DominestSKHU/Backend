@@ -4,7 +4,6 @@ import com.dominest.dominestbackend.api.common.RspTemplate;
 import com.dominest.dominestbackend.api.schedule.request.ScheduleDeleteRequest;
 import com.dominest.dominestbackend.api.schedule.request.ScheduleSaveRequest;
 import com.dominest.dominestbackend.api.schedule.response.ScheduleInfo;
-import com.dominest.dominestbackend.api.schedule.response.UserScheduleResponse;
 import com.dominest.dominestbackend.domain.schedule.service.ScheduleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,18 +24,11 @@ public class ScheduleController {
                 +requests.getUsername() + "님의 스케줄을 성공적으로 저장하였습니다.");
     }
 
-    @GetMapping("/allSchedule") // 저장된 모든 스케줄 불러오기
+    @GetMapping("/schedules") // 저장된 모든 스케줄 불러오기
     public RspTemplate<List<ScheduleInfo>> getSchedule() {
         List<ScheduleInfo> scheduleInfos = scheduleService.getSchedule();
         return new RspTemplate<>(HttpStatus.OK
                 , "모든 스케줄을 성공적으로 불러왔습니다.", scheduleInfos);
-    }
-
-
-    @GetMapping("/schedule/user-info") // 유저 이름, 번호 가져오기
-    public RspTemplate<List<UserScheduleResponse>> getUserInfo() {
-        List<UserScheduleResponse> userResponses = scheduleService.getUserInfo();
-        return new RspTemplate<>(HttpStatus.OK, "유저의 이름과 번호를 성공적으로 불러왔습니다.", userResponses);
     }
 
     @DeleteMapping("/schedule") // 스케줄 삭제
