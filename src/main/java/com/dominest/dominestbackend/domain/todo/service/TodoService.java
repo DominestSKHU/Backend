@@ -58,7 +58,7 @@ public class TodoService {
 
         todos.sort((a, b) -> {
             if (Boolean.compare(a.isCheckYn(), b.isCheckYn()) == 0) {
-                return Long.compare(b.getTodoId(), a.getTodoId());  // todoId 역순으로 정렬
+                return Long.compare(b.getId(), a.getId());  // todoId 역순으로 정렬
             } else {
                 return Boolean.compare(a.isCheckYn(), b.isCheckYn());  // 체크되지 않은 할 일이 먼저 오도록 정렬
             }

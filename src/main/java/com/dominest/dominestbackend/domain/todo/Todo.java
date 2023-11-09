@@ -11,11 +11,10 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@Table(name = "Todo")
 public class Todo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long todoId;
+    private Long id;
 
     @Column(nullable = false)
     private LocalDateTime date; // 날짜
