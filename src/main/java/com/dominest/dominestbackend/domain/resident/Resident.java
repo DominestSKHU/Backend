@@ -175,5 +175,14 @@ public class Resident extends BaseEntity {
         this.address = resident.getAddress();
     }
 
+    // 이름 중복될 경우 이름 뒤에 전화번호 뒷자리를 붙인다.
+    public void changeNameWithPhoneNumber() {
+        String[] splitedNumber = phoneNumber.split("-");
+        if (splitedNumber.length != 3)
+            throw new IllegalArgumentException("전화번호 형식이 잘못되었습니다.");
+        String lastFourDigits = splitedNumber[splitedNumber.length - 1]; // 마지막 4자리 숫자
+        this.name = name + "(" + lastFourDigits + ")";
+    }
+
 }
 

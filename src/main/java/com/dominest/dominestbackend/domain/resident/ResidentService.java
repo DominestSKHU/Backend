@@ -115,13 +115,18 @@ public class ResidentService {
             Room room = roomService.getByAssignedRoom(assignedRoom);
             Resident resident = Resident.from(row, residenceSemester, room);
 
-            if (existsByUniqueKey(resident)) {
-                // 엑셀 데이터상 중복이 있을 시 로그만 남기고 다음 행으로 넘어간다.
-                log.warn("엑셀 데이터 저장 실패. 중복 데이터가 있어 다음으로 넘어감. 이름: {}, 학번: {}, 학기: {}" +
-                                ", 방 번호: {}, 방 코드: {}", resident.getName()
-                        , resident.getStudentId(), resident.getResidenceSemester()
-                        , resident.getRoom().getId(), resident.getRoom().getAssignedRoom());
-                continue;
+            if (residentRepository.existsByNameAndResidenceSemester(resident.getName(), residenceSemester)) {
+                if (existsByUniqueKey(resident)) {
+                    // 엑셀 데이터상 중복이 있을 시 로그만 남기고 다음 행으로 넘어간다.
+                    log.warn("엑셀 데이터 저장 실패. 중복 데이터가 있어 다음으로 넘어감. 이름: {}, 학번: {}, 학기: {}" +
+                                    ", 방 번호: {}, 방 코드: {}", resident.getName()
+                            , resident.getStudentId(), resident.getResidenceSemester()
+                            , resident.getRoom().getId(), resident.getRoom().getAssignedRoom());
+                    continue;
+                } else {
+                    // 동명이인일 경우 이름 바꿔서 저장
+                    resident.changeNameWithPhoneNumber();
+                }
             }
 
             save(resident);
@@ -184,7 +189,6 @@ public class ResidentService {
         return residentRepository.existsByResidenceSemesterAndStudentIdAndPhoneNumberAndName(
                 resident.getResidenceSemester(), resident.getStudentId(), resident.getPhoneNumber(), resident.getName());
     }
-
 
     private void save(Resident resident) {
         try {
