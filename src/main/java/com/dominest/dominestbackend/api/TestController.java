@@ -1,11 +1,8 @@
 package com.dominest.dominestbackend.api;
 
-import com.dominest.dominestbackend.domain.room.RoomRepository;
-import lombok.RequiredArgsConstructor;
+
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -16,13 +13,6 @@ import java.time.LocalDateTime;
 @RestController
 public class TestController {
 
-    public TestController(
-                          @Value("${script.backup-db}") final String dbBackupScriptFile
-    ) {
-        this.dbBackupScriptFile = dbBackupScriptFile;
-    }
-    private final String dbBackupScriptFile;
-
     @GetMapping("/health")
     public String getRoom(){
         return LocalDateTime.now().toString();
@@ -31,7 +21,8 @@ public class TestController {
     @GetMapping("/test/back-up-db")
     public void runBatFile() {
         try {
-            String filePath = dbBackupScriptFile;
+            final String BACKUP_DB_BAT_FILE_NAME = "domi-backup-time.bat";
+            String filePath = new ClassPathResource(BACKUP_DB_BAT_FILE_NAME).getFile().getAbsolutePath();
             // 외부 파일이므로 JVM이 아닌 독립적인 프로세스에서 실행
             Process process = Runtime.getRuntime().exec(filePath);
 
