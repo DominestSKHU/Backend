@@ -24,6 +24,7 @@ import lombok.Builder;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,6 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+@Profile({"local", "dev"})
 @Component
 public class InitDB {
     private final PasswordEncoder passwordEncoder;
