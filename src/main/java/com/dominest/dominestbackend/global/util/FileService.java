@@ -86,8 +86,9 @@ public class FileService {
 
     public byte[] getByteArr(FilePrefix filePrefix, String fileName) {
         String fullFilePath = filePrefix.getPrefix() + fileName;
-        try (InputStream imageStream = new FileInputStream(fileUploadPath + fullFilePath)) {
-            return imageStream.readAllBytes();
+        try  {
+            Path path = Paths.get(fileUploadPath + fullFilePath);
+            return Files.readAllBytes(path);
         } catch (IOException e) {
             log.error("IOEXCEPTION 발생: filePrefix: {}, fileName: {}", filePrefix, fileName);
             throw new FileIOException(ErrorCode.FILE_CANNOT_BE_READ, e);
