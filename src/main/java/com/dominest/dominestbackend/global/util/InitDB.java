@@ -17,6 +17,8 @@ import com.dominest.dominestbackend.domain.post.undeliveredparcel.component.Unde
 import com.dominest.dominestbackend.domain.post.undeliveredparcel.component.UndeliveredParcelRepository;
 import com.dominest.dominestbackend.domain.room.Room;
 import com.dominest.dominestbackend.domain.room.RoomRepository;
+import com.dominest.dominestbackend.domain.schedule.Schedule;
+import com.dominest.dominestbackend.domain.schedule.repository.ScheduleRepository;
 import com.dominest.dominestbackend.domain.user.User;
 import com.dominest.dominestbackend.domain.user.component.Role;
 import com.dominest.dominestbackend.domain.user.repository.UserRepository;
@@ -51,6 +53,7 @@ public class InitDB {
     private final ImageTypeRepository imageTypeRepository;
     private final ComplaintRepository complaintRepository;
     private final CardKeyRepository cardKeyRepository;
+    private final ScheduleRepository scheduleRepository;
 
     @Autowired
     public InitDB(PasswordEncoder passwordEncoder, UserRepository userRepository
@@ -63,7 +66,7 @@ public class InitDB {
             , @Value("${init.user6.email}") String email6, @Value("${init.user6.pwd}") String pwd6, @Value("${init.user6.name}") String name6, @Value("${init.user6.phone}") String phone6, @Value("${init.user6.role}") Role role6
             , @Value("${init.user7.email}") String email7, @Value("${init.user7.pwd}") String pwd7, @Value("${init.user7.name}") String name7, @Value("${init.user7.phone}") String phone7, @Value("${init.user7.role}") Role role7
             , @Value("${init.user8.email}") String email8, @Value("${init.user8.pwd}") String pwd8, @Value("${init.user8.name}") String name8, @Value("${init.user8.phone}") String phone8, @Value("${init.user8.role}") Role role8,
-                  UndeliveredParcelPostRepository undeliveredParcelPostRepository, UndeliveredParcelRepository undeliveredParcelRepository, ImageTypeRepository imageTypeRepository, ComplaintRepository complaintRepository, CardKeyRepository cardKeyRepository) {
+                  UndeliveredParcelPostRepository undeliveredParcelPostRepository, UndeliveredParcelRepository undeliveredParcelRepository, ImageTypeRepository imageTypeRepository, ComplaintRepository complaintRepository, CardKeyRepository cardKeyRepository, ScheduleRepository scheduleRepository) {
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
         this.categoryRepository = categoryRepository;
@@ -89,6 +92,7 @@ public class InitDB {
         this.imageTypeRepository = imageTypeRepository;
         this.complaintRepository = complaintRepository;
         this.cardKeyRepository = cardKeyRepository;
+        this.scheduleRepository = scheduleRepository;
     }
 
     @Getter
@@ -117,7 +121,6 @@ public class InitDB {
                     .build();
             users.add(user);
         }
-        User firstUser = users.get(0);
         userRepository.saveAll(users);
 
         Category undelivCategoryNo1 = Category.builder()
@@ -159,6 +162,15 @@ public class InitDB {
                 .orderKey(5)
                 .build();
         categoryRepository.save(imageCategoryNo5);
+
+        ArrayList<Schedule> schedules = new ArrayList<>();
+        for (Schedule.Weekday weekday : Schedule.Weekday.values()) {
+            for (Schedule.TimeSlot timeSlot : Schedule.TimeSlot.values()) {
+                schedules.add(Schedule.of(weekday, timeSlot));
+            }
+        }
+        scheduleRepository.saveAll(schedules);
+
         
 //        UndeliveredParcelPost unDeliParcelPost = UndeliveredParcelPost.builder()
 //                .titleWithCurrentDate(createTitle())

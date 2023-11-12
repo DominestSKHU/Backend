@@ -41,7 +41,7 @@ public class ScheduleService {
             String timeSlot = createTimeSlot(time);
 
             // 해당하는 스케쥴 찾아 유저 이름을 추가 및 저장, 없는 경우 새로 생성
-            scheduleRepository.findByDayOfWeekAndTimeSlot(dayOfWeek, timeSlot) // dayOfWeek 타입 변경
+            scheduleRepository.findByDayOfWeekAndTimeSlot(dayOfWeek, Schedule.TimeSlot.fromString(timeSlot)) // dayOfWeek 타입 변경
                     .ifPresent(schedule -> {
                         schedule.getUsernames().add(username);
                         scheduleRepository.save(schedule);
@@ -70,7 +70,7 @@ public class ScheduleService {
         // 가져온 스케줄 정보를 요일별로 분류
         for (Schedule schedule : schedules) {
             String dayOfWeek = schedule.getDayOfWeek().name();
-            String timeSlot = schedule.getTimeSlot();
+            String timeSlot = schedule.getTimeSlot().value;
             List<String> usernames = schedule.getUsernames(); // 모든 사용자 이름 가져오기
 
             TimeSlotInfo timeSlotInfo = new TimeSlotInfo(timeSlot, usernames); // 사용자 이름 리스트를 TimeSlotInfo에 전달
@@ -105,7 +105,7 @@ public class ScheduleService {
         String timeSlot = request.getTimeSlot();
 
         // 요일과 시간대로 스케줄 조회
-        Optional<Schedule> optionalSchedule = scheduleRepository.findByDayOfWeekAndTimeSlot(Schedule.Weekday.valueOf(dayOfWeek), timeSlot);
+        Optional<Schedule> optionalSchedule = scheduleRepository.findByDayOfWeekAndTimeSlot(Schedule.Weekday.fromString(dayOfWeek), Schedule.TimeSlot.fromString(timeSlot));
         if (!optionalSchedule.isPresent()) {  // 결과가 없다면
             throw new BusinessException(ErrorCode.SCHEDULE_NOT_FOUND);
         }
