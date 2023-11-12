@@ -19,7 +19,7 @@ import java.io.IOException;
 public class SchedulerConfig {
 
     @Autowired
-    public SchedulerConfig(@Value("${script.backup-filename") String dbBackupScriptFileName) {
+    public SchedulerConfig(@Value("${script.backup-filename}") String dbBackupScriptFileName) {
         this.DB_BACKUP_DB_SCRIPT_FILE_NAME = dbBackupScriptFileName;
     }
 
