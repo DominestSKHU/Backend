@@ -25,7 +25,7 @@ public class SchedulerConfig {
 
     private final String DB_BACKUP_DB_SCRIPT_FILE_NAME;
 
-    @Scheduled(cron = "0 0 9-18 * * *")
+    @Scheduled(cron = "0 0 9-18 * * MON-FRI") // sec min hour day month day-of-week
     public void runDbBackupBatFile() {
         try {
             String filePath = new ClassPathResource(DB_BACKUP_DB_SCRIPT_FILE_NAME).getFile().getAbsolutePath();
