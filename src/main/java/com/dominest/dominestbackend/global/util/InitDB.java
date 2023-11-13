@@ -1,19 +1,14 @@
 package com.dominest.dominestbackend.global.util;
 
 
-import com.dominest.dominestbackend.domain.favorite.Favorite;
-import com.dominest.dominestbackend.domain.post.cardkey.CardKey;
 import com.dominest.dominestbackend.domain.post.cardkey.CardKeyRepository;
-import com.dominest.dominestbackend.domain.post.complaint.Complaint;
 import com.dominest.dominestbackend.domain.post.complaint.ComplaintRepository;
 import com.dominest.dominestbackend.domain.post.component.category.Category;
 import com.dominest.dominestbackend.domain.post.component.category.component.Type;
 import com.dominest.dominestbackend.domain.post.component.category.repository.CategoryRepository;
-import com.dominest.dominestbackend.domain.post.image.ImageType;
 import com.dominest.dominestbackend.domain.post.image.ImageTypeRepository;
-import com.dominest.dominestbackend.domain.post.undeliveredparcel.UndeliveredParcelPost;
+import com.dominest.dominestbackend.domain.post.manual.ManualPostRepository;
 import com.dominest.dominestbackend.domain.post.undeliveredparcel.UndeliveredParcelPostRepository;
-import com.dominest.dominestbackend.domain.post.undeliveredparcel.component.UndeliveredParcel;
 import com.dominest.dominestbackend.domain.post.undeliveredparcel.component.UndeliveredParcelRepository;
 import com.dominest.dominestbackend.domain.room.Room;
 import com.dominest.dominestbackend.domain.room.RoomRepository;
@@ -32,7 +27,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -55,6 +49,8 @@ public class InitDB {
     private final CardKeyRepository cardKeyRepository;
     private final ScheduleRepository scheduleRepository;
 
+    private final ManualPostRepository manualPostRepository;
+
     @Autowired
     public InitDB(PasswordEncoder passwordEncoder, UserRepository userRepository
             , CategoryRepository categoryRepository, RoomRepository roomRepository
@@ -66,7 +62,7 @@ public class InitDB {
             , @Value("${init.user6.email}") String email6, @Value("${init.user6.pwd}") String pwd6, @Value("${init.user6.name}") String name6, @Value("${init.user6.phone}") String phone6, @Value("${init.user6.role}") Role role6
             , @Value("${init.user7.email}") String email7, @Value("${init.user7.pwd}") String pwd7, @Value("${init.user7.name}") String name7, @Value("${init.user7.phone}") String phone7, @Value("${init.user7.role}") Role role7
             , @Value("${init.user8.email}") String email8, @Value("${init.user8.pwd}") String pwd8, @Value("${init.user8.name}") String name8, @Value("${init.user8.phone}") String phone8, @Value("${init.user8.role}") Role role8,
-                  UndeliveredParcelPostRepository undeliveredParcelPostRepository, UndeliveredParcelRepository undeliveredParcelRepository, ImageTypeRepository imageTypeRepository, ComplaintRepository complaintRepository, CardKeyRepository cardKeyRepository, ScheduleRepository scheduleRepository) {
+                  UndeliveredParcelPostRepository undeliveredParcelPostRepository, UndeliveredParcelRepository undeliveredParcelRepository, ImageTypeRepository imageTypeRepository, ComplaintRepository complaintRepository, CardKeyRepository cardKeyRepository, ScheduleRepository scheduleRepository, ManualPostRepository manualPostRepository) {
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
         this.categoryRepository = categoryRepository;
@@ -93,6 +89,7 @@ public class InitDB {
         this.complaintRepository = complaintRepository;
         this.cardKeyRepository = cardKeyRepository;
         this.scheduleRepository = scheduleRepository;
+        this.manualPostRepository = manualPostRepository;
     }
 
     @Getter
@@ -162,6 +159,14 @@ public class InitDB {
                 .orderKey(5)
                 .build();
         categoryRepository.save(imageCategoryNo5);
+
+        Category manualCategoryNo6 = Category.builder()
+                .name("사용 설명서")
+                .type(Type.MANUAL)
+                .explanation("사용 설명서")
+                .orderKey(6)
+                .build();
+        categoryRepository.save(manualCategoryNo6);
 
         ArrayList<Schedule> schedules = new ArrayList<>();
         for (Schedule.Weekday weekday : Schedule.Weekday.values()) {

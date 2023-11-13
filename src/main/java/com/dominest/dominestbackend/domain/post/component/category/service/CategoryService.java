@@ -7,6 +7,7 @@ import com.dominest.dominestbackend.domain.post.component.category.Category;
 import com.dominest.dominestbackend.domain.post.component.category.component.Type;
 import com.dominest.dominestbackend.domain.post.component.category.repository.CategoryRepository;
 import com.dominest.dominestbackend.domain.post.image.ImageTypeRepository;
+import com.dominest.dominestbackend.domain.post.manual.ManualPostRepository;
 import com.dominest.dominestbackend.domain.post.undeliveredparcel.UndeliveredParcelPostRepository;
 import com.dominest.dominestbackend.global.exception.ErrorCode;
 import com.dominest.dominestbackend.global.exception.exceptions.BusinessException;
@@ -28,6 +29,7 @@ public class CategoryService {
     private final UndeliveredParcelPostRepository undeliveredParcelPostRepository;
     private final ComplaintRepository complaintRepository;
     private final CardKeyRepository cardKeyRepository;
+    private final ManualPostRepository manualPostRepository;
 
     @Transactional
     public Category create(String categoryName, Type categoryType, String explanation) {
@@ -101,6 +103,8 @@ public class CategoryService {
             complaintRepository.deleteByCategoryId(categoryId);
         } else if (Type.CARD_KEY.equals(type)) {
             cardKeyRepository.deleteByCategoryId(categoryId);
+        } else if(Type.MANUAL.equals(type)) {
+            manualPostRepository.deleteByCategoryId(categoryId);
         }
         throw new BusinessException(ErrorCode.CANNOT_DELETE_ASSOCIATED_POST);
     }

@@ -11,6 +11,7 @@ public enum Type {
     , COMPLAINT("complaint") // 민원처리내역
     , CARD_KEY("card-key") // 카드키관리대장
     , SANITATION_CHECK("sanitation-check") // 방역 호실 점검
+    , MANUAL("manual")
     ;
 
     private final String url;
