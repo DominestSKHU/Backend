@@ -51,6 +51,7 @@ public class InitDB {
 
     private final ManualPostRepository manualPostRepository;
 
+
     @Autowired
     public InitDB(PasswordEncoder passwordEncoder, UserRepository userRepository
             , CategoryRepository categoryRepository, RoomRepository roomRepository
