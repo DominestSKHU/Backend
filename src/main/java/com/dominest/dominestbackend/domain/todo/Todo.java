@@ -25,6 +25,7 @@ public class Todo {
     @Column(nullable = false)
     private String requester; // 요청 하는 사람
 
+    @Column(nullable = false)
     private String requestReceiver; // 요청 받는 사람
 
     @Column(nullable = false)
