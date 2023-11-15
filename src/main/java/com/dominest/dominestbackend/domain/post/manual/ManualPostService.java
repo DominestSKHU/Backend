@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ManualPostService {
     private final CategoryService categoryService;
     private final UserService userService;
+    private final ManualPostRepository manualPostRepository;
 
     @Transactional
     public Long create(Long categoryId, CreateManualPostDto.Req reqDto, String email) {
@@ -27,6 +28,7 @@ public class ManualPostService {
                 category(category).
                 htmlContent(reqDto.getHtmlContent()).
                 build();
-        return 0L;
+
+        return manualPostRepository.save(manualPost).getId();
     }
 }
