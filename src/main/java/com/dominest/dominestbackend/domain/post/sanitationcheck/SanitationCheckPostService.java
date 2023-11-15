@@ -144,9 +144,11 @@ public class SanitationCheckPostService {
 
     private String createTitle() {
         // 원하는 형식의 문자열로 변환
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        String formattedDate = LocalDateTime.now().format(formatter);
-        return formattedDate + "방역호실점검";
+        LocalDateTime now = LocalDateTime.now();
+        return now.getYear() +
+                "년 " +
+                now.getMonthValue() +
+                "월 방역호실점검";
     }
 }
 
