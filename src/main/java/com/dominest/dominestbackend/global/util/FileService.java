@@ -30,6 +30,7 @@ public class FileService {
     /**@return save() 메서드 반환값의 리스트*/
     public List<String> save(FilePrefix prefix, List<MultipartFile> multipartFiles){
         List<String> storedFilePaths = new ArrayList<>();
+        if(multipartFiles == null ) return storedFilePaths;
         for (MultipartFile multipartFile : multipartFiles) {
             String storedFilePath = save(prefix, multipartFile);
             if (storedFilePath == null) {
@@ -122,6 +123,10 @@ public class FileService {
         RESIDENT_ADMISSION("resident/admission/"),
         RESIDENT_DEPARTURE("resident/departure/"),
         POST_IMAGE_TYPE("post/image_type/"),
+
+        MANUAL_ATTACH_TYPE("manual/attach"),
+        MANUAL_IMAGE_TYPE("manual/image"),
+        MANUAL_VIDEO_TYPE("manual/video"),
         NONE(""),
         ;
 

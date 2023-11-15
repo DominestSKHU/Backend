@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
@@ -21,7 +20,8 @@ public class ManualPostController {
     private final ManualPostService manualPostService;
     @PostMapping("/categories/{categoryId}/posts/manual")
     public ResponseEntity<RspTemplate<Void>> handleCreateManual(
-            @PathVariable Long categoryId, Principal principal, @RequestBody @Valid CreateManualPostDto.Req reqDto
+            @PathVariable Long categoryId, Principal principal, @Valid CreateManualPostDto.Req reqDto
+
     ) {
         String email = PrincipalUtil.toEmail(principal);
 
