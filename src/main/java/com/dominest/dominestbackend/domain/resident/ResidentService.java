@@ -36,8 +36,13 @@ public class ResidentService {
     @Transactional
     public String uploadPdf(Long id, FileService.FilePrefix filePrefix, MultipartFile pdf) {
         Resident resident = findById(id);
-        // 로컬에 파일 저장
-        String uploadedFileName = fileService.save(filePrefix, pdf);
+
+        // 로컬에 파일 저장. // 이름-UUID.pdf 형식으로 저장한다.
+        String uploadedFileName = new StringBuilder()
+                .append(resident.getName())
+                .append("-")
+                .append(fileService.save(filePrefix, pdf))
+                .toString();
 
         String prevFileName = filePrefix.getPdfFileName(resident);
         filePrefix.setPdfFileNameToResident(resident, uploadedFileName);
