@@ -67,7 +67,6 @@ public class SanitationCheckPostService {
 
         // sani...Post 객체 생성
         SanitationCheckPost saniChkPost = SanitationCheckPost.builder()
-                .titleWithCurrentDate(createTitle())
                 .category(category)
                 .writer(user)
                 .residenceSemester(residenceSemester)
@@ -142,14 +141,6 @@ public class SanitationCheckPostService {
         return EntityUtil.mustNotNull(sanitationCheckPostRepository.findByIdFetchCategory(postId), ErrorCode.POST_NOT_FOUND);
     }
 
-    private String createTitle() {
-        // 원하는 형식의 문자열로 변환
-        LocalDateTime now = LocalDateTime.now();
-        return now.getYear() +
-                "년 " +
-                now.getMonthValue() +
-                "월 방역호실점검";
-    }
 }
 
 
