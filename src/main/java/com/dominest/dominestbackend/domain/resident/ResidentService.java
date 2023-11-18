@@ -34,23 +34,20 @@ public class ResidentService {
 
     /** @return 저장한 파일명 */
     @Transactional
-    public String uploadPdf(Long id, FileService.FilePrefix filePrefix, MultipartFile pdf) {
+    public void uploadPdf(Long id, FileService.FilePrefix filePrefix, MultipartFile pdf) {
+        if (fileService.isInvalidFileExtension(pdf.getOriginalFilename(), FileService.FileExt.PDF)) {
+            throw new BusinessException(ErrorCode.INVALID_FILE_EXTENSION);
+        }
+
         Resident resident = findById(id);
 
-        // 로컬에 파일 저장. // 이름-UUID.pdf 형식으로 저장한다.
-        String uploadedFileName = new StringBuilder()
-                .append(resident.getName())
-                .append("-")
-                .append(fileService.save(filePrefix, pdf))
-                .toString();
+        String uploadedFilename = fileService.save(filePrefix, pdf, resident.generatePdfFileNameToStore());
 
         String prevFileName = filePrefix.getPdfFileName(resident);
-        filePrefix.setPdfFileNameToResident(resident, uploadedFileName);
+        filePrefix.setPdfFileNameToResident(resident, uploadedFilename);
 
         if (prevFileName != null)
             fileService.deleteFile(filePrefix, prevFileName);
-
-        return uploadedFileName;
     }
 
     @Transactional
@@ -64,7 +61,7 @@ public class ResidentService {
 
             String filename = pdf.getOriginalFilename();
             // pdf 확장자가 아니라면 continue
-            if (! filename.endsWith(".pdf")){
+            if (fileService.isInvalidFileExtension(filename, FileService.FileExt.PDF)){
                 continue;
             }
 
@@ -78,17 +75,12 @@ public class ResidentService {
                 continue;
             }
 
-            // 로컬에 파일 저장. // 이름-UUID.pdf 형식으로 저장한다.
-            String uploadedFileName = new StringBuilder()
-                    .append(resident.getName())
-                    .append("-")
-                    .append(fileService.save(filePrefix, pdf))
-                    .toString();
+            String uploadedFilename = fileService.save(filePrefix, pdf, resident.generatePdfFileNameToStore());
 
             // filePrefix에 맞는 파일명을 가져온다.
             String prevFileName = filePrefix.getPdfFileName(resident);
             // 파일명을 filePrefix를 단서로 하여(입사신청, 퇴사신청서) Resident에 저장한다.
-            filePrefix.setPdfFileNameToResident(resident, uploadedFileName);
+            filePrefix.setPdfFileNameToResident(resident, uploadedFilename);
 
             res.addToDtoList(filename, "OK", null);
             res.addSuccessCount();
@@ -120,6 +112,7 @@ public class ResidentService {
             Room room = roomService.getByAssignedRoom(assignedRoom);
             Resident resident = Resident.from(row, residenceSemester, room);
 
+            // 중복을 검사함. 같은 사람이라고 판단될 경우와 동명이인이라고 판단될 경우에 따라 분기.
             if (residentRepository.existsByNameAndResidenceSemester(resident.getName(), residenceSemester)) {
                 if (existsByUniqueKey(resident)) {
                     // 엑셀 데이터상 중복이 있을 시 로그만 남기고 다음 행으로 넘어간다.

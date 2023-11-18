@@ -132,6 +132,11 @@ public class FileService {
         fileNames.forEach(fileName -> deleteFile(filePrefix, fileName));
     }
 
+    public boolean isInvalidFileExtension(String fileName, FileExt fileExt) {
+        String ext = extractExt(fileName);
+        return !ext.equals(fileExt.value);
+    }
+
     // fileUploadPath 내부에 저장될 directory 를 선택한다.
     // fileUplaodPath + FilePrefix + fileName 으로 저장된다.
     @Getter

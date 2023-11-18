@@ -10,6 +10,7 @@ import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -182,6 +183,10 @@ public class Resident extends BaseEntity {
             throw new IllegalArgumentException("전화번호 형식이 잘못되었습니다.");
         String lastFourDigits = splitedNumber[splitedNumber.length - 1]; // 마지막 4자리 숫자
         this.name = name + "(" + lastFourDigits + ")";
+    }
+
+    public String generatePdfFileNameToStore() {
+        return this.name + "-" + UUID.randomUUID() + ".pdf";
     }
 
 }
