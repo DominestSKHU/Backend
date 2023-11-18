@@ -11,9 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -49,7 +47,7 @@ public class FileService {
             return null;
         }
         String originalFileName = multipartFile.getOriginalFilename();
-        String storedFileName = createStoredFilePath(originalFileName);
+        String storedFileName = convertFileNameToUuid(originalFileName);
         Path storedFilePath = Paths.get(fileUploadPath + prefix.getPrefix() + storedFileName);
 
         try {
@@ -63,7 +61,7 @@ public class FileService {
         return storedFileName;
     }
 
-    private String createStoredFilePath(String originalFileName) {
+    private String convertFileNameToUuid(String originalFileName) {
         String uuid = UUID.randomUUID().toString();
         String ext = extractExt(originalFileName);
 
