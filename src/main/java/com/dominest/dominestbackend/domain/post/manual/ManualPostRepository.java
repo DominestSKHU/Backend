@@ -1,13 +1,16 @@
 package com.dominest.dominestbackend.domain.post.manual;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-
-import javax.persistence.Entity;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface ManualPostRepository extends JpaRepository<ManualPost, Long> {
 
+    @Query(value = "SELECT m FROM ManualPost m JOIN FETCH m.writer u" +
+            " WHERE m.category.id = :categoryId "
+            , countQuery = "SELECT count(*) FROM ManualPost m WHERE m.category.id = :categoryId")
+    Page<ManualPost> findAllByCategory(@Param("categoryId") Long categoryId, Pageable pageable);
     void deleteByCategoryId(Long categoryId);
 }

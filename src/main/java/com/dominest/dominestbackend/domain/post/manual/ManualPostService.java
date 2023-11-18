@@ -8,6 +8,8 @@ import com.dominest.dominestbackend.domain.user.User;
 import com.dominest.dominestbackend.domain.user.service.UserService;
 import com.dominest.dominestbackend.global.util.FileService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -45,5 +47,10 @@ public class ManualPostService {
         List<String> savedImgUrls = fileService.save(FileService.FilePrefix.MANUAL_IMAGE_TYPE, imageFiles);
         List<String> savedVideoUrls = fileService.save(FileService.FilePrefix.MANUAL_VIDEO_TYPE, videoFiles);
         manualPost.setUrls(savedAttachUrls, savedImgUrls, savedVideoUrls);
+    }
+
+    public Page<ManualPost> getPage(Long categoryId, Pageable pageable) {
+        // 카테고리 내 게시글이 1건도 없는 경우도 있으므로, 게시글과 함께 카테고리를 Join해서 데이터를 찾아오지 않는다.
+        return manualPostRepository.findAllByCategory(categoryId, pageable);
     }
 }

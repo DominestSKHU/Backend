@@ -12,7 +12,6 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class ManualPost extends Post {
-
     @Column(nullable = false)
     private String htmlContent;
 
