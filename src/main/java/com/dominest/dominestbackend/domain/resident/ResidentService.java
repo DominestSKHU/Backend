@@ -31,6 +31,7 @@ public class ResidentService {
     private final ResidentRepository residentRepository;
     private final FileService fileService;
     private final RoomService roomService;
+    private final ResidentFileManager residentFileManager;
 
     /** @return 저장한 파일명 */
     @Transactional
@@ -43,11 +44,11 @@ public class ResidentService {
 
         String uploadedFilename = fileService.save(filePrefix, pdf, resident.generatePdfFileNameToStore());
 
-        String prevFileName = filePrefix.getPdfFileName(resident);
-        filePrefix.setPdfFileNameToResident(resident, uploadedFilename);
+        String prevFilename = residentFileManager.getPdfFilename(resident, filePrefix);
+        residentFileManager.setPdfFilenameToResident(resident, filePrefix, uploadedFilename);
 
-        if (prevFileName != null)
-            fileService.deleteFile(filePrefix, prevFileName);
+        if (prevFilename != null)
+            fileService.deleteFile(filePrefix, prevFilename);
     }
 
     @Transactional
@@ -61,7 +62,7 @@ public class ResidentService {
 
             String filename = pdf.getOriginalFilename();
             // pdf 확장자가 아니라면 continue
-            if (fileService.isInvalidFileExtension(filename, FileService.FileExt.PDF)){
+            if (fileService.isInvalidFileExtension(filename, FileService.FileExt.PDF)) {
                 continue;
             }
 
@@ -77,16 +78,14 @@ public class ResidentService {
 
             String uploadedFilename = fileService.save(filePrefix, pdf, resident.generatePdfFileNameToStore());
 
-            // filePrefix에 맞는 파일명을 가져온다.
-            String prevFileName = filePrefix.getPdfFileName(resident);
-            // 파일명을 filePrefix를 단서로 하여(입사신청, 퇴사신청서) Resident에 저장한다.
-            filePrefix.setPdfFileNameToResident(resident, uploadedFilename);
+            String prevFilename = residentFileManager.getPdfFilename(resident, filePrefix);
+            residentFileManager.setPdfFilenameToResident(resident, filePrefix, uploadedFilename);
 
             res.addToDtoList(filename, "OK", null);
             res.addSuccessCount();
 
-            if (prevFileName != null)
-                fileService.deleteFile(filePrefix, prevFileName);
+            if (prevFilename != null)
+                fileService.deleteFile(filePrefix, prevFilename);
         }
         // 한 건도 업로드하지 못했으면 예외발생
         if (res.getSuccessCount() == 0)
@@ -149,7 +148,7 @@ public class ResidentService {
         Room room = roomService.getByAssignedRoom(reqDto.getAssignedRoom());
         Resident resident = reqDto.toEntity(room);
 
-       save(resident);
+        save(resident);
     }
 
     @Transactional
