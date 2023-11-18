@@ -5,6 +5,7 @@ import com.dominest.dominestbackend.global.exception.ErrorCode;
 import com.dominest.dominestbackend.global.exception.exceptions.BusinessException;
 import com.dominest.dominestbackend.global.exception.exceptions.file.FileIOException;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -22,8 +23,12 @@ import java.util.UUID;
 @Slf4j
 @Service
 public class FileService {
-    @Value("${file.upload.path}")// yml 설정파일
-    private String fileUploadPath;
+    // yml 설정파일
+    private final String fileUploadPath;
+
+    public FileService(@Value("${file.upload.path}")String fileUploadPath) {
+        this.fileUploadPath = fileUploadPath;
+    }
 
     /**@return save() 메서드 반환값의 리스트*/
     public List<String> save(FilePrefix prefix, List<MultipartFile> multipartFiles){
@@ -47,18 +52,32 @@ public class FileService {
             return null;
         }
         String originalFileName = multipartFile.getOriginalFilename();
-        String storedFileName = convertFileNameToUuid(originalFileName);
-        Path storedFilePath = Paths.get(fileUploadPath + prefix.getPrefix() + storedFileName);
+        String filenameToStore = convertFileNameToUuid(originalFileName);
+        Path filePathToStore = Paths.get(fileUploadPath + prefix.getPrefix() + filenameToStore);
 
+        saveMultipartFile(multipartFile, filePathToStore);
+        return filenameToStore;
+    }
+
+    public String save(FilePrefix prefix, MultipartFile multipartFile, String filenameToStore){
+        // empty Check. type=file 이며 name이 일치한다면, 본문이 비어있어도 MultiPartFile 객체가 생성된다.
+        if (multipartFile.isEmpty()) {
+            return null;
+        }
+        Path filePathToStore = Paths.get(fileUploadPath + prefix.getPrefix() + filenameToStore);
+
+        saveMultipartFile(multipartFile, filePathToStore);
+        return filenameToStore;
+    }
+
+    private void saveMultipartFile(MultipartFile multipartFile, Path filePathToStore) {
         try {
             // transferTo()는 내부적으로 알아서 is, os close를 해준다.
-            multipartFile.transferTo(storedFilePath);
+            multipartFile.transferTo(filePathToStore);
         } catch (IOException e) {
-            log.error("IOEXCEPTION 발생: originalFile: {}, storedFilePath: {}", originalFileName, storedFilePath.toString());
+            log.error("IOEXCEPTION 발생: originalFile: {}, filePathToStore: {}", multipartFile.getOriginalFilename(), filePathToStore);
             throw new FileIOException(ErrorCode.FILE_CANNOT_BE_STORED, e);
         }
-
-        return storedFileName;
     }
 
     private String convertFileNameToUuid(String originalFileName) {
@@ -68,7 +87,7 @@ public class FileService {
         return uuid + "." + ext;
     }
 
-    public String extractExt(String originalFileName) {
+    private String extractExt(String originalFileName) {
         int pos = originalFileName.lastIndexOf(".");
         return originalFileName.substring(pos +1);
     }
@@ -148,6 +167,12 @@ public class FileService {
                 throw new BusinessException("잘못된 FilePrefix 값입니다.", HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
+    }
+    @RequiredArgsConstructor
+    public enum FileExt {
+        PDF("pdf");
+
+        public final String value;
     }
 }
 
