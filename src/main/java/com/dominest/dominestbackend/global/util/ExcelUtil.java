@@ -1,5 +1,6 @@
 package com.dominest.dominestbackend.global.util;
 
+import com.dominest.dominestbackend.domain.post.complaint.Complaint;
 import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.checkedroom.CheckedRoom;
 import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.checkedroom.component.ResidentInfo;
 import com.dominest.dominestbackend.domain.room.Room;
@@ -23,6 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -110,7 +112,8 @@ public class ExcelUtil {
         return originalFileName.substring(pos +1);
     }
 
-    public static void createAndRespondCheckedRoomData(String filename, String sheetName, HttpServletResponse response, List<CheckedRoom> checkedRoomsGotPenalty) {
+    // 통과차수별 방 정보와 소속된 사생의 정보를 반환.
+    public static void createAndRespondCheckedRoomData(String filename, String sheetName, HttpServletResponse response, List<CheckedRoom> checkedRooms) {
         if (! isExcelExt(filename)) {
             throw new AppServiceException(ErrorCode.INVALID_FILE_EXTENSION);
         }
@@ -118,7 +121,6 @@ public class ExcelUtil {
         ContentDisposition contentDisposition = ContentDisposition.builder("attachment")
                 .filename(filename, StandardCharsets.UTF_8)
                 .build();
-
         response.setHeader(HttpHeaders.CONTENT_DISPOSITION, contentDisposition.toString());
 
         // try-with-resources를 사용하여 워크북 생성
@@ -141,10 +143,10 @@ public class ExcelUtil {
             sheet.setColumnWidth(3, columnWidth10);
 
             // 데이터 작성
-            for (int rowNum = 1; rowNum <= checkedRoomsGotPenalty.size(); rowNum++) {
+            for (int rowNum = 1; rowNum <= checkedRooms.size(); rowNum++) {
                 Row row = sheet.createRow(rowNum);
 
-                CheckedRoom checkedRoom = checkedRoomsGotPenalty.get(rowNum - 1);
+                CheckedRoom checkedRoom = checkedRooms.get(rowNum - 1);
                 ResidentInfo residentInfo = checkedRoom.getResidentInfo();
                 Room room = checkedRoom.getRoom();
                 String assignedRoom = room != null ? room.getAssignedRoom() : "";
@@ -164,7 +166,8 @@ public class ExcelUtil {
         }
     }
 
-    public static void createAndRespondAllCheckedRoomData(String filename, String sheetName, HttpServletResponse response, List<CheckedRoom> checkedRoomsGotPenalty) {
+    // 점검표 화면의 내용 전체를 다운로드
+    public static void createAndRespondAllCheckedRoomData(String filename, String sheetName, HttpServletResponse response, List<CheckedRoom> checkedRooms) {
         if (! isExcelExt(filename)) {
             throw new AppServiceException(ErrorCode.INVALID_FILE_EXTENSION);
         }
@@ -172,7 +175,6 @@ public class ExcelUtil {
         ContentDisposition contentDisposition = ContentDisposition.builder("attachment")
                 .filename(filename, StandardCharsets.UTF_8)
                 .build();
-
         response.setHeader(HttpHeaders.CONTENT_DISPOSITION, contentDisposition.toString());
 
         // try-with-resources를 사용하여 워크북 생성
@@ -213,10 +215,10 @@ public class ExcelUtil {
 
             // 데이터 작성
             int dataStartRow = 2;
-            for (int rowNum = dataStartRow; rowNum <= checkedRoomsGotPenalty.size() + dataStartRow - 1; rowNum++) {
+            for (int rowNum = dataStartRow; rowNum <= checkedRooms.size() + dataStartRow - 1; rowNum++) {
                 Row row = sheet.createRow(rowNum);
 
-                CheckedRoom checkedRoom = checkedRoomsGotPenalty.get(rowNum - dataStartRow);
+                CheckedRoom checkedRoom = checkedRooms.get(rowNum - dataStartRow);
                 ResidentInfo residentInfo = checkedRoom.getResidentInfo();
                 Room room = checkedRoom.getRoom();
                 String assignedRoom = room != null ? room.getAssignedRoom() : "";
@@ -235,6 +237,60 @@ public class ExcelUtil {
                 row.createCell(9).setCellValue(checkedRoom.isShower() ? "O" : "X");
                 row.createCell(10).setCellValue(checkedRoom.isProhibitedItem() ? "O" : "X");
                 row.createCell(11).setCellValue(checkedRoom.getEtc() == null ? "" : checkedRoom.getEtc());
+            }
+
+            // 파일 내보내기
+            workbook.write(response.getOutputStream());
+        } catch (IOException e) {
+            throw new FileIOException(ErrorCode.FILE_CANNOT_BE_SENT, e);
+        }
+    }
+
+    // 통과차수별 방 정보와 소속된 사생의 정보를 반환.
+    public static void createAndRespondComplaintData(String filename, String sheetName, HttpServletResponse response, List<Complaint> complaints) {
+        if (! isExcelExt(filename)) {
+            throw new AppServiceException(ErrorCode.INVALID_FILE_EXTENSION);
+        }
+
+        ContentDisposition contentDisposition = ContentDisposition.builder("attachment")
+                .filename(filename, StandardCharsets.UTF_8)
+                .build();
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, contentDisposition.toString());
+
+        // try-with-resources를 사용하여 워크북 생성
+        try (Workbook workbook = new XSSFWorkbook()) {
+            // 새로운 워크시트 생성
+            Sheet sheet = workbook.createSheet(sheetName);
+            // 헤더 행 작성
+            Row headerRow = sheet.createRow(0);
+            String[] headers = {"민원번호", "방번호", "민원결과", "민원내역", "민원답변",  "민원인", "민원접수일"};
+
+            for (int i=0; i < headers.length; i++) {
+                Cell cell = headerRow.createCell(i);
+                cell.setCellValue(headers[i]);
+            }
+
+            // 보기 편하게끔 민원내역 민원답변, 민원접수일 컬럼은 width를 따로 설정
+            int columnWidth30 = 30 * 256; // 23문자 너비
+            sheet.setColumnWidth(3, columnWidth30);
+            sheet.setColumnWidth(4, columnWidth30);
+            int columnWidth12 = 12 * 256; // 14문자 너비
+            sheet.setColumnWidth(6, columnWidth12);
+
+            // 데이터 작성
+            for (int rowNum = 1; rowNum <= complaints.size(); rowNum++) {
+                Row row = sheet.createRow(rowNum);
+
+                Complaint complaint = complaints.get(rowNum - 1);
+
+                // "민원번호", "방번호", "처리결과", "민원내역", "민원답변",  "민원인", "민원접수일"
+                row.createCell(0).setCellValue(complaint.getId());
+                row.createCell(1).setCellValue(complaint.getRoomNo());
+                row.createCell(2).setCellValue(complaint.getProcessState().state);
+                row.createCell(3).setCellValue(complaint.getComplaintCause());
+                row.createCell(4).setCellValue(complaint.getComplaintResolution());
+                row.createCell(5).setCellValue(complaint.getName());
+                row.createCell(6).setCellValue(complaint.getDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
             }
 
             // 파일 내보내기

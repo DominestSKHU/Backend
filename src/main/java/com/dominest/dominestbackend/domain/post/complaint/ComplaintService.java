@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Service
@@ -84,6 +86,10 @@ public class ComplaintService {
         if (StringUtils.hasText(complSchText)) {
             return complaintRepository.findAllByCategoryIdSearch(categoryId, complSchText + "*", pageable);
         }
+        return complaintRepository.findPageAllByCategoryId(categoryId, pageable);
+    }
+
+    public List<Complaint> getPage(Long categoryId, Pageable pageable) {
         return complaintRepository.findAllByCategoryId(categoryId, pageable);
     }
 
