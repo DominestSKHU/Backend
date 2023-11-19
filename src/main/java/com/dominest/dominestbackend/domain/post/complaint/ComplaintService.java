@@ -88,12 +88,6 @@ public class ComplaintService {
         }
         return complaintRepository.findPageAllByCategoryId(categoryId, pageable);
     }
-
-    public List<Complaint> getPage(Long categoryId, Pageable pageable) {
-        return complaintRepository.findAllByCategoryId(categoryId, pageable);
-    }
-
-
 }
 
 

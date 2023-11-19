@@ -61,7 +61,7 @@ public class ExcelUtil {
                 List<String> rowData = new ArrayList<>(RESIDENT_COLUMN_COUNT); // default capacity 10이므로 컬럼개수만큼 공간 확보
                 while (cellIterator.hasNext()) {
                     Cell cell = cellIterator.next();
-                    String cellValue = "";
+                    String cellValue;
                     switch (cell.getCellType()) {
                         case STRING:
                             cellValue = cell.getStringCellValue();
