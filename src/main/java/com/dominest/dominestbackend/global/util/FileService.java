@@ -122,9 +122,9 @@ public class FileService {
         RESIDENT_DEPARTURE("resident/departure/"),
         POST_IMAGE_TYPE("post/image_type/"),
 
-        MANUAL_ATTACH_TYPE("manual/attach"),
-        MANUAL_IMAGE_TYPE("manual/image"),
-        MANUAL_VIDEO_TYPE("manual/video"),
+        MANUAL_ATTACH_TYPE("manual/attach/"),
+        MANUAL_IMAGE_TYPE("manual/image/"),
+        MANUAL_VIDEO_TYPE("manual/video/"),
         NONE(""),
         ;
 

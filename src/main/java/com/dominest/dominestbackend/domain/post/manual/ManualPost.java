@@ -9,6 +9,7 @@ import javax.persistence.*;
 import java.util.List;
 
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class ManualPost extends Post {
@@ -17,15 +18,12 @@ public class ManualPost extends Post {
 
     private boolean isModified;
 
-    @Setter
     @ElementCollection(fetch = FetchType.LAZY)
     private List<String> attachmentUrls;
 
-    @Setter
     @ElementCollection(fetch = FetchType.LAZY)
     private List<String> imageUrls;
 
-    @Setter
     @ElementCollection(fetch = FetchType.LAZY)
     private List<String> videoUrls;
 
