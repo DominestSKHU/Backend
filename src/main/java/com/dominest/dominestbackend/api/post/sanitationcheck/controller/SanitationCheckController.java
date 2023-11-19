@@ -202,7 +202,7 @@ public class SanitationCheckController {
         List<CheckedRoom> checkedRoomsGotPenalty = checkedRoomRepository.findAllByPostIdAndNotInPassState(postId, penalty0passStates);
 
         // 파일 이름 설정
-        ExcelUtil.createAndRespondCheckedRoomData(filename, sheetName, response, checkedRoomsGotPenalty);
+        ExcelUtil.createAndRespondResidentInfoWithCheckedRoom(filename, sheetName, response, checkedRoomsGotPenalty);
     }
 
     // (엑셀 다운로드) 방호점 게시글의 특정 통과차수에 해당하는 입사생 목록
@@ -222,7 +222,7 @@ public class SanitationCheckController {
         List<CheckedRoom> checkedRooms = checkedRoomRepository.findAllByPostIdAndPassState(postId, passState);
 
         // 파일 이름 설정
-        ExcelUtil.createAndRespondCheckedRoomData(filename, sheetName, response, checkedRooms);
+        ExcelUtil.createAndRespondResidentInfoWithCheckedRoom(filename, sheetName, response, checkedRooms);
     }
 
     // (엑셀 다운로드) 방호점 게시글의 전체 데이터
@@ -239,7 +239,7 @@ public class SanitationCheckController {
         List<CheckedRoom> checkedRoomsGotPenalty = checkedRoomRepository.findAllByPostId(postId);
 
         // 파일 이름 설정
-        ExcelUtil.createAndRespondAllCheckedRoomData(filename, sheetName, response, checkedRoomsGotPenalty);
+        ExcelUtil.createAndRespondAllDataWithCheckedRoom(filename, sheetName, response, checkedRoomsGotPenalty);
     }
 
 

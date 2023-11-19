@@ -118,7 +118,7 @@ public class ComplaintController {
         }
         String sheetName = "민원접수내역";
 
-        ExcelUtil.createAndRespondComplaintData(filename, sheetName, response, complaints);
+        ExcelUtil.createAndRespondAllDataWitehComplaint(filename, sheetName, response, complaints);
     }
 
 }

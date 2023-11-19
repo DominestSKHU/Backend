@@ -113,7 +113,7 @@ public class ExcelUtil {
     }
 
     // 통과차수별 방 정보와 소속된 사생의 정보를 반환.
-    public static void createAndRespondCheckedRoomData(String filename, String sheetName, HttpServletResponse response, List<CheckedRoom> checkedRooms) {
+    public static void createAndRespondResidentInfoWithCheckedRoom(String filename, String sheetName, HttpServletResponse response, List<CheckedRoom> checkedRooms) {
         if (! isExcelExt(filename)) {
             throw new AppServiceException(ErrorCode.INVALID_FILE_EXTENSION);
         }
@@ -167,7 +167,7 @@ public class ExcelUtil {
     }
 
     // 점검표 화면의 내용 전체를 다운로드
-    public static void createAndRespondAllCheckedRoomData(String filename, String sheetName, HttpServletResponse response, List<CheckedRoom> checkedRooms) {
+    public static void createAndRespondAllDataWithCheckedRoom(String filename, String sheetName, HttpServletResponse response, List<CheckedRoom> checkedRooms) {
         if (! isExcelExt(filename)) {
             throw new AppServiceException(ErrorCode.INVALID_FILE_EXTENSION);
         }
@@ -246,8 +246,8 @@ public class ExcelUtil {
         }
     }
 
-    // 통과차수별 방 정보와 소속된 사생의 정보를 반환.
-    public static void createAndRespondComplaintData(String filename, String sheetName, HttpServletResponse response, List<Complaint> complaints) {
+    // 민원처리내역의 모든 데이터를 엑셀로 반환한다.
+    public static void createAndRespondAllDataWitehComplaint(String filename, String sheetName, HttpServletResponse response, List<Complaint> complaints) {
         if (! isExcelExt(filename)) {
             throw new AppServiceException(ErrorCode.INVALID_FILE_EXTENSION);
         }
