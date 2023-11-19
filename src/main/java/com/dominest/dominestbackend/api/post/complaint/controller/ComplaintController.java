@@ -11,6 +11,7 @@ import com.dominest.dominestbackend.domain.post.component.category.Category;
 import com.dominest.dominestbackend.domain.post.component.category.component.Type;
 import com.dominest.dominestbackend.domain.post.component.category.service.CategoryService;
 import com.dominest.dominestbackend.global.util.ExcelUtil;
+import com.dominest.dominestbackend.global.util.FileService;
 import com.dominest.dominestbackend.global.util.PageableUtil;
 import com.dominest.dominestbackend.global.util.PrincipalUtil;
 import lombok.RequiredArgsConstructor;
@@ -107,14 +108,24 @@ public class ComplaintController {
         String filename;
         LocalDate now = LocalDate.now();
         String formattedDate = now.format(DateTimeFormatter.ofPattern("yy-MM-dd"));
+        StringBuilder sb = new StringBuilder();
         if (downloadCnt == null) {
             complaints = complaintRepository.findAllByCategoryId(category.getId(), Sort.by(Order.desc("id")));
-            filename = formattedDate + " 민원접수내역 전체 " + complaintCnt +  "건.xlsx";
+            filename = sb.append(formattedDate)
+                    .append(" 민원접수내역 전체 ")
+                    .append(complaintCnt).append("건")
+                    .append(".").append(FileService.FileExt.XLSX.value)
+                    .toString();
         } else {
-            complaints = complaintRepository.findAllByCategoryId(category.getId(),
+            complaints = complaintRepository.findAllByCategoryId(
+                    category.getId(),
                     PageableUtil.of(1, downloadCnt)
             );
-            filename = formattedDate + " 민원접수내역 최신 " + downloadCnt +  "건.xlsx";
+            filename = sb.append(formattedDate)
+                    .append(" 민원접수내역 최신 ")
+                    .append(downloadCnt).append("건")
+                    .append(".").append(FileService.FileExt.XLSX.value)
+                    .toString();
         }
         String sheetName = "민원접수내역";
 

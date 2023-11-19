@@ -17,6 +17,7 @@ import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.checkedroo
 import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.checkedroom.CheckedRoomService;
 import com.dominest.dominestbackend.domain.resident.component.ResidenceSemester;
 import com.dominest.dominestbackend.global.util.ExcelUtil;
+import com.dominest.dominestbackend.global.util.FileService.FileExt;
 import com.dominest.dominestbackend.global.util.PageableUtil;
 import com.dominest.dominestbackend.global.util.PrincipalUtil;
 import lombok.Getter;
@@ -192,7 +193,7 @@ public class SanitationCheckController {
     ) {
         String postTitle = sanitationCheckPostService.getById(postId).getTitle();
 
-        String filename = postTitle + " - 벌점 부여자 명단" + ".xlsx";
+        String filename = postTitle + " - 벌점 부여자 명단" + "." + FileExt.XLSX.value;
         String sheetName = "벌점 부여자 명단";
 
         // N차 통과를 조회하려면 CheckedRoom까지 조회해야 함. Resident를 Inner Join해서 빈 방 조회를 피하자.
@@ -214,7 +215,7 @@ public class SanitationCheckController {
         String postTitle = sanitationCheckPostService.getById(postId).getTitle();
 
         String passStateValue = passState.getValue();
-        String filename = postTitle + " - " + passStateValue + " 명단" + ".xlsx";
+        String filename = postTitle + " - " + passStateValue + " 명단" + "." + FileExt.XLSX.value;
         String sheetName = passStateValue + "명단";
 
         // N차 통과를 조회하려면 CheckedRoom까지 조회해야 함. Resident를 Inner Join해서 빈 방 조회를 피하자.
@@ -232,7 +233,7 @@ public class SanitationCheckController {
     ) {
         String postTitle = sanitationCheckPostService.getById(postId).getTitle();
 
-        String filename = postTitle + " - 점검표 전체 데이터" + ".xlsx";
+        String filename = postTitle + " - 점검표 전체 데이터" + "." + FileExt.XLSX.value;
         String sheetName = "점검표 전체 데이터";
 
         // N차 통과를 조회하려면 CheckedRoom까지 조회해야 함. Resident를 Inner Join해서 빈 방 조회를 피하자.
