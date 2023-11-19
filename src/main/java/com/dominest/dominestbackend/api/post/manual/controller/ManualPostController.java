@@ -59,4 +59,14 @@ public class ManualPostController {
                 ,resDto);
 
     }
+
+    @DeleteMapping("/posts/manual/{manualPostId}")
+    public ResponseEntity<RspTemplate<Void>> handleDeleteManualPost(
+            @PathVariable Long manualPostId
+    ) {
+        long deletedPostId = manualPostService.delete(manualPostId);
+
+        RspTemplate<Void> rspTemplate = new RspTemplate<>(HttpStatus.OK, deletedPostId + "번 게시글 삭제");
+        return ResponseEntity.ok(rspTemplate);
+    }
 }
