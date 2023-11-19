@@ -57,9 +57,9 @@ public class ImageTypeListDto {
             }
 
             static List<ImageTypeDto> from(Page<ImageType> imageTypes){
-                return imageTypes.stream()
+                return imageTypes
                         .map(ImageTypeDto::from)
-                        .collect(Collectors.toList());
+                        .toList();
             }
         }
     }

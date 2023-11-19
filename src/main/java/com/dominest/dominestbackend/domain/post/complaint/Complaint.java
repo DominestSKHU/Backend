@@ -32,7 +32,7 @@ public class Complaint extends BaseEntity {
     private ProcessState processState; // 처리상태
 
     @Column(nullable = false)
-    private LocalDate date; // 민원접수일자
+    private LocalDate date; // 민원접수일자. 사용자 요청에 의한 DB 등록시간(createTime)과 실제 접수일이 다를 수 있음.
 
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -72,6 +72,6 @@ public class Complaint extends BaseEntity {
         RECEIPT_COMPLETED("접수완료"), PROCESSING("처리중"), PROCESS_COMPLETED("처리완료");
 
         @JsonValue // 직렬화, 역직렬화 시 사용될 값
-        private final String state;
+        public final String state;
     }
 }

@@ -55,9 +55,9 @@ public class UndelivParcelPostListDto {
             }
 
             static List<UndelivParcelPostDto> from(Page<UndeliveredParcelPost> posts){
-                return posts.stream()
+                return posts
                         .map(UndelivParcelPostDto::from)
-                        .collect(Collectors.toList());
+                        .toList();
             }
         }
     }
