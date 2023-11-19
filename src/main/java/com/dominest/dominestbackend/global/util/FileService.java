@@ -152,7 +152,8 @@ public class FileService {
     }
     @RequiredArgsConstructor
     public enum FileExt {
-        PDF("pdf");
+        PDF("pdf"),
+        XLSX("xlsx");
 
         public final String value;
     }
