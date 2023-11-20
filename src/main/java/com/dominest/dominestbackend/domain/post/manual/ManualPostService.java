@@ -1,10 +1,10 @@
 package com.dominest.dominestbackend.domain.post.manual;
 
 import com.dominest.dominestbackend.api.post.manual.dto.CreateManualPostDto;
+import com.dominest.dominestbackend.api.post.manual.dto.UpdateManualPostDto;
 import com.dominest.dominestbackend.domain.post.component.category.Category;
 import com.dominest.dominestbackend.domain.post.component.category.component.Type;
 import com.dominest.dominestbackend.domain.post.component.category.service.CategoryService;
-import com.dominest.dominestbackend.domain.post.undeliveredparcel.UndeliveredParcelPost;
 import com.dominest.dominestbackend.domain.user.User;
 import com.dominest.dominestbackend.domain.user.service.UserService;
 import com.dominest.dominestbackend.global.exception.ErrorCode;
@@ -18,6 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Optional;
+
+import static com.dominest.dominestbackend.global.util.FileService.FilePrefix.*;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -27,6 +30,9 @@ public class ManualPostService {
     private final UserService userService;
     private final ManualPostRepository manualPostRepository;
     private final FileService fileService;
+
+    private static final String filePathPrefix = "manual/";
+    private static final String filePathSuffix = "/";
 
     @Transactional
     public Long create(Long categoryId, CreateManualPostDto.Req reqDto, String email) {
@@ -45,14 +51,24 @@ public class ManualPostService {
         return manualPostId;
     }
 
-    public void saveFile(List<MultipartFile>attachFiles, List<MultipartFile> imageFiles,
+    private void saveFile(List<MultipartFile>attachFiles, List<MultipartFile> imageFiles,
                                List<MultipartFile> videoFiles, ManualPost manualPost, Long manualPostId) {
 
-        String subPath = manualPostId+"/";
-        List<String> savedAttachUrls = fileService.save(FileService.FilePrefix.MANUAL_ATTACH_TYPE, subPath, attachFiles);
-        List<String> savedImgUrls = fileService.save(FileService.FilePrefix.MANUAL_IMAGE_TYPE, subPath, imageFiles);
-        List<String> savedVideoUrls = fileService.save(FileService.FilePrefix.MANUAL_VIDEO_TYPE, subPath, videoFiles);
-        manualPost.setUrls(savedAttachUrls, savedImgUrls, savedVideoUrls);
+        String subPath = filePathPrefix+manualPostId+filePathSuffix;
+        List<String> savedAttachUrls = fileService.save(FileService.FilePrefix.ATTACH_TYPE, subPath, attachFiles);
+        List<String> savedImgUrls = fileService.save(FileService.FilePrefix.IMAGE_TYPE, subPath, imageFiles);
+        List<String> savedVideoUrls = fileService.save(FileService.FilePrefix.VIDEO_TYPE, subPath, videoFiles);
+        manualPost.setAttachmentNames(savedAttachUrls, savedImgUrls, savedVideoUrls);
+    }
+
+    private void deleteFile(List<String> toDeleteAttachFileUrls, List<String> toDeleteImageFileUrls,
+                            List<String> toDeleteVideoFileUrls) {
+        if(toDeleteImageFileUrls!= null)
+            toDeleteImageFileUrls.forEach(fileService::deleteFile);
+        if(toDeleteVideoFileUrls != null)
+            toDeleteVideoFileUrls.forEach(fileService::deleteFile);
+        if(toDeleteAttachFileUrls != null)
+            toDeleteAttachFileUrls.forEach(fileService::deleteFile);
     }
 
     public Page<ManualPost> getPage(Long categoryId, Pageable pageable) {
@@ -60,14 +76,58 @@ public class ManualPostService {
         return manualPostRepository.findAllByCategory(categoryId, pageable);
     }
 
-    public ManualPost getById(Long undelivParcelPostId) {
-        return EntityUtil.mustNotNull(manualPostRepository.findById(undelivParcelPostId), ErrorCode.POST_NOT_FOUND);
+    private ManualPost getById(Long manualPostId) {
+        return EntityUtil.mustNotNull(manualPostRepository.findById(manualPostId), ErrorCode.POST_NOT_FOUND);
     }
 
     @Transactional
     public long delete(Long manualPostId) {
         ManualPost post = getById(manualPostId);
         manualPostRepository.delete(post);
+        String filePath = filePathPrefix+manualPostId+filePathSuffix;
+        fileService.deleteFile(filePath);
         return post.getId();
+    }
+
+    @Transactional
+    public long update(Long manualPostId, UpdateManualPostDto.Req reqDto) {
+        ManualPost manualPost = getById(manualPostId);
+
+        //게시글 업데이트
+        Optional.ofNullable(reqDto.getTitle())
+                .ifPresent(manualPost::setTitle);
+
+        Optional.ofNullable(reqDto.getHtmlContent())
+                .ifPresent(manualPost::setHtmlContent);
+
+        String subPath = filePathPrefix+manualPostId+filePathSuffix;
+
+        Optional.ofNullable(reqDto.getAttachFiles())
+                .ifPresent(attachFiles -> {
+                    List<String> savedAttachUrls = fileService.save(ATTACH_TYPE, subPath, attachFiles);
+                    manualPost.addAttachmentUrls(savedAttachUrls);
+                });
+
+        Optional.ofNullable(reqDto.getImageFiles())
+                .ifPresent(imageFiles -> {
+                    List<String> savedImageUrls = fileService.save(IMAGE_TYPE, subPath, imageFiles);
+                    manualPost.addImageUrls(savedImageUrls);
+                });
+
+        Optional.ofNullable(reqDto.getVideoFiles())
+                .ifPresent(videoFiles -> {
+                    List<String> savedVideoUrls = fileService.save(VIDEO_TYPE, subPath, videoFiles);
+                    manualPost.addVideoUrls(savedVideoUrls);
+                });
+
+        //수정으로 인해 필요 없어진 파일들 삭제
+        List<String> toDeleteAttachmentUrls = reqDto.getToDeleteAttachUrls();
+        List<String> toDeleteImageUrls = reqDto.getToDeleteImageUrls();
+        List<String> toDeleteVideoUrls = reqDto.getToDeleteVideoUrls();
+
+        deleteFile(toDeleteAttachmentUrls , toDeleteImageUrls, toDeleteVideoUrls);
+        manualPost.deleteUrls(toDeleteAttachmentUrls , toDeleteImageUrls, toDeleteVideoUrls);
+
+        return manualPostRepository.save(manualPost).getId();
     }
 }

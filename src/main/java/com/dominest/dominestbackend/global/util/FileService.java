@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.mail.Folder;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -51,6 +53,7 @@ public class FileService {
         String storedFileName = createStoredFilePath(originalFileName);
         Path storedFilePath = Paths.get(fileUploadPath + prefix.getPrefix() + storedFileName);
 
+
         try {
             // transferTo()는 내부적으로 알아서 is, os close를 해준다.
             multipartFile.transferTo(storedFilePath);
@@ -85,9 +88,17 @@ public class FileService {
             return null;
         }
         String originalFileName = multipartFile.getOriginalFilename();
-        Path storedFilePath = Paths.get(fileUploadPath + prefix.getPrefix() + subPath);
+        String storedFileFolderStr = fileUploadPath + subPath + prefix.getPrefix(); // 절대경로
+        String storedFileStr = storedFileFolderStr + originalFileName; // 절대경로
+        String storedReletiveFileStr = subPath + prefix.getPrefix() + originalFileName; // 상대경로
+        Path storedFilePath = Paths.get(storedFileStr);
 
+        File folder = new File(storedFileFolderStr);
         try {
+            //폴더가 없다면 자동 생성
+            if(!folder.exists()) {
+                folder.mkdir();
+            }
             // transferTo()는 내부적으로 알아서 is, os close를 해준다.
             multipartFile.transferTo(storedFilePath);
         } catch (IOException e) {
@@ -95,7 +106,7 @@ public class FileService {
             throw new FileIOException(ErrorCode.FILE_CANNOT_BE_STORED, e);
         }
 
-        return originalFileName;
+        return storedReletiveFileStr;
     }
 
     private String createStoredFilePath(String originalFileName) {
@@ -131,7 +142,8 @@ public class FileService {
     }
 
     public void deleteFile(FilePrefix filePrefix, String fileName) {
-        String filePathToDelete = fileUploadPath + filePrefix.getPrefix() + fileName;
+        deleteFile(filePrefix.getPrefix()+fileName);
+        /*String filePathToDelete = fileUploadPath + filePrefix.getPrefix() + fileName;
         Path pathToDelete = Paths.get(filePathToDelete);
 
         // NotNull 이므로 예외를 발생시키지 않고 바로 빠져나온다.
@@ -143,12 +155,28 @@ public class FileService {
             Files.delete(pathToDelete);
         } catch (IOException e) {
             throw new FileIOException(ErrorCode.FILE_CANNOT_BE_DELETED, e);
+        }*/
+    }
+
+    public void deleteFile(String filePath) {
+        String filePathToDelete = fileUploadPath + filePath;
+        Path pathToDelete = Paths.get(filePathToDelete);
+
+        // NotNull 이므로 예외를 발생시키지 않고 바로 빠져나온다.
+        // 파일을 찾을 수 없다면 지울 수도 없으므로 작업 취소. DB파일명은 그대로인데 물리적인 파일만 삭제했을 경우를 대비한다.
+
+        if(!Files.exists(pathToDelete)) return;
+        try {
+            Files.delete(pathToDelete);
+        } catch(IOException e) {
+            throw new FileIOException(ErrorCode.FILE_CANNOT_BE_DELETED, e);
         }
     }
 
     public void deleteFile(FilePrefix filePrefix, List<String> fileNames) {
         fileNames.forEach(fileName -> deleteFile(filePrefix, fileName));
     }
+
 
     // fileUploadPath 내부에 저장될 directory 를 선택한다.
     // fileUplaodPath + FilePrefix + fileName 으로 저장된다.
@@ -158,9 +186,9 @@ public class FileService {
         RESIDENT_DEPARTURE("resident/departure/"),
         POST_IMAGE_TYPE("post/image_type/"),
 
-        MANUAL_ATTACH_TYPE("manual/attach"),
-        MANUAL_IMAGE_TYPE("manual/image"),
-        MANUAL_VIDEO_TYPE("manual/video"),
+        ATTACH_TYPE("attach/"),
+        IMAGE_TYPE("image/"),
+        VIDEO_TYPE("video/"),
         NONE(""),
         ;
 
@@ -191,14 +219,3 @@ public class FileService {
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-

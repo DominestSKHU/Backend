@@ -10,7 +10,6 @@ import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.FloorServi
 import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.checkedroom.CheckedRoom;
 import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.checkedroom.CheckedRoomService;
 import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.checkedroom.component.ResidentInfo;
-import com.dominest.dominestbackend.domain.resident.Resident;
 import com.dominest.dominestbackend.domain.resident.ResidentRepository;
 import com.dominest.dominestbackend.domain.resident.component.ResidenceSemester;
 import com.dominest.dominestbackend.domain.room.Room;
@@ -149,18 +148,3 @@ public class SanitationCheckPostService {
         return formattedDate + "방역호실점검";
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

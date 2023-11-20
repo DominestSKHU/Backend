@@ -9,6 +9,7 @@ import javax.persistence.*;
 import java.util.List;
 
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class ManualPost extends Post {
@@ -17,15 +18,12 @@ public class ManualPost extends Post {
 
     private boolean isModified;
 
-    @Setter
     @ElementCollection(fetch = FetchType.LAZY)
     private List<String> attachmentUrls;
 
-    @Setter
     @ElementCollection(fetch = FetchType.LAZY)
     private List<String> imageUrls;
 
-    @Setter
     @ElementCollection(fetch = FetchType.LAZY)
     private List<String> videoUrls;
 
@@ -43,11 +41,32 @@ public class ManualPost extends Post {
         this.isModified = isModified;
     }
 
-    public void setUrls(List<String> attachmentUrls, List<String> imageUrls,
-                   List<String> videoUrls) {
+    public void setAttachmentNames(List<String> attachmentUrls, List<String> imageUrls,
+                                   List<String> videoUrls) {
         this.attachmentUrls = attachmentUrls;
         this.imageUrls = imageUrls;
         this.videoUrls = videoUrls;
     }
 
+    public void addAttachmentUrls(List<String> attachmentUrls) {
+        this.attachmentUrls.addAll(attachmentUrls);
+    }
+
+    public void addImageUrls(List<String> imageUrls) {
+        this.imageUrls.addAll(imageUrls);
+    }
+
+    public void addVideoUrls(List<String> videoUrls) {
+        this.videoUrls.addAll(videoUrls);
+    }
+
+    public void deleteUrls(List<String> toDeleteAttachmentUrls, List<String> toDeleteImageUrls, List<String> toDeleteVideoUrls) {
+
+        if(toDeleteAttachmentUrls != null)
+            this.attachmentUrls.removeAll(toDeleteAttachmentUrls);
+        if(toDeleteImageUrls != null)
+            this.imageUrls.removeAll(toDeleteImageUrls);
+        if(toDeleteVideoUrls != null)
+            this.videoUrls.removeAll(toDeleteVideoUrls);
+    }
 }

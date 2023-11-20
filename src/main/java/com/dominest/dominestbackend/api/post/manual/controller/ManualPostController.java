@@ -3,6 +3,7 @@ package com.dominest.dominestbackend.api.post.manual.controller;
 import com.dominest.dominestbackend.api.common.RspTemplate;
 import com.dominest.dominestbackend.api.post.manual.dto.CreateManualPostDto;
 import com.dominest.dominestbackend.api.post.manual.dto.ManualPostListDto;
+import com.dominest.dominestbackend.api.post.manual.dto.UpdateManualPostDto;
 import com.dominest.dominestbackend.domain.post.component.category.Category;
 import com.dominest.dominestbackend.domain.post.component.category.component.Type;
 import com.dominest.dominestbackend.domain.post.component.category.service.CategoryService;
@@ -60,6 +61,7 @@ public class ManualPostController {
 
     }
 
+    //게시글 삭제
     @DeleteMapping("/posts/manual/{manualPostId}")
     public ResponseEntity<RspTemplate<Void>> handleDeleteManualPost(
             @PathVariable Long manualPostId
@@ -67,6 +69,17 @@ public class ManualPostController {
         long deletedPostId = manualPostService.delete(manualPostId);
 
         RspTemplate<Void> rspTemplate = new RspTemplate<>(HttpStatus.OK, deletedPostId + "번 게시글 삭제");
+        return ResponseEntity.ok(rspTemplate);
+    }
+
+    //게시글 수정
+    @PatchMapping("/posts/manual/{manualPostId}")
+    public ResponseEntity<RspTemplate<Void>> handleUpdateManualPost(
+            @PathVariable Long manualPostId, @Valid UpdateManualPostDto.Req reqDto
+    ) {
+        long updatedPostId = manualPostService.update(manualPostId, reqDto);
+
+        RspTemplate<Void> rspTemplate = new RspTemplate<>(HttpStatus.OK, updatedPostId + "번 게시글 수정");
         return ResponseEntity.ok(rspTemplate);
     }
 }
