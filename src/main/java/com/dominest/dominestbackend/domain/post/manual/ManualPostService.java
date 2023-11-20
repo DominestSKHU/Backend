@@ -38,17 +38,20 @@ public class ManualPostService {
                 category(category).
                 htmlContent(reqDto.getHtmlContent()).
                 build();
-        saveFile(reqDto.getAttachFiles(), reqDto.getImageFiles(), reqDto.getVideoFIles(), manualPost);
 
-        return manualPostRepository.save(manualPost).getId();
+        Long manualPostId = manualPostRepository.save(manualPost).getId();
+        saveFile(reqDto.getAttachFiles(), reqDto.getImageFiles(), reqDto.getVideoFIles(), manualPost, manualPostId);
+
+        return manualPostId;
     }
 
     public void saveFile(List<MultipartFile>attachFiles, List<MultipartFile> imageFiles,
-                               List<MultipartFile> videoFiles, ManualPost manualPost) {
+                               List<MultipartFile> videoFiles, ManualPost manualPost, Long manualPostId) {
 
-        List<String> savedAttachUrls = fileService.save(FileService.FilePrefix.MANUAL_ATTACH_TYPE, attachFiles);
-        List<String> savedImgUrls = fileService.save(FileService.FilePrefix.MANUAL_IMAGE_TYPE, imageFiles);
-        List<String> savedVideoUrls = fileService.save(FileService.FilePrefix.MANUAL_VIDEO_TYPE, videoFiles);
+        String subPath = manualPostId+"/";
+        List<String> savedAttachUrls = fileService.save(FileService.FilePrefix.MANUAL_ATTACH_TYPE, subPath, attachFiles);
+        List<String> savedImgUrls = fileService.save(FileService.FilePrefix.MANUAL_IMAGE_TYPE, subPath, imageFiles);
+        List<String> savedVideoUrls = fileService.save(FileService.FilePrefix.MANUAL_VIDEO_TYPE, subPath, videoFiles);
         manualPost.setUrls(savedAttachUrls, savedImgUrls, savedVideoUrls);
     }
 

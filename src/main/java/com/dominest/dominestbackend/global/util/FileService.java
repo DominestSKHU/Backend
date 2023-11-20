@@ -62,6 +62,42 @@ public class FileService {
         return storedFileName;
     }
 
+    //일단은 원래 함수를 보존하기 위해서 코드 구조가 매우 유사하지만 코드를 따로 만들었음.
+    public List<String> save(FilePrefix prefix, String subPath, List<MultipartFile> multipartFiles){
+        List<String> storedFilePaths = new ArrayList<>();
+        if(multipartFiles == null ) return storedFilePaths;
+        for (MultipartFile multipartFile : multipartFiles) {
+            String storedFilePath = save(prefix, subPath, multipartFile);
+            if (storedFilePath == null) {
+                log.warn("save() 메서드 null 반환, 파일이 비어있을 수 있음.");
+                continue;
+            }
+            storedFilePaths.add(storedFilePath);
+        }
+        // 저장한 파일의 경로 리스트를 반환한다.
+        return storedFilePaths;
+    }
+
+    /**@return "저장된 파일명 UUID" + ".확장자". */
+    public String save(FilePrefix prefix, String subPath, MultipartFile multipartFile){
+        // empty Check. type=file 이며 name이 일치한다면, 본문이 비어있어도 MultiPartFile 객체가 생성된다.
+        if (multipartFile.isEmpty()) {
+            return null;
+        }
+        String originalFileName = multipartFile.getOriginalFilename();
+        Path storedFilePath = Paths.get(fileUploadPath + prefix.getPrefix() + subPath);
+
+        try {
+            // transferTo()는 내부적으로 알아서 is, os close를 해준다.
+            multipartFile.transferTo(storedFilePath);
+        } catch (IOException e) {
+            log.error("IOEXCEPTION 발생: originalFile: {}, storedFilePath: {}", originalFileName, storedFilePath.toString());
+            throw new FileIOException(ErrorCode.FILE_CANNOT_BE_STORED, e);
+        }
+
+        return originalFileName;
+    }
+
     private String createStoredFilePath(String originalFileName) {
         String uuid = UUID.randomUUID().toString();
         String ext = extractExt(originalFileName);
