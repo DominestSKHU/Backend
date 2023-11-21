@@ -76,10 +76,13 @@ public class ManualPostService {
         return manualPostRepository.findAllByCategory(categoryId, pageable);
     }
 
-    private ManualPost getById(Long manualPostId) {
+    public ManualPost getById(Long manualPostId) {
         return EntityUtil.mustNotNull(manualPostRepository.findById(manualPostId), ErrorCode.POST_NOT_FOUND);
     }
 
+    public ManualPost getByIdIncludeAllColumn(Long manualPostId) {
+        return EntityUtil.mustNotNull(manualPostRepository.findManualPostIncludeAllColumn(manualPostId), ErrorCode.POST_NOT_FOUND);
+    }
     @Transactional
     public long delete(Long manualPostId) {
         ManualPost post = getById(manualPostId);

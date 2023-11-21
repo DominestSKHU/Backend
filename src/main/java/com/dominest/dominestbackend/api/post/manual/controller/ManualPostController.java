@@ -3,6 +3,7 @@ package com.dominest.dominestbackend.api.post.manual.controller;
 import com.dominest.dominestbackend.api.common.RspTemplate;
 import com.dominest.dominestbackend.api.post.manual.dto.CreateManualPostDto;
 import com.dominest.dominestbackend.api.post.manual.dto.ManualPostListDto;
+import com.dominest.dominestbackend.api.post.manual.dto.ReadManualDto;
 import com.dominest.dominestbackend.api.post.manual.dto.UpdateManualPostDto;
 import com.dominest.dominestbackend.domain.post.component.category.Category;
 import com.dominest.dominestbackend.domain.post.component.category.component.Type;
@@ -45,7 +46,7 @@ public class ManualPostController {
 
     //게시글 목록 조회
     @GetMapping("/categories/{categoryId}/posts/manual")
-    public RspTemplate<ManualPostListDto.Res> handleGetManual(
+    public RspTemplate<ManualPostListDto.Res> handleGetManualPostList(
             @PathVariable Long categoryId, @RequestParam(defaultValue = "1") int page) {
         final int MANUAL_TYPE_PAGE_SIZE = 20;
         Sort sort = Sort.by(Sort.Direction.DESC, "id");
@@ -58,7 +59,6 @@ public class ManualPostController {
         return new RspTemplate<>(HttpStatus.OK
                 , "페이지 게시글 목록 조회 - " + resDto.getPage().getCurrentPage() + "페이지"
                 ,resDto);
-
     }
 
     //게시글 삭제
@@ -81,5 +81,20 @@ public class ManualPostController {
 
         RspTemplate<Void> rspTemplate = new RspTemplate<>(HttpStatus.OK, updatedPostId + "번 게시글 수정");
         return ResponseEntity.ok(rspTemplate);
+    }
+
+    //게시글 읽기
+    //categoryId와 manualId가 맞지 않는 경우에 보안 조치는 굳이 안해도 될 것 같아서 생략
+    @GetMapping("/categories/{categoryId}/posts/manual/{manualId}")
+    public RspTemplate<ReadManualDto.Res> handleManualPost(
+            @PathVariable Long categoryId, @PathVariable Long manualId, @RequestParam(defaultValue = "1") int page) {
+
+        ManualPost post = manualPostService.getByIdIncludeAllColumn(manualId);
+
+        ReadManualDto.Res resDto = ReadManualDto.Res.from(post, page);
+        return new RspTemplate<>(HttpStatus.OK
+                , "manual 게시글 조회 - " + post.getId() + "번 게시글"
+                ,resDto);
+
     }
 }

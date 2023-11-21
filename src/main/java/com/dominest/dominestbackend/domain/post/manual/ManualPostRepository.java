@@ -12,5 +12,12 @@ public interface ManualPostRepository extends JpaRepository<ManualPost, Long> {
             " WHERE m.category.id = :categoryId "
             , countQuery = "SELECT count(*) FROM ManualPost m WHERE m.category.id = :categoryId")
     Page<ManualPost> findAllByCategory(@Param("categoryId") Long categoryId, Pageable pageable);
+
+   // @EntityGraph(attributePaths = {"writer", "attachmentUrls", "imageUrls", "videoUrls"})
+   // @Query(value = "SELECT m FROM ManualPost m")
+   // ManualPost findManualPostIncludeAllColumn(long manualId);
+
+     @Query(value = "SELECT m, m.writer FROM ManualPost m")
+     ManualPost findManualPostIncludeAllColumn(long manualId);
     void deleteByCategoryId(Long categoryId);
 }
