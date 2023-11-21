@@ -152,9 +152,9 @@ public class ExcelUtil {
                 String assignedRoom = room != null ? room.getAssignedRoom() : "";
 
                 row.createCell(0).setCellValue(assignedRoom);
-                row.createCell(1).setCellValue(residentInfo.getName());
-                row.createCell(2).setCellValue(residentInfo.getPhoneNo());
-                row.createCell(3).setCellValue(residentInfo.getStudentId());
+                row.createCell(1).setCellValue(residentInfo == null ? "" : residentInfo.getName());
+                row.createCell(2).setCellValue(residentInfo == null ? "" : residentInfo.getPhoneNo());
+                row.createCell(3).setCellValue(residentInfo == null ? "" : residentInfo.getStudentId());
                 row.createCell(4).setCellValue(checkedRoom.getPassState().getPenalty());
                 row.createCell(5).setCellValue(checkedRoom.getPassState().getValue());
             }
