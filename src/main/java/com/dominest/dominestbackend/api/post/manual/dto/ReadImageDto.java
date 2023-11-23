@@ -1,18 +1,14 @@
 package com.dominest.dominestbackend.api.post.manual.dto;
-
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotBlank;
-import java.util.List;
 import java.util.Set;
 
+
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class CreateManualPostDto {
+public class ReadImageDto {
     @AllArgsConstructor
     @Getter
     public static class Req {

@@ -5,7 +5,7 @@ import com.dominest.dominestbackend.domain.post.manual.ManualPost;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Set;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ReadManualDto {
@@ -21,7 +21,7 @@ public class ReadManualDto {
         public static Res from(ManualPost manualPost, int page){
             ManualPostDto post = ManualPostDto.from(manualPost);
             Long categoryId = manualPost.getCategory().getId();
-            String categoryLink = MANUAL_POST_LIST_URL_PREFIX + categoryId + "/" +
+            String categoryLink = MANUAL_POST_LIST_URL_PREFIX + categoryId +
                     MANUAL_POST_LIST_URL_SUFFIX;
             return new Res(post, categoryLink, page);
         }
@@ -40,9 +40,9 @@ public class ReadManualDto {
             LocalDateTime createTime;
 
             AuditLog auditLog;
-            //List<String> attachmentUrls;
-            //List<String> imageUrls;
-            //List<String> videoUrls;
+            Set<String> attachmentUrls;
+            Set<String> imageUrls;
+            Set<String> videoUrls;
 
             static ManualPostDto from(ManualPost post){
                 return ReadManualDto.Res.ManualPostDto.builder()
@@ -52,9 +52,9 @@ public class ReadManualDto {
                         .htmlContent(post.getHtmlContent())
                         .createTime(post.getCreateTime())
                         .auditLog(AuditLog.from(post))
-                      //  .attachmentUrls(post.getAttachmentUrls())
-                      //  .imageUrls(post.getImageUrls())
-                      //  .videoUrls(post.getVideoUrls())
+                        .attachmentUrls(post.getAttachmentUrls())
+                        .imageUrls(post.getImageUrls())
+                        .videoUrls(post.getVideoUrls())
                         .build();
             }
         }

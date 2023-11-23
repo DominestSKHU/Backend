@@ -7,6 +7,7 @@ import com.dominest.dominestbackend.domain.user.User;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -19,13 +20,13 @@ public class ManualPost extends Post {
     private boolean isModified;
 
     @ElementCollection(fetch = FetchType.LAZY)
-    private List<String> attachmentUrls;
+    private Set<String> attachmentUrls;
 
     @ElementCollection(fetch = FetchType.LAZY)
-    private List<String> imageUrls;
+    private Set<String> imageUrls;
 
     @ElementCollection(fetch = FetchType.LAZY)
-    private List<String> videoUrls;
+    private Set<String> videoUrls;
 
     @Builder
     private ManualPost(String title, User writer, Category category, String htmlContent) {
@@ -41,26 +42,26 @@ public class ManualPost extends Post {
         this.isModified = isModified;
     }
 
-    public void setAttachmentNames(List<String> attachmentUrls, List<String> imageUrls,
-                                   List<String> videoUrls) {
+    public void setAttachmentNames(Set<String> attachmentUrls, Set<String> imageUrls,
+                                   Set<String> videoUrls) {
         this.attachmentUrls = attachmentUrls;
         this.imageUrls = imageUrls;
         this.videoUrls = videoUrls;
     }
 
-    public void addAttachmentUrls(List<String> attachmentUrls) {
+    public void addAttachmentUrls(Set<String> attachmentUrls) {
         this.attachmentUrls.addAll(attachmentUrls);
     }
 
-    public void addImageUrls(List<String> imageUrls) {
+    public void addImageUrls(Set<String> imageUrls) {
         this.imageUrls.addAll(imageUrls);
     }
 
-    public void addVideoUrls(List<String> videoUrls) {
+    public void addVideoUrls(Set<String> videoUrls) {
         this.videoUrls.addAll(videoUrls);
     }
 
-    public void deleteUrls(List<String> toDeleteAttachmentUrls, List<String> toDeleteImageUrls, List<String> toDeleteVideoUrls) {
+    public void deleteUrls(Set<String> toDeleteAttachmentUrls, Set<String> toDeleteImageUrls, Set<String> toDeleteVideoUrls) {
 
         if(toDeleteAttachmentUrls != null)
             this.attachmentUrls.removeAll(toDeleteAttachmentUrls);

@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -22,19 +23,19 @@ public class ManualPostListDto {
         CategoryDto category;
         PageInfoDto page;
 
-        List<ManualPostDto> posts;
+        Set<ManualPostDto> posts;
 
         public static Res from(Page<ManualPost> postPage, Category category){
             CategoryDto categoryDto = CategoryDto.from(category);
             PageInfoDto pageInfoDto = PageInfoDto.from(postPage);
 
-            List<ManualPostDto> posts
+            Set<ManualPostDto> posts
                     = ManualPostDto.from(postPage);
 
             return new Res(pageInfoDto, posts, categoryDto);
         }
 
-        Res(PageInfoDto page, List<ManualPostDto> posts, CategoryDto category) {
+        Res(PageInfoDto page, Set<ManualPostDto> posts, CategoryDto category) {
             this.page = page;
             this.posts = posts;
             this.category = category;
@@ -61,10 +62,10 @@ public class ManualPostListDto {
                         .build();
             }
 
-            static List<ManualPostDto> from(Page<ManualPost> posts){
+            static Set<ManualPostDto> from(Page<ManualPost> posts){
                 return posts.stream()
                         .map(ManualPostDto::from)
-                        .collect(Collectors.toList());
+                        .collect(Collectors.toSet());
             }
         }
     }

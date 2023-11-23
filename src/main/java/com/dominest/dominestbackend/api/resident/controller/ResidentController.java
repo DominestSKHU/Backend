@@ -161,20 +161,3 @@ public class ResidentController {
                 , resDto);
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

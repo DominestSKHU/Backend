@@ -17,8 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static com.dominest.dominestbackend.global.util.FileService.FilePrefix.*;
 
@@ -51,18 +51,18 @@ public class ManualPostService {
         return manualPostId;
     }
 
-    private void saveFile(List<MultipartFile>attachFiles, List<MultipartFile> imageFiles,
-                               List<MultipartFile> videoFiles, ManualPost manualPost, Long manualPostId) {
+    private void saveFile(Set<MultipartFile>attachFiles, Set<MultipartFile> imageFiles,
+                          Set<MultipartFile> videoFiles, ManualPost manualPost, Long manualPostId) {
 
         String subPath = filePathPrefix+manualPostId+filePathSuffix;
-        List<String> savedAttachUrls = fileService.save(FileService.FilePrefix.ATTACH_TYPE, subPath, attachFiles);
-        List<String> savedImgUrls = fileService.save(FileService.FilePrefix.IMAGE_TYPE, subPath, imageFiles);
-        List<String> savedVideoUrls = fileService.save(FileService.FilePrefix.VIDEO_TYPE, subPath, videoFiles);
+        Set<String> savedAttachUrls = fileService.save(FileService.FilePrefix.ATTACH_TYPE, subPath, attachFiles);
+        Set<String> savedImgUrls = fileService.save(FileService.FilePrefix.IMAGE_TYPE, subPath, imageFiles);
+        Set<String> savedVideoUrls = fileService.save(FileService.FilePrefix.VIDEO_TYPE, subPath, videoFiles);
         manualPost.setAttachmentNames(savedAttachUrls, savedImgUrls, savedVideoUrls);
     }
 
-    private void deleteFile(List<String> toDeleteAttachFileUrls, List<String> toDeleteImageFileUrls,
-                            List<String> toDeleteVideoFileUrls) {
+    private void deleteFile(Set<String> toDeleteAttachFileUrls, Set<String> toDeleteImageFileUrls,
+                            Set<String> toDeleteVideoFileUrls) {
         if(toDeleteImageFileUrls!= null)
             toDeleteImageFileUrls.forEach(fileService::deleteFile);
         if(toDeleteVideoFileUrls != null)
@@ -107,28 +107,28 @@ public class ManualPostService {
 
         Optional.ofNullable(reqDto.getAttachFiles())
                 .ifPresent(attachFiles -> {
-                    List<String> savedAttachUrls = fileService.save(ATTACH_TYPE, subPath, attachFiles);
+                    Set<String> savedAttachUrls = fileService.save(ATTACH_TYPE, subPath, attachFiles);
                     manualPost.addAttachmentUrls(savedAttachUrls);
                 });
 
         Optional.ofNullable(reqDto.getImageFiles())
                 .ifPresent(imageFiles -> {
-                    List<String> savedImageUrls = fileService.save(IMAGE_TYPE, subPath, imageFiles);
+                    Set<String> savedImageUrls = fileService.save(IMAGE_TYPE, subPath, imageFiles);
                     manualPost.addImageUrls(savedImageUrls);
                 });
 
         Optional.ofNullable(reqDto.getVideoFiles())
                 .ifPresent(videoFiles -> {
-                    List<String> savedVideoUrls = fileService.save(VIDEO_TYPE, subPath, videoFiles);
+                    Set<String> savedVideoUrls = fileService.save(VIDEO_TYPE, subPath, videoFiles);
                     manualPost.addVideoUrls(savedVideoUrls);
                 });
 
         //수정으로 인해 필요 없어진 파일들 삭제
-        List<String> toDeleteAttachmentUrls = reqDto.getToDeleteAttachUrls();
-        List<String> toDeleteImageUrls = reqDto.getToDeleteImageUrls();
-        List<String> toDeleteVideoUrls = reqDto.getToDeleteVideoUrls();
+        Set<String> toDeleteAttachmentUrls = reqDto.getToDeleteAttachUrls();
+        Set<String> toDeleteImageUrls = reqDto.getToDeleteImageUrls();
+        Set<String> toDeleteVideoUrls = reqDto.getToDeleteVideoUrls();
 
-        deleteFile(toDeleteAttachmentUrls , toDeleteImageUrls, toDeleteVideoUrls);
+        deleteFile(toDeleteAttachmentUrls, toDeleteImageUrls, toDeleteVideoUrls);
         manualPost.deleteUrls(toDeleteAttachmentUrls , toDeleteImageUrls, toDeleteVideoUrls);
 
         return manualPostRepository.save(manualPost).getId();

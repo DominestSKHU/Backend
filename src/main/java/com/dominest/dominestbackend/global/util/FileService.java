@@ -17,9 +17,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -66,8 +64,8 @@ public class FileService {
     }
 
     //일단은 원래 함수를 보존하기 위해서 코드 구조가 매우 유사하지만 코드를 따로 만들었음.
-    public List<String> save(FilePrefix prefix, String subPath, List<MultipartFile> multipartFiles){
-        List<String> storedFilePaths = new ArrayList<>();
+    public Set<String> save(FilePrefix prefix, String subPath, Set<MultipartFile> multipartFiles){
+        Set<String> storedFilePaths = new HashSet<>();
         if(multipartFiles == null ) return storedFilePaths;
         for (MultipartFile multipartFile : multipartFiles) {
             String storedFilePath = save(prefix, subPath, multipartFile);
@@ -141,6 +139,16 @@ public class FileService {
         }
     }
 
+    public byte[] getByteArr(String filePath) {
+        try  {
+            Path path = Paths.get(fileUploadPath + filePath);
+            return Files.readAllBytes(path);
+        } catch (IOException e) {
+            log.error("IOEXCEPTION 발생: filePath: {}", filePath);
+            throw new FileIOException(ErrorCode.FILE_CANNOT_BE_READ, e);
+        }
+    }
+
     public void deleteFile(FilePrefix filePrefix, String fileName) {
         deleteFile(filePrefix.getPrefix()+fileName);
         /*String filePathToDelete = fileUploadPath + filePrefix.getPrefix() + fileName;
@@ -173,7 +181,7 @@ public class FileService {
         }
     }
 
-    public void deleteFile(FilePrefix filePrefix, List<String> fileNames) {
+    public void deleteFile(FilePrefix filePrefix, Collection<String> fileNames) {
         fileNames.forEach(fileName -> deleteFile(filePrefix, fileName));
     }
 

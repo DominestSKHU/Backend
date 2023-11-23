@@ -8,6 +8,7 @@ import org.hibernate.validator.constraints.Length;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Set;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UpdateManualPostDto {
@@ -22,13 +23,13 @@ public class UpdateManualPostDto {
         String htmlContent = ""; // html형식의 게시글 내용
 
         //첨부파일
-        List<MultipartFile> imageFiles;
-        List<MultipartFile> videoFiles;
-        List<MultipartFile> attachFiles;
+        Set<MultipartFile> imageFiles;
+        Set<MultipartFile> videoFiles;
+        Set<MultipartFile> attachFiles;
 
         //삭제될 파일 목록
-        List<String> toDeleteImageUrls;
-        List<String> toDeleteVideoUrls;
-        List<String> toDeleteAttachUrls;
+        Set<String> toDeleteImageUrls;
+        Set<String> toDeleteVideoUrls;
+        Set<String> toDeleteAttachUrls;
     }
 }

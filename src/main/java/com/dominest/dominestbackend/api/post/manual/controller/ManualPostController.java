@@ -10,6 +10,9 @@ import com.dominest.dominestbackend.domain.post.component.category.component.Typ
 import com.dominest.dominestbackend.domain.post.component.category.service.CategoryService;
 import com.dominest.dominestbackend.domain.post.manual.ManualPost;
 import com.dominest.dominestbackend.domain.post.manual.ManualPostService;
+import com.dominest.dominestbackend.global.exception.ErrorCode;
+import com.dominest.dominestbackend.global.exception.exceptions.file.FileIOException;
+import com.dominest.dominestbackend.global.util.FileService;
 import com.dominest.dominestbackend.global.util.PageableUtil;
 import com.dominest.dominestbackend.global.util.PrincipalUtil;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +23,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.security.Principal;
 
 @RequiredArgsConstructor
@@ -28,6 +33,7 @@ import java.security.Principal;
 public class ManualPostController {
     private final ManualPostService manualPostService;
     private final CategoryService categoryService;
+    private final FileService fileService;
 
     //게시글 작성
     @PostMapping("/categories/{categoryId}/posts/manual")
@@ -87,7 +93,7 @@ public class ManualPostController {
     //categoryId와 manualId가 맞지 않는 경우에 보안 조치는 굳이 안해도 될 것 같아서 생략
     @GetMapping("/categories/{categoryId}/posts/manual/{manualId}")
     public RspTemplate<ReadManualDto.Res> handleManualPost(
-            @PathVariable Long categoryId, @PathVariable Long manualId, @RequestParam(defaultValue = "1") int page) {
+            @PathVariable Long manualId, @RequestParam(defaultValue = "1") int page) {
 
         ManualPost post = manualPostService.getByIdIncludeAllColumn(manualId);
 
@@ -96,5 +102,28 @@ public class ManualPostController {
                 , "manual 게시글 조회 - " + post.getId() + "번 게시글"
                 ,resDto);
 
+    }
+
+    //첨부물 조회 부분은 controller을 따로 빼서 처리하는 것은 어떨까...
+    //아래 내용 전부 수정 예정(복붙해온거임)
+    @GetMapping("/posts/manual/image")
+    public void getImage(HttpServletResponse response, @RequestParam(required = true) String filePath) {
+        response.setContentType("image/*");
+        getAnyFile(response, filePath);
+    }
+
+    @GetMapping("posts/manual/file")
+    public void getFile(HttpServletResponse response, @RequestParam(required = true) String filePath) {
+        response.setContentType("file/unknown");
+        getAnyFile(response, filePath);
+    }
+
+    public void getAnyFile(HttpServletResponse response, String filePath) {
+        byte[] bytes = fileService.getByteArr(filePath);
+        try {
+            response.getOutputStream().write(bytes);
+        } catch (IOException e) {
+            throw new FileIOException(ErrorCode.FILE_CANNOT_BE_SENT, e);
+        }
     }
 }
