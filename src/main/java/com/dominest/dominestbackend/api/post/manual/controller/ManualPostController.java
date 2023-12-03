@@ -15,18 +15,23 @@ import com.dominest.dominestbackend.global.exception.exceptions.file.FileIOExcep
 import com.dominest.dominestbackend.global.util.FileService;
 import com.dominest.dominestbackend.global.util.PageableUtil;
 import com.dominest.dominestbackend.global.util.PrincipalUtil;
+import com.dominest.dominestbackend.global.util.VideoService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.support.ResourceRegion;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.MediaType;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.security.Principal;
+import java.util.Optional;
+
+
 
 @RequiredArgsConstructor
 @RestController
@@ -34,6 +39,7 @@ public class ManualPostController {
     private final ManualPostService manualPostService;
     private final CategoryService categoryService;
     private final FileService fileService;
+    private final VideoService videoService;
 
     //게시글 작성
     @PostMapping("/categories/{categoryId}/posts/manual")
@@ -116,6 +122,18 @@ public class ManualPostController {
     public void getFile(HttpServletResponse response, @RequestParam(required = true) String filePath) {
         response.setContentType("file/unknown");
         getAnyFile(response, filePath);
+    }
+
+    @GetMapping("posts/manual/video")
+    public  RspTemplate<ResourceRegion> getVideo(HttpServletResponse response, @RequestHeader HttpHeaders headers, @RequestParam(required = true) String filePath) {
+        Optional<HttpRange> optional = headers.getRange().stream().findFirst();
+        ResourceRegion resourceRegion = videoService.getVideoResource(filePath, optional);
+        MediaType mediaType = videoService.getMediaType();
+        response.setContentType(mediaType.getType());
+
+        return new RspTemplate<>(HttpStatus.PARTIAL_CONTENT
+                , "영상 부분 전송"
+                ,resourceRegion);
     }
 
     public void getAnyFile(HttpServletResponse response, String filePath) {
