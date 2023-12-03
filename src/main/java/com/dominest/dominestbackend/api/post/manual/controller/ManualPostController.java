@@ -111,7 +111,6 @@ public class ManualPostController {
     }
 
     //첨부물 조회 부분은 controller을 따로 빼서 처리하는 것은 어떨까...
-    //아래 내용 전부 수정 예정(복붙해온거임)
     @GetMapping("/posts/manual/image")
     public void getImage(HttpServletResponse response, @RequestParam(required = true) String filePath) {
         response.setContentType("image/*");
@@ -120,7 +119,7 @@ public class ManualPostController {
 
     @GetMapping("posts/manual/file")
     public void getFile(HttpServletResponse response, @RequestParam(required = true) String filePath) {
-        response.setContentType("file/unknown");
+        response.setContentType("application/download");
         getAnyFile(response, filePath);
     }
 
