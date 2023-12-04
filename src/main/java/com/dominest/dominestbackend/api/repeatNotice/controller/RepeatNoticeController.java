@@ -6,10 +6,9 @@ import com.dominest.dominestbackend.api.repeatNotice.response.RepeatNoticeSaveRe
 import com.dominest.dominestbackend.domain.repeatNotice.service.RepeatNoticeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @RestController
@@ -28,9 +27,11 @@ public class RepeatNoticeController {
 
 
     @GetMapping("/repeat-notice")
-    public ResponseEntity<List<String>> getDayNoticeContent(@RequestParam String createBy, @RequestParam String requestTime) {
-        LocalDateTime dateTime = LocalDateTime.parse(requestTime);
-        List<String> contents = repeatNoticeService.getDayNoticeContent(createBy, dateTime);
-        return ResponseEntity.ok(contents);
+    public RspTemplate<List<String>> getDayNoticeContent(@RequestParam int dayOfWeek, @RequestParam String time) {
+        LocalTime requestTime = LocalTime.parse(time);
+        List<String> contents = repeatNoticeService.getDayNoticeContent(dayOfWeek, requestTime);
+
+        return new RspTemplate<>(HttpStatus.OK, "알림을 성공적으로 불러왔습니다.", contents);
     }
+
 }

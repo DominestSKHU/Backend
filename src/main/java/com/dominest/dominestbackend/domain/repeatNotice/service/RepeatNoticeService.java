@@ -57,28 +57,46 @@ public class RepeatNoticeService {
         return responses;
     }
 
-
-    // 알림 보내기
-    public List<String> getDayNoticeContent(String createBy, LocalDateTime requestTime) {
+    private String convertDayOfWeek(int dayInNumber) {
+        switch(dayInNumber) {
+            case 1:
+                return "월요일";
+            case 2:
+                return "화요일";
+            case 3:
+                return "수요일";
+            case 4:
+                return "목요일";
+            case 5:
+                return "금요일";
+            case 6:
+                return "토요일";
+            case 7:
+                return "일요일";
+            default:
+                throw new IllegalArgumentException("요일 정보가 잘못되었습니다. 1(월요일)에서 7(일요일) 사이의 숫자를 입력해주세요.");
+        }
+    }
+    public List<String> getDayNoticeContent(int requestDayOfWeek, LocalTime requestTime) {
         List<String> contents = new ArrayList<>();
 
         // 유저가 생성한 알림 가져오기
-        List<RepeatNotice> allDayNotices = repeatNoticeRepository.findByCreatedBy(createBy);
+        List<RepeatNotice> allDayNotices = repeatNoticeRepository.findAll();
 
-        // 요일 정보 가져오기 (1 = Monday, 7 = Sunday)
-        int currentDayOfWeek = requestTime.getDayOfWeek().getValue();
+        // 요일 정보 가져오기 (1 = 월요일, 7 = 일요일)
+        String currentDay = convertDayOfWeek(requestDayOfWeek);
 
         for (RepeatNotice repeatNotice : allDayNotices) {
-            // 알림이 설정된 요일 정보 가져오기
-            int noticeDayOfWeek = DayOfWeek.valueOf(repeatNotice.getDay().toUpperCase()).getValue();
+
+            String noticeDay = repeatNotice.getDay(); // 알림이 설정된 요일
 
             // 요청한 시간이 알림을 보내야 하는 요일이라면
-            if (noticeDayOfWeek == currentDayOfWeek) {
+            if (noticeDay.equals(currentDay)) {
                 LocalTime noticeTime = repeatNotice.getTime(); // 알림의 시간 설정
 
                 // 요청 시간과 알림 시간이 같거나 알림 시간에서 X분 전의 시간을 뺐을 때 요청 시간과 같다면
-                if (requestTime.toLocalTime().minusMinutes(repeatNotice.getAlertBefore()).equals(noticeTime)
-                        || requestTime.toLocalTime().equals(noticeTime)) {
+                if (noticeTime.minusMinutes(repeatNotice.getAlertBefore()).equals(requestTime)
+                        || noticeTime.equals(requestTime)) {
                     contents.add(repeatNotice.getContent());
                 }
             }
@@ -86,4 +104,6 @@ public class RepeatNoticeService {
 
         return contents;
     }
+
+
 }
