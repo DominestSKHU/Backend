@@ -24,24 +24,27 @@ public class VideoService {
     public ResourceRegion getVideoResource(String filePath, Optional<HttpRange> httpRangeoptional) {
         String fullFilePath = fileUploadPath + filePath;
         ResourceRegion resourceRegion;
+        long videoContentLength;
+        final long chunkSize = 1000000L;
+
         try {
-            final long chunkSize = 1000000L;
             video = new UrlResource(fullFilePath);
-            long videoContendLength = video.contentLength();
-            if (httpRangeoptional.isPresent()) {
-                HttpRange httpRange = httpRangeoptional.get();
-                long start = httpRange.getRangeStart(videoContendLength);
-                long end = httpRange.getRangeEnd(videoContendLength);
-                long length = Long.min(chunkSize, end - start + 1);
-                resourceRegion = new ResourceRegion(video, start, length);
-            } else {
-                long length = Long.min(chunkSize, videoContendLength);
-                resourceRegion = new ResourceRegion(video, 0, length);
-            }
-            return resourceRegion;
+            videoContentLength = video.contentLength();
         } catch (IOException e) {
             throw new FileIOException(ErrorCode.FILE_CANNOT_BE_READ, e);
         }
+
+        if (httpRangeoptional.isPresent()) {
+            HttpRange httpRange = httpRangeoptional.get();
+            long start = httpRange.getRangeStart(videoContentLength);
+            long end = httpRange.getRangeEnd(videoContentLength);
+            long length = Long.min(chunkSize, end - start + 1);
+            resourceRegion = new ResourceRegion(video, start, length);
+        } else {
+            long length = Long.min(chunkSize, videoContentLength);
+            resourceRegion = new ResourceRegion(video, 0, length);
+        }
+        return resourceRegion;
     }
 
     public MediaType getMediaType() {
