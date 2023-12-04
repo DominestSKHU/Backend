@@ -7,7 +7,7 @@ import java.time.LocalDate;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class CalendarSaveRequest {
+public class CalenderSaveRequest {
     private LocalDate date; // 날짜
 
     private String content; // 내용 작성
