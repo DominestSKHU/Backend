@@ -76,7 +76,7 @@ public class CategoryController {
         try {
             updateCount = categoryService.update(reqDto);
         } catch (DataIntegrityViolationException e) {
-            throw new BusinessException("카테고리 수정 실패, name 중복 혹은 값의 누락을 확인해주세요", HttpStatus.BAD_REQUEST);
+            throw new BusinessException("카테고리 수정 실패, name 중복 혹은 값의 누락을 확인해주세요", HttpStatus.BAD_REQUEST, e);
         }
 
         return new RspTemplate<>(HttpStatus.OK

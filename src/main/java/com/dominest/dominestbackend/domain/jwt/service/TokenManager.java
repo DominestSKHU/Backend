@@ -107,12 +107,8 @@ public class TokenManager {
                     .setSigningKey(key).build()
                     .parseClaimsJws(token).getBody();
         } catch (JwtException e) {
-            throw new JwtAuthException(ErrorCode.NOT_VALID_TOKEN);
+            throw new JwtAuthException(ErrorCode.NOT_VALID_TOKEN, e);
         }
-    }
-
-    public String getMemberEmail(String accessToken) {
-        return getTokenClaims(accessToken).getAudience(); // aud == email
     }
 
     public boolean validateToken(String token) {

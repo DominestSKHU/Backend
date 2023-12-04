@@ -66,5 +66,6 @@ tasks.register('copySecret', Copy) {
     from './domidomi-secret' // 서브모듈 디렉토리 경로
     include "application*.yml"  // 복사할 파일들
     include "schema.sql"
+    include "domi-backup-time.bat"
     into 'src/main/resources'  // 복사 위치
 }

@@ -87,8 +87,7 @@ public class ImageTypeController {
         try {
             response.getOutputStream().write(bytes);
         } catch (IOException e) {
-            e.printStackTrace();
-            throw new FileIOException(ErrorCode.FILE_CANNOT_BE_SENT);
+            throw new FileIOException(ErrorCode.FILE_CANNOT_BE_SENT, e);
         }
     }
 

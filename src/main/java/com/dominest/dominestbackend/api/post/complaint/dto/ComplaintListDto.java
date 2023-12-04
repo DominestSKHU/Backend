@@ -68,9 +68,9 @@ public class ComplaintListDto {
         }
 
         static List<ComplaintDto> from(Page<Complaint> complaints){
-            return complaints.stream()
+            return complaints
                     .map(ComplaintDto::from)
-                    .collect(Collectors.toList());
+                    .toList();
         }
     }
 }

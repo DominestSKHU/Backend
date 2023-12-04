@@ -1,7 +1,6 @@
 package com.dominest.dominestbackend.domain.resident;
 
 import com.dominest.dominestbackend.domain.common.BaseEntity;
-import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.checkedroom.CheckedRoom;
 import com.dominest.dominestbackend.domain.resident.component.ResidenceSemester;
 import com.dominest.dominestbackend.domain.room.Room;
 import com.dominest.dominestbackend.global.util.TimeUtil;
@@ -10,8 +9,8 @@ import lombok.*;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -20,10 +19,13 @@ import java.util.List;
         // unique 제약에서 '학기' 는 기본적으로 깔고 간다.
         // 1. [학번, 전화번호, 이름] 중복제한:  똑같은 학생이 한 학기에 둘 이상 있을 순 없다.
         // 2. [방번호]가 중복되면 안된다. 학기중 하나의 방, 하나의 구역에 둘 이상이 있을 순 없다.
+        // 3. [이름] 이 학기마다 중복되면 안된다. PDF 검색관련 로직 때문에 이름+학기가 Unique해야 함.
         @UniqueConstraint(name = "unique_for_resident_info",
                                             columnNames = { "residenceSemester", "studentId", "phoneNumber", "name"})
         , @UniqueConstraint(name = "unique_for_room",
                                             columnNames = { "room_id", "residenceSemester" })
+        , @UniqueConstraint(name = "unique_for_pdf",
+                                            columnNames = { "name", "residenceSemester" })
 })
 public class Resident extends BaseEntity {
     @Id
@@ -172,6 +174,19 @@ public class Resident extends BaseEntity {
         this.socialName = resident.getSocialName();
         this.zipCode = resident.getZipCode();
         this.address = resident.getAddress();
+    }
+
+    // 이름 중복될 경우 이름 뒤에 전화번호 뒷자리를 붙인다.
+    public void changeNameWithPhoneNumber() {
+        String[] splitedNumber = phoneNumber.split("-");
+        if (splitedNumber.length != 3)
+            throw new IllegalArgumentException("전화번호 형식이 잘못되었습니다.");
+        String lastFourDigits = splitedNumber[splitedNumber.length - 1]; // 마지막 4자리 숫자
+        this.name = name + "(" + lastFourDigits + ")";
+    }
+
+    public String generatePdfFileNameToStore() {
+        return this.name + "-" + UUID.randomUUID() + ".pdf";
     }
 
 }
