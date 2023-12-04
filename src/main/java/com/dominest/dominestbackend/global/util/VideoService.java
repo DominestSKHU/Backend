@@ -21,15 +21,15 @@ public class VideoService {
 
     private UrlResource video = null;
 
-    public ResourceRegion getVideoResource(String filePath, Optional<HttpRange> optional) {
+    public ResourceRegion getVideoResource(String filePath, Optional<HttpRange> httpRangeoptional) {
         String fullFilePath = fileUploadPath + filePath;
         ResourceRegion resourceRegion;
         try {
             final long chunkSize = 1000000L;
             video = new UrlResource(fullFilePath);
             long videoContendLength = video.contentLength();
-            if (optional.isPresent()) {
-                HttpRange httpRange = optional.get();
+            if (httpRangeoptional.isPresent()) {
+                HttpRange httpRange = httpRangeoptional.get();
                 long start = httpRange.getRangeStart(videoContendLength);
                 long end = httpRange.getRangeEnd(videoContendLength);
                 long length = Long.min(chunkSize, end - start + 1);

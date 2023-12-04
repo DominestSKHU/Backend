@@ -125,8 +125,8 @@ public class ManualPostController {
 
     @GetMapping("posts/manual/video")
     public  RspTemplate<ResourceRegion> getVideo(HttpServletResponse response, @RequestHeader HttpHeaders headers, @RequestParam(required = true) String filePath) {
-        Optional<HttpRange> optional = headers.getRange().stream().findFirst();
-        ResourceRegion resourceRegion = videoService.getVideoResource(filePath, optional);
+        Optional<HttpRange> httpRangeOptional = headers.getRange().stream().findFirst();
+        ResourceRegion resourceRegion = videoService.getVideoResource(filePath, httpRangeOptional);
         MediaType mediaType = videoService.getMediaType();
         response.setContentType(mediaType.getType());
 
