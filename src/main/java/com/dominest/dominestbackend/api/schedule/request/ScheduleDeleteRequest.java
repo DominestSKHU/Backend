@@ -1,5 +1,6 @@
 package com.dominest.dominestbackend.api.schedule.request;
 
+import com.dominest.dominestbackend.domain.schedule.Schedule;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,6 +9,6 @@ import lombok.NoArgsConstructor;
 @Getter
 public class ScheduleDeleteRequest {
     private String username;
-    private String dayOfWeek;
+    private Schedule.DayOfWeek dayOfWeek;
     private String timeSlot;
 }
