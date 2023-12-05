@@ -94,9 +94,8 @@ public class FileService {
         File folder = new File(storedFileFolderStr);
         try {
             //폴더가 없다면 자동 생성
-            if(!folder.exists()) {
-                folder.mkdir();
-            }
+            if(!folder.exists() && (!folder.mkdirs()))
+                    throw new FileIOException(ErrorCode.FOLDER_CANNOT_BE_CREATED, new IOException());
             // transferTo()는 내부적으로 알아서 is, os close를 해준다.
             multipartFile.transferTo(storedFilePath);
         } catch (IOException e) {
