@@ -11,6 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -25,10 +26,19 @@ public class SanitationCheckPost extends Post {
     private ResidenceSemester residenceSemester;
 
     @Builder
-    private SanitationCheckPost(String titleWithCurrentDate, User writer, Category category
+    private SanitationCheckPost(User writer, Category category
             , ResidenceSemester residenceSemester
     ) {
-        super(titleWithCurrentDate, writer, category);
+        super(createTitle(), writer, category);
         this.residenceSemester = residenceSemester;
+    }
+    // 객체의 context를 전혀 반영하지 않으므로 static
+    private static String createTitle() {
+        // 원하는 형식의 문자열로 변환
+        LocalDateTime now = LocalDateTime.now();
+        return now.getYear() +
+                "년 " +
+                now.getMonthValue() +
+                "월 방역호실점검";
     }
 }

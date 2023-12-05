@@ -5,28 +5,37 @@ import com.dominest.dominestbackend.api.post.complaint.dto.ComplaintListDto;
 import com.dominest.dominestbackend.api.post.complaint.dto.CreateComplaintDto;
 import com.dominest.dominestbackend.api.post.complaint.dto.UpdateComplaintDto;
 import com.dominest.dominestbackend.domain.post.complaint.Complaint;
+import com.dominest.dominestbackend.domain.post.complaint.ComplaintRepository;
 import com.dominest.dominestbackend.domain.post.complaint.ComplaintService;
 import com.dominest.dominestbackend.domain.post.component.category.Category;
 import com.dominest.dominestbackend.domain.post.component.category.component.Type;
 import com.dominest.dominestbackend.domain.post.component.category.service.CategoryService;
+import com.dominest.dominestbackend.global.util.ExcelUtil;
+import com.dominest.dominestbackend.global.util.FileService;
 import com.dominest.dominestbackend.global.util.PageableUtil;
 import com.dominest.dominestbackend.global.util.PrincipalUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.security.Principal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
 public class ComplaintController {
     private final ComplaintService complaintService;
     private final CategoryService categoryService;
+    private final ComplaintRepository complaintRepository;
 
     // 민원 등록
     @PostMapping("/categories/{categoryId}/posts/complaint")
@@ -83,6 +92,44 @@ public class ComplaintController {
         return new RspTemplate<>(HttpStatus.OK
                 , "(생성일자 내림차순) 페이지  목록 조회 - " + resDto.getPage().getCurrentPage() + "페이지"
                 ,resDto);
+    }
+
+    @GetMapping("/categories/{categoryId}/posts/complaint/xlsx")
+    public void handleGetComplaintsXlsx(
+            @PathVariable Long categoryId
+            , @RequestParam(required = false) Integer downloadCnt
+            , HttpServletResponse response
+    ) {
+        Category category = categoryService.validateCategoryType(categoryId, Type.COMPLAINT);
+
+        List<Complaint> complaints;
+        long complaintCnt = complaintRepository.countByCategoryId(category.getId());
+
+        String filename;
+        LocalDate now = LocalDate.now();
+        String formattedDate = now.format(DateTimeFormatter.ofPattern("yy-MM-dd"));
+        StringBuilder sb = new StringBuilder();
+        if (downloadCnt == null) {
+            complaints = complaintRepository.findAllByCategoryId(category.getId(), Sort.by(Order.desc("id")));
+            filename = sb.append(formattedDate)
+                    .append(" 민원접수내역 전체 ")
+                    .append(complaintCnt).append("건")
+                    .append(".").append(FileService.FileExt.XLSX.value)
+                    .toString();
+        } else {
+            complaints = complaintRepository.findAllByCategoryId(
+                    category.getId(),
+                    PageableUtil.of(1, downloadCnt)
+            );
+            filename = sb.append(formattedDate)
+                    .append(" 민원접수내역 최신 ")
+                    .append(downloadCnt).append("건")
+                    .append(".").append(FileService.FileExt.XLSX.value)
+                    .toString();
+        }
+        String sheetName = "민원접수내역";
+
+        ExcelUtil.createAndRespondAllDataWitehComplaint(filename, sheetName, response, complaints);
     }
 
 }
