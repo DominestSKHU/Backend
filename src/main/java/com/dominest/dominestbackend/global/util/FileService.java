@@ -17,6 +17,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Stream;
 
 @Slf4j
 @Service
@@ -182,6 +183,18 @@ public class FileService {
 
     public void deleteFile(FilePrefix filePrefix, Collection<String> fileNames) {
         fileNames.forEach(fileName -> deleteFile(filePrefix, fileName));
+    }
+
+    public void deleteFolder(String folderPath) {
+        String folderPathToDelete = fileUploadPath + folderPath;
+        Path pathToDelete = Paths.get(folderPathToDelete);
+        try (Stream<Path> pathStream = Files.walk(pathToDelete)
+                .sorted(Comparator.reverseOrder())) {
+            pathStream.map(Path::toFile)
+                    .forEach(File::delete);
+        } catch (IOException e) {
+            throw new FileIOException(ErrorCode.FOLDER_CANNOT_BE_DELETED, e);
+        }
     }
 
 

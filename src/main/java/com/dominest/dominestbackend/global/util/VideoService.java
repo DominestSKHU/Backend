@@ -33,7 +33,6 @@ public class VideoService {
         } catch (IOException e) {
             throw new FileIOException(ErrorCode.FILE_CANNOT_BE_READ, e);
         }
-
         if (httpRangeoptional.isPresent()) {
             HttpRange httpRange = httpRangeoptional.get();
             long start = httpRange.getRangeStart(videoContentLength);

@@ -87,8 +87,8 @@ public class ManualPostService {
     public long delete(Long manualPostId) {
         ManualPost post = getById(manualPostId);
         manualPostRepository.delete(post);
-        String filePath = filePathPrefix+manualPostId+filePathSuffix;
-        fileService.deleteFile(filePath);
+        String folderPath = filePathPrefix+manualPostId+filePathSuffix;
+        fileService.deleteFolder(folderPath);
         return post.getId();
     }
 
