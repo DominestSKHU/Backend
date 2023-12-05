@@ -22,7 +22,7 @@ public class VideoService {
     private UrlResource video = null;
 
     public ResourceRegion getVideoResource(String filePath, Optional<HttpRange> httpRangeoptional) {
-        String fullFilePath = fileUploadPath + filePath;
+        String fullFilePath = "file:///"+fileUploadPath + filePath;
         ResourceRegion resourceRegion;
         long videoContentLength;
         final long chunkSize = 1000000L;

@@ -124,15 +124,13 @@ public class ManualPostController {
     }
 
     @GetMapping("posts/manual/video")
-    public  RspTemplate<ResourceRegion> getVideo(HttpServletResponse response, @RequestHeader HttpHeaders headers, @RequestParam(required = true) String filePath) {
+    public ResponseEntity<ResourceRegion> getVideo(HttpServletResponse response, @RequestHeader HttpHeaders headers, @RequestParam(required = true) String filePath) {
         Optional<HttpRange> httpRangeOptional = headers.getRange().stream().findFirst();
         ResourceRegion resourceRegion = videoService.getVideoResource(filePath, httpRangeOptional);
         MediaType mediaType = videoService.getMediaType();
         response.setContentType(mediaType.getType());
 
-        return new RspTemplate<>(HttpStatus.PARTIAL_CONTENT
-                , "영상 부분 전송"
-                ,resourceRegion);
+        return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT).body(resourceRegion);
     }
 
     public void getAnyFile(HttpServletResponse response, String filePath) {
