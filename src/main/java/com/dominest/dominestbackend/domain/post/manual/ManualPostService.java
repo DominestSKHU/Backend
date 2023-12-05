@@ -46,7 +46,7 @@ public class ManualPostService {
                 build();
 
         Long manualPostId = manualPostRepository.save(manualPost).getId();
-        saveFile(reqDto.getAttachFiles(), reqDto.getImageFiles(), reqDto.getVideoFIles(), manualPost, manualPostId);
+        saveFile(reqDto.getAttachFiles(), reqDto.getImageFiles(), reqDto.getVideoFiles(), manualPost, manualPostId);
 
         return manualPostId;
     }
