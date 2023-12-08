@@ -1,10 +1,10 @@
-package com.dominest.dominestbackend.api.dateNotice.controller;
+package com.dominest.dominestbackend.api.datenotice.controller;
 
 import com.dominest.dominestbackend.api.common.RspTemplate;
-import com.dominest.dominestbackend.api.dateNotice.request.DateNoticeSaveRequest;
-import com.dominest.dominestbackend.api.dateNotice.response.DateNoticeResponse;
-import com.dominest.dominestbackend.domain.dateNotice.DateNotice;
-import com.dominest.dominestbackend.domain.dateNotice.service.DateNoticeService;
+import com.dominest.dominestbackend.api.datenotice.request.DateNoticeSaveRequest;
+import com.dominest.dominestbackend.api.datenotice.response.DateNoticeResponse;
+import com.dominest.dominestbackend.domain.datenotice.DateNotice;
+import com.dominest.dominestbackend.domain.datenotice.service.DateNoticeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;

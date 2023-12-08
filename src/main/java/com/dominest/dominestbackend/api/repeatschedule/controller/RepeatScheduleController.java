@@ -1,10 +1,10 @@
-package com.dominest.dominestbackend.api.repeatSchedule.controller;
+package com.dominest.dominestbackend.api.repeatschedule.controller;
 
 import com.dominest.dominestbackend.api.common.RspTemplate;
-import com.dominest.dominestbackend.api.repeatSchedule.request.RepeatScheduleSaveRequest;
-import com.dominest.dominestbackend.api.repeatSchedule.resopnse.AllRepeatScheduleResponse;
-import com.dominest.dominestbackend.api.repeatSchedule.resopnse.RepeatScheduleResponse;
-import com.dominest.dominestbackend.domain.repeatSchedule.service.RepeatScheduleService;
+import com.dominest.dominestbackend.api.repeatschedule.request.RepeatScheduleSaveRequest;
+import com.dominest.dominestbackend.api.repeatschedule.resopnse.AllRepeatScheduleResponse;
+import com.dominest.dominestbackend.api.repeatschedule.resopnse.RepeatScheduleResponse;
+import com.dominest.dominestbackend.domain.repeatschedule.service.RepeatScheduleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
