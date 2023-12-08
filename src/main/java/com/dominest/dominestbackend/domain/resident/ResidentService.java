@@ -6,6 +6,8 @@ import com.dominest.dominestbackend.api.resident.dto.SaveResidentDto;
 import com.dominest.dominestbackend.domain.resident.component.ResidenceSemester;
 import com.dominest.dominestbackend.domain.room.Room;
 import com.dominest.dominestbackend.domain.room.RoomService;
+import com.dominest.dominestbackend.domain.room.roomhistory.RoomHistory;
+import com.dominest.dominestbackend.domain.room.roomhistory.RoomHistoryService;
 import com.dominest.dominestbackend.global.exception.ErrorCode;
 import com.dominest.dominestbackend.global.exception.exceptions.BusinessException;
 import com.dominest.dominestbackend.global.exception.exceptions.domain.EntityNotFoundException;
@@ -31,6 +33,7 @@ public class ResidentService {
     private final ResidentRepository residentRepository;
     private final FileService fileService;
     private final RoomService roomService;
+    private final RoomHistoryService roomHistoryService;
     private final ResidentFileManager residentFileManager;
 
     /** @return 저장한 파일명 */
@@ -125,7 +128,7 @@ public class ResidentService {
                     resident.changeNameWithPhoneNumber();
                 }
             }
-
+            // save()에서 {방-학기}, {이름-학기} 등이 중복될 경우는 예외 던지고 롤백한다..
             save(resident);
             successRow++;
         }
@@ -165,6 +168,7 @@ public class ResidentService {
             throw new BusinessException("입사생 정보 변경 실패, 잘못된 입력값입니다. 데이터 누락 혹은 중복을 확인해주세요." +
                     " 지정 학기에 같은 학번을 가졌거나, 같은 방을 사용중인 입사생이 있을 수 있습니다.", HttpStatus.BAD_REQUEST, e);
         }
+        updateRoomHistory(residentToUpdate);
     }
 
     public Resident findById(Long id) {
@@ -198,7 +202,13 @@ public class ResidentService {
                             , resident.getRoom().getId(), resident.getRoom().getAssignedRoom())
                     , HttpStatus.BAD_REQUEST, e);
         }
+        updateRoomHistory(resident);
     }
+
+    private void updateRoomHistory(Resident resident) {
+        roomHistoryService.saveFrom(resident);
+    }
+
 
 }
 

@@ -10,11 +10,10 @@ import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.FloorServi
 import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.checkedroom.CheckedRoom;
 import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.checkedroom.CheckedRoomService;
 import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.checkedroom.component.ResidentInfo;
-import com.dominest.dominestbackend.domain.resident.Resident;
 import com.dominest.dominestbackend.domain.resident.ResidentRepository;
 import com.dominest.dominestbackend.domain.resident.component.ResidenceSemester;
 import com.dominest.dominestbackend.domain.room.Room;
-import com.dominest.dominestbackend.domain.room.RoomService;
+import com.dominest.dominestbackend.domain.room.RoomRepository;
 import com.dominest.dominestbackend.domain.user.User;
 import com.dominest.dominestbackend.domain.user.service.UserService;
 import com.dominest.dominestbackend.global.exception.ErrorCode;
@@ -27,8 +26,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,12 +34,12 @@ import java.util.List;
 @Transactional(readOnly = true)
 @Service
 public class SanitationCheckPostService {
+    private final RoomRepository roomRepository;
     private final SanitationCheckPostRepository sanitationCheckPostRepository;
     private final UserService userService;
     private final CategoryService categoryService;
     private final CheckedRoomService checkedRoomService;
     private final FloorService floorService;
-    private final RoomService roomService;
     private final ResidentRepository residentRepository;
     private final RecentPostService recentPostService;
 
@@ -92,7 +89,7 @@ public class SanitationCheckPostService {
         ArrayList<CheckedRoom> checkedRooms = new ArrayList<>();
         for (Floor floor : floors) {
             Integer floorNumber = floor.getFloorNumber();
-            List<Room> rooms = roomService.getByFloorNo(floorNumber);
+            List<Room> rooms = roomRepository.findByFloorNo(floorNumber);
             for (Room room : rooms) { // CheckedRoom 은 Room 만큼 생성되어야 한다.
                 ResidentInfo residentInfo = residentRepository.findByResidenceSemesterAndRoom(residenceSemester, room)
                         .map(ResidentInfo::from)
