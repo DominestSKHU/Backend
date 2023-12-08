@@ -28,7 +28,7 @@ public class DateNoticeController {
                 , "알림이 성공적으로 생성되었습니다.", dateNotice);
     }
 
-    @GetMapping("/content")
+    @GetMapping("/date-notices")
     public RspTemplate<List<String>> getNoticeContent(Principal principal,
                                                          @RequestParam("time")
                                                          @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") LocalDateTime time) {
@@ -38,7 +38,7 @@ public class DateNoticeController {
                 , "알림을 성공적으로 불러왔습니다.", content);
     }
 
-    @GetMapping("/notices")
+    @GetMapping("/date-notices/me")
     public RspTemplate<List<DateNoticeResponse>> getNoticesByUser(Principal principal) {
         List<DateNoticeResponse> noticeResponses = dateNoticeService.getDateNoticesByUser(principal);
         
@@ -46,7 +46,7 @@ public class DateNoticeController {
                 , "유저가 작성한 모든 알림을 성공적으로 불러왔습니다.", noticeResponses);
     }
 
-    @PutMapping("/change-apply/{id}")
+    @PutMapping("/date-notices/change-apply/{id}")
     public RspTemplate<Boolean> switchApply(@PathVariable Long id) {
         boolean changeApply =  dateNoticeService.switchDateApply(id);
 

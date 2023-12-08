@@ -17,7 +17,7 @@ public class RepeatScheduleController {
 
     private final RepeatScheduleService repeatScheduleService;
 
-    @PostMapping("repeat-schedule") // 반복일정 글 저장
+    @PostMapping("/repeat-schedule") // 반복일정 글 저장
     public RspTemplate<RepeatScheduleResponse> createRepeatedSchedule(@RequestBody RepeatScheduleSaveRequest request) {
         RepeatScheduleResponse createdRepeatedSchedule = repeatScheduleService.createDayNotices(request);
 
@@ -32,7 +32,7 @@ public class RepeatScheduleController {
                 , "모든 반복일정 글을 성공적으로 불러왔습니다.", allRepeatScheduleResponses);
     }
 
-    @GetMapping("/detail/{repeatScheduleId}")
+    @GetMapping("/repeat-schedule/detail/{repeatScheduleId}")
     public RspTemplate<RepeatScheduleResponse> getRepeatScheduleById(@PathVariable Long repeatScheduleId) {
         RepeatScheduleResponse repeatScheduleByIdResponse =  repeatScheduleService.getRepeatScheduleById(repeatScheduleId);
 
