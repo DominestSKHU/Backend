@@ -1,6 +1,8 @@
 package com.dominest.dominestbackend.domain.room.roomhistory;
 
 import com.dominest.dominestbackend.domain.resident.Resident;
+import com.dominest.dominestbackend.domain.resident.ResidentRepository;
+import com.dominest.dominestbackend.domain.resident.component.ResidenceSemester;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class RoomHistoryService {
     private final RoomHistoryRepository roomHistoryRepository;
+    private final ResidentRepository residentRepository;
 
     @Transactional
     public void saveFrom(Resident resident) {
@@ -23,5 +26,11 @@ public class RoomHistoryService {
                 .build();
 
         roomHistoryRepository.save(roomHistory);
+    }
+
+    @Transactional
+    public void initRoomHistory(ResidenceSemester residenceSemester) {
+        residentRepository.findAllByResidenceSemesterFetchRoom(residenceSemester)
+                .forEach(this::saveFrom);
     }
 }

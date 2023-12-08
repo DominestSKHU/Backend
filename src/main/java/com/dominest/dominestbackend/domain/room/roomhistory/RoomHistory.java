@@ -1,5 +1,6 @@
 package com.dominest.dominestbackend.domain.room.roomhistory;
 
+import com.dominest.dominestbackend.domain.common.BaseEntity;
 import com.dominest.dominestbackend.domain.room.Room;
 import com.dominest.dominestbackend.global.validation.PhoneNumber;
 import lombok.AccessLevel;
@@ -19,7 +20,7 @@ import java.time.LocalDate;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class RoomHistory {
+public class RoomHistory extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

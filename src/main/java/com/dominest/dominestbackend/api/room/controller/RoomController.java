@@ -3,6 +3,7 @@ package com.dominest.dominestbackend.api.room.controller;
 import com.dominest.dominestbackend.api.common.RspTemplate;
 import com.dominest.dominestbackend.api.room.dto.RoomHistoryListResponse;
 import com.dominest.dominestbackend.api.room.dto.RoomListResponse;
+import com.dominest.dominestbackend.domain.resident.component.ResidenceSemester;
 import com.dominest.dominestbackend.domain.room.Room;
 import com.dominest.dominestbackend.domain.room.RoomRepository;
 import com.dominest.dominestbackend.domain.room.RoomService;
@@ -54,6 +55,17 @@ public class RoomController {
                 , id + "번 방의 거주기록 조회"
                 , rspDto);
     }
+
+    // 현재 사생 데이터를 방 거주기록에 반영.
+    // 거주기록 관련 기능이 사생데이터 업로드 기능 이후에 만들어졌기 때문에 배포 후 최초 한 번은 실행해야 한다.
+    @GetMapping("/init-history")
+    public String initRoomHistory(
+            @RequestParam ResidenceSemester residenceSemester
+            ) {
+        roomHistoryService.initRoomHistory(residenceSemester);
+        return "방 거주기록 초기화 완료";
+    }
+
 }
 
 
