@@ -83,6 +83,10 @@ public enum ErrorCode {
     // 캘린터
     , CALENDAR_NOT_FOUND(404, "데이터가 존재하지 않습니다.")
 
+    // 알림
+    ,NOTICE_NOT_FOUND(404, "해당 알림이 존재하지 않습니다.")
+    ,NOT_CORRECT_DAY(404, "요일 정보가 잘못되었습니다. 1(월요일)에서 7(일요일) 사이의 숫자를 입력해주세요.")
+
     // 500
     , INTERNAL_SERVER_ERROR(500, "서버 오류가 발생하였습니다.");
     ;
