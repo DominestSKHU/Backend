@@ -32,7 +32,7 @@ public class RepeatScheduleController {
                 , "모든 반복일정 글을 성공적으로 불러왔습니다.", allRepeatScheduleResponses);
     }
 
-    @GetMapping("/repeat-schedule/detail/{repeatScheduleId}")
+    @GetMapping("/repeat-schedule/{repeatScheduleId}/detail")
     public RspTemplate<RepeatScheduleResponse> getRepeatScheduleById(@PathVariable Long repeatScheduleId) {
         RepeatScheduleResponse repeatScheduleByIdResponse =  repeatScheduleService.getRepeatScheduleById(repeatScheduleId);
 
