@@ -46,7 +46,7 @@ public class DateNoticeController {
                 , "유저가 작성한 모든 알림을 성공적으로 불러왔습니다.", noticeResponses);
     }
 
-    @PutMapping("/date-notices/change-apply/{id}")
+    @PutMapping("/date-notices/{id}/change-apply")
     public RspTemplate<Boolean> switchApply(@PathVariable Long id) {
         boolean changeApply =  dateNoticeService.switchDateApply(id);
 
