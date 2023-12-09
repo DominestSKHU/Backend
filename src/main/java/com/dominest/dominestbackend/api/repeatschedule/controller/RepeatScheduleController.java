@@ -25,7 +25,7 @@ public class RepeatScheduleController {
                 , "반복일정 글이 성공적으로 생성되었습니다.", createdRepeatedSchedule);
     }
 
-    @GetMapping("/all-repeat-schedule")
+    @GetMapping("/repeat-schedules")
     public RspTemplate<List<AllRepeatScheduleResponse>> getAllRepeatSchedules() { // 모든 반복일정 글
         List<AllRepeatScheduleResponse> allRepeatScheduleResponses =  repeatScheduleService.getAllRepeatSchedules();
         return new RspTemplate<>(HttpStatus.OK

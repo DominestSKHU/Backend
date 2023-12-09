@@ -42,7 +42,7 @@ public class RoomHistory extends BaseEntity {
 
     @Builder
     private RoomHistory(String residentName, LocalDate admissionDate, LocalDate leavingDate
-            , @PhoneNumber String phoneNumber, String studentId, Room room) {
+            , String phoneNumber, String studentId, Room room) {
         this.residentName = residentName;
         this.admissionDate = admissionDate;
         this.leavingDate = leavingDate;
