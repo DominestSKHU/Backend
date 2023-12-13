@@ -34,7 +34,7 @@ public class ScheduleController {
     @DeleteMapping("/schedule") // 스케줄 삭제
     public RspTemplate<Void> deleteSchedule(@RequestBody ScheduleDeleteRequest request) {
         scheduleService.deleteSchedule(request);
-        return new RspTemplate<>(HttpStatus.OK, request.getDayOfWeek()+ "의 " + request.getTimeSlot() + "시간대에 "
+        return new RspTemplate<>(HttpStatus.OK, request.getDayOfWeek().value+ "의 " + request.getTimeSlot() + "시간대에 "
                 +request.getUsername() + "님의 스케줄을 성공적으로 삭제했습니다.");
     }
 }

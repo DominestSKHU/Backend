@@ -1,13 +1,11 @@
 package com.dominest.dominestbackend.global.util;
 
-import com.dominest.dominestbackend.domain.resident.Resident;
 import com.dominest.dominestbackend.global.exception.ErrorCode;
-import com.dominest.dominestbackend.global.exception.exceptions.BusinessException;
 import com.dominest.dominestbackend.global.exception.exceptions.file.FileIOException;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,8 +20,12 @@ import java.util.stream.Stream;
 @Slf4j
 @Service
 public class FileService {
-    @Value("${file.upload.path}")// yml 설정파일
-    private String fileUploadPath;
+    // yml 설정파일
+    private final String fileUploadPath;
+
+    public FileService(@Value("${file.upload.path}")String fileUploadPath) {
+        this.fileUploadPath = fileUploadPath;
+    }
 
     /**@return save() 메서드 반환값의 리스트*/
     public List<String> save(FilePrefix prefix, List<MultipartFile> multipartFiles){
@@ -48,19 +50,22 @@ public class FileService {
             return null;
         }
         String originalFileName = multipartFile.getOriginalFilename();
-        String storedFileName = createStoredFilePath(originalFileName);
-        Path storedFilePath = Paths.get(fileUploadPath + prefix.getPrefix() + storedFileName);
+        String filenameToStore = convertFileNameToUuid(originalFileName);
+        Path filePathToStore = Paths.get(fileUploadPath + prefix.getPrefix() + filenameToStore);
 
+        saveMultipartFile(multipartFile, filePathToStore);
+        return filenameToStore;
+    }
 
-        try {
-            // transferTo()는 내부적으로 알아서 is, os close를 해준다.
-            multipartFile.transferTo(storedFilePath);
-        } catch (IOException e) {
-            log.error("IOEXCEPTION 발생: originalFile: {}, storedFilePath: {}", originalFileName, storedFilePath.toString());
-            throw new FileIOException(ErrorCode.FILE_CANNOT_BE_STORED, e);
+    public String save(FilePrefix prefix, MultipartFile multipartFile, String filenameToStore){
+        // empty Check. type=file 이며 name이 일치한다면, 본문이 비어있어도 MultiPartFile 객체가 생성된다.
+        if (multipartFile.isEmpty()) {
+            return null;
         }
+        Path filePathToStore = Paths.get(fileUploadPath + prefix.getPrefix() + filenameToStore);
 
-        return storedFileName;
+        saveMultipartFile(multipartFile, filePathToStore);
+        return filenameToStore;
     }
 
     //일단은 원래 함수를 보존하기 위해서 코드 구조가 매우 유사하지만 코드를 따로 만들었음.
@@ -92,28 +97,31 @@ public class FileService {
         Path storedFilePath = Paths.get(storedFileStr);
 
         File folder = new File(storedFileFolderStr);
-        try {
-            //폴더가 없다면 자동 생성
-            if(!folder.exists() && (!folder.mkdirs()))
-                    throw new FileIOException(ErrorCode.FOLDER_CANNOT_BE_CREATED, new IOException());
-            // transferTo()는 내부적으로 알아서 is, os close를 해준다.
-            multipartFile.transferTo(storedFilePath);
-        } catch (IOException e) {
-            log.error("IOEXCEPTION 발생: originalFile: {}, storedFilePath: {}", originalFileName, storedFilePath.toString());
-            throw new FileIOException(ErrorCode.FILE_CANNOT_BE_STORED, e);
-        }
+        if(!folder.exists() && (!folder.mkdirs()))
+            throw new FileIOException(ErrorCode.FOLDER_CANNOT_BE_CREATED, new IOException());
+        saveMultipartFile(multipartFile, storedFilePath);
 
         return storedReletiveFileStr;
     }
 
-    private String createStoredFilePath(String originalFileName) {
+    private void saveMultipartFile(MultipartFile multipartFile, Path filePathToStore) {
+        try {
+            // transferTo()는 내부적으로 알아서 is, os close를 해준다.
+            multipartFile.transferTo(filePathToStore);
+        } catch (IOException e) {
+            log.error("IOEXCEPTION 발생: originalFile: {}, filePathToStore: {}", multipartFile.getOriginalFilename(), filePathToStore);
+            throw new FileIOException(ErrorCode.FILE_CANNOT_BE_STORED, e);
+        }
+    }
+
+    private String convertFileNameToUuid(String originalFileName) {
         String uuid = UUID.randomUUID().toString();
         String ext = extractExt(originalFileName);
 
         return uuid + "." + ext;
     }
 
-    public String extractExt(String originalFileName) {
+    private String extractExt(String originalFileName) {
         int pos = originalFileName.lastIndexOf(".");
         return originalFileName.substring(pos +1);
     }
@@ -129,13 +137,7 @@ public class FileService {
 
     public byte[] getByteArr(FilePrefix filePrefix, String fileName) {
         String fullFilePath = filePrefix.getPrefix() + fileName;
-        try  {
-            Path path = Paths.get(fileUploadPath + fullFilePath);
-            return Files.readAllBytes(path);
-        } catch (IOException e) {
-            log.error("IOEXCEPTION 발생: filePrefix: {}, fileName: {}", filePrefix, fileName);
-            throw new FileIOException(ErrorCode.FILE_CANNOT_BE_READ, e);
-        }
+        return getByteArr(fullFilePath);
     }
 
     public byte[] getByteArr(String filePath) {
@@ -184,6 +186,11 @@ public class FileService {
         fileNames.forEach(fileName -> deleteFile(filePrefix, fileName));
     }
 
+    public boolean isInvalidFileExtension(String fileName, FileExt fileExt) {
+        String ext = extractExt(fileName);
+        return !ext.equals(fileExt.value);
+    }
+
     public void deleteFolder(String folderPath) {
         String folderPathToDelete = fileUploadPath + folderPath;
         Path pathToDelete = Paths.get(folderPathToDelete);
@@ -216,25 +223,23 @@ public class FileService {
         FilePrefix(String prefix) {
             this.prefix = prefix;
         }
+    }
+    @RequiredArgsConstructor
+    public enum FileExt {
+        PDF("pdf"),
+        XLSX("xlsx");
 
-        public String getPdfFileName(Resident resident) {
-            if (this.equals(RESIDENT_ADMISSION)) {
-                return resident.getAdmissionPdfFileName();
-            } else if (this.equals(RESIDENT_DEPARTURE)) {
-                return resident.getDeparturePdfFileName();
-            } else {
-                return null;
-            }
-        }
-
-        public void setPdfFileNameToResident(Resident resident, String uploadedFileName) {
-            if (this.equals(RESIDENT_ADMISSION)) {
-                resident.setAdmissionPdfFileName(uploadedFileName);
-            } else if (this.equals(RESIDENT_DEPARTURE)) {
-                resident.setDeparturePdfFileName(uploadedFileName);
-            } else { // 입사신청서, 퇴사신청서가 아닌 다른 FilePrefix 값일 때
-                throw new BusinessException("잘못된 FilePrefix 값입니다.", HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-        }
+        public final String value;
     }
 }
+
+
+
+
+
+
+
+
+
+
+

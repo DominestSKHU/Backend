@@ -170,9 +170,9 @@ public class InitDB {
         categoryRepository.save(manualCategoryNo6);
 
         ArrayList<Schedule> schedules = new ArrayList<>();
-        for (Schedule.Weekday weekday : Schedule.Weekday.values()) {
+        for (Schedule.DayOfWeek dayOfWeek : Schedule.DayOfWeek.values()) {
             for (Schedule.TimeSlot timeSlot : Schedule.TimeSlot.values()) {
-                schedules.add(Schedule.of(weekday, timeSlot));
+                schedules.add(Schedule.of(dayOfWeek, timeSlot));
             }
         }
         scheduleRepository.saveAll(schedules);

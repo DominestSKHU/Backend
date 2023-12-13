@@ -1,5 +1,6 @@
 package com.dominest.dominestbackend.api.schedule.response;
 
+import com.dominest.dominestbackend.domain.schedule.Schedule;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,6 +16,6 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 public class ScheduleInfo {
-    private String dayOfWeek;
+    private Schedule.DayOfWeek dayOfWeek;
     private List<TimeSlotInfo> timeSlotInfos;
 }

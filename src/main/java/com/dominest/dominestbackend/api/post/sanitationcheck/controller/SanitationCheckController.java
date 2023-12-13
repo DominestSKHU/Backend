@@ -17,6 +17,7 @@ import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.checkedroo
 import com.dominest.dominestbackend.domain.post.sanitationcheck.floor.checkedroom.CheckedRoomService;
 import com.dominest.dominestbackend.domain.resident.component.ResidenceSemester;
 import com.dominest.dominestbackend.global.util.ExcelUtil;
+import com.dominest.dominestbackend.global.util.FileService.FileExt;
 import com.dominest.dominestbackend.global.util.PageableUtil;
 import com.dominest.dominestbackend.global.util.PrincipalUtil;
 import lombok.Getter;
@@ -192,7 +193,7 @@ public class SanitationCheckController {
     ) {
         String postTitle = sanitationCheckPostService.getById(postId).getTitle();
 
-        String filename = postTitle + " - 벌점 부여자 명단" + ".xlsx";
+        String filename = postTitle + " - 벌점 부여자 명단" + "." + FileExt.XLSX.value;
         String sheetName = "벌점 부여자 명단";
 
         // N차 통과를 조회하려면 CheckedRoom까지 조회해야 함. Resident를 Inner Join해서 빈 방 조회를 피하자.
@@ -202,7 +203,7 @@ public class SanitationCheckController {
         List<CheckedRoom> checkedRoomsGotPenalty = checkedRoomRepository.findAllByPostIdAndNotInPassState(postId, penalty0passStates);
 
         // 파일 이름 설정
-        ExcelUtil.createAndRespondCheckedRoomData(filename, sheetName, response, checkedRoomsGotPenalty);
+        ExcelUtil.createAndRespondResidentInfoWithCheckedRoom(filename, sheetName, response, checkedRoomsGotPenalty);
     }
 
     // (엑셀 다운로드) 방호점 게시글의 특정 통과차수에 해당하는 입사생 목록
@@ -214,7 +215,7 @@ public class SanitationCheckController {
         String postTitle = sanitationCheckPostService.getById(postId).getTitle();
 
         String passStateValue = passState.getValue();
-        String filename = postTitle + " - " + passStateValue + " 명단" + ".xlsx";
+        String filename = postTitle + " - " + passStateValue + " 명단" + "." + FileExt.XLSX.value;
         String sheetName = passStateValue + "명단";
 
         // N차 통과를 조회하려면 CheckedRoom까지 조회해야 함. Resident를 Inner Join해서 빈 방 조회를 피하자.
@@ -222,7 +223,7 @@ public class SanitationCheckController {
         List<CheckedRoom> checkedRooms = checkedRoomRepository.findAllByPostIdAndPassState(postId, passState);
 
         // 파일 이름 설정
-        ExcelUtil.createAndRespondCheckedRoomData(filename, sheetName, response, checkedRooms);
+        ExcelUtil.createAndRespondResidentInfoWithCheckedRoom(filename, sheetName, response, checkedRooms);
     }
 
     // (엑셀 다운로드) 방호점 게시글의 전체 데이터
@@ -232,14 +233,14 @@ public class SanitationCheckController {
     ) {
         String postTitle = sanitationCheckPostService.getById(postId).getTitle();
 
-        String filename = postTitle + " - 점검표 전체 데이터" + ".xlsx";
+        String filename = postTitle + " - 점검표 전체 데이터" + "." + FileExt.XLSX.value;
         String sheetName = "점검표 전체 데이터";
 
         // N차 통과를 조회하려면 CheckedRoom까지 조회해야 함. Resident를 Inner Join해서 빈 방 조회를 피하자.
         List<CheckedRoom> checkedRoomsGotPenalty = checkedRoomRepository.findAllByPostId(postId);
 
         // 파일 이름 설정
-        ExcelUtil.createAndRespondAllCheckedRoomData(filename, sheetName, response, checkedRoomsGotPenalty);
+        ExcelUtil.createAndRespondAllDataWithCheckedRoom(filename, sheetName, response, checkedRoomsGotPenalty);
     }
 
 

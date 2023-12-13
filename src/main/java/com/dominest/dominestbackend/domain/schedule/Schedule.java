@@ -2,7 +2,6 @@ package com.dominest.dominestbackend.domain.schedule;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.*;
-import org.checkerframework.checker.units.qual.A;
 
 import javax.persistence.*;
 import java.util.Arrays;
@@ -17,7 +16,7 @@ public class Schedule {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    private Weekday dayOfWeek; // 요일
+    private DayOfWeek dayOfWeek; // 요일
 
     @Enumerated(EnumType.STRING)
     private TimeSlot timeSlot;  // 시간
@@ -26,25 +25,25 @@ public class Schedule {
     @Column(name = "username")
     private List<String> usernames;
 
-    private Schedule(Weekday dayOfWeek, TimeSlot timeSlot) {
+    private Schedule(DayOfWeek dayOfWeek, TimeSlot timeSlot) {
         this.dayOfWeek = dayOfWeek;
         this.timeSlot = timeSlot;
     }
 
-    public static Schedule of(Weekday dayOfWeek, TimeSlot timeSlot) {
+    public static Schedule of(DayOfWeek dayOfWeek, TimeSlot timeSlot) {
         return new Schedule(dayOfWeek, timeSlot);
     }
 
     @RequiredArgsConstructor
-    public enum Weekday {
+    public enum DayOfWeek {
         MON("월요일"), TUE("화요일"), WED("수요일"), THU("목요일"), FRI("금요일");
 
         @JsonValue
         public final String value;
 
-        public static Weekday fromString(String value) {
-            return Arrays.stream(Weekday.values())
-                    .filter(weekday -> weekday.value.equals(value))
+        public static DayOfWeek fromString(String value) {
+            return Arrays.stream(DayOfWeek.values())
+                    .filter(dayOfWeek -> dayOfWeek.value.equals(value))
                     .findFirst()
                     .orElseThrow(() -> new IllegalArgumentException("Invalid weekday value: " + value));
         }

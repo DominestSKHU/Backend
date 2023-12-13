@@ -6,6 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
-    Optional<Schedule> findByDayOfWeekAndTimeSlot(Schedule.Weekday dayOfWeek, Schedule.TimeSlot timeSlot);
+    Optional<Schedule> findByDayOfWeekAndTimeSlot(Schedule.DayOfWeek dayOfWeek, Schedule.TimeSlot timeSlot);
 
 }
