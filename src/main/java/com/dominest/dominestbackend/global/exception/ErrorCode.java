@@ -13,6 +13,7 @@ public enum ErrorCode {
     EMAIL_ALREADY_REGISTERED(409, "이미 가입된 이메일입니다."),
     EMAIL_CANNOT_BE_SENT(500, "이메일을 보낼 수 없습니다."),
     EMAIL_VERIFICATION_CODE_NOT_FOUND(400, "이메일 인증 코드가 존재하지 않습니다."),
+    EMAIL_CANNOT_BE_CREATED(500, "이메일을 생성할 수 없습니다."),
 
     // 인증 - 로그인 시도
     MISMATCHED_SIGNIN_INFO(400, "잘못된 로그인 정보입니다."),

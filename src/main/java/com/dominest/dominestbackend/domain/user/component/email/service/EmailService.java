@@ -2,6 +2,8 @@ package com.dominest.dominestbackend.domain.user.component.email.service;
 
 import com.dominest.dominestbackend.domain.user.User;
 import com.dominest.dominestbackend.domain.user.repository.UserRepository;
+import com.dominest.dominestbackend.global.exception.ErrorCode;
+import com.dominest.dominestbackend.global.exception.exceptions.AppServiceException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -24,15 +26,10 @@ public class EmailService {
 
 
     // 회원가입 메일 양식 작성
-    private MimeMessage createJoinMessage(String email) throws MessagingException{
+    private MimeMessage createJoinMessage(String email) {
         String authNum = emailVerificationService.generateCode(email);
         String setFrom = "gjwldud0719@naver.com";
         String title = "회원가입 인증 번호";
-
-        MimeMessage message = emailSender.createMimeMessage();
-        message.addRecipients(MimeMessage.RecipientType.TO, email); // 보내는 대상
-        message.setSubject(title);
-        message.setFrom(setFrom);
         String n = "";
         n += "<div style='display: flex; width: 100%; min-height: 100%; text-align: center; justify-content: center; background-color: #f0f0f0;'>";
         n += "<div style='display: flex; width: 80%; padding-top: 5%; background-color: white; text-align: left; justify-content: center;'>";
@@ -66,8 +63,15 @@ public class EmailService {
         n += "</div>";
         n += "</div>";
 
-
-        message.setText(n,"utf-8", "html");
+        MimeMessage message = emailSender.createMimeMessage();
+        try {
+            message.addRecipients(MimeMessage.RecipientType.TO, email); // 보내는 대상
+            message.setSubject(title);
+            message.setFrom(setFrom);
+            message.setText(n,"utf-8", "html");
+        } catch (MessagingException e) {
+            throw new AppServiceException(ErrorCode.EMAIL_CANNOT_BE_CREATED, e);
+        }
         return message;
     }
 
@@ -119,7 +123,7 @@ public class EmailService {
         return message;
     }
 
-    private MimeMessage createChangeMessage(String email) throws MessagingException { // 임시 비밀번호 발송 메일 만들기
+    private MimeMessage createChangeMessage(String email)  { // 임시 비밀번호 발송 메일 만들기
         String authNum = emailVerificationService.generateCode(email);
 
         Optional<User> user = userRepository.findByEmail(email);
@@ -132,11 +136,6 @@ public class EmailService {
 
         String setFrom = "gjwldud0719@naver.com";
         String title = "임시 비밀번호";
-
-        MimeMessage message = emailSender.createMimeMessage();
-        message.addRecipients(MimeMessage.RecipientType.TO, email); // 보내는 대상
-        message.setSubject(title);
-        message.setFrom(setFrom);
         String n = "";
         n += "<div style='display: flex; width: 100%; min-height: 100%; text-align: center; justify-content: center; background-color: #f0f0f0;'>";
         n += "<div style='display: flex; width: 80%; padding-top: 5%; background-color: white; text-align: left; justify-content: center;'>";
@@ -169,28 +168,35 @@ public class EmailService {
         n += "</div>";
         n += "</div>";
 
-        message.setText(n, "utf-8", "html");
+        MimeMessage message = emailSender.createMimeMessage();
+        try {
+            message.addRecipients(MimeMessage.RecipientType.TO, email); // 보내는 대상
+            message.setSubject(title);
+            message.setFrom(setFrom);
+            message.setText(n, "utf-8", "html");
+        } catch (MessagingException e) {
+            throw new AppServiceException(ErrorCode.EMAIL_CANNOT_BE_CREATED, e);
+        }
+
         return message;
     }
 
 
-    public void sendJoinMessage(String email) throws Exception{ // 회원가입 메일 발송
+    public void sendJoinMessage(String email) { // 회원가입 메일 발송
         MimeMessage message = createJoinMessage(email);
         try{
             emailSender.send((message));
-        } catch(MailException es){
-            es.printStackTrace();
-            throw new IllegalArgumentException();
+        } catch(MailException e){
+            throw new AppServiceException(ErrorCode.EMAIL_CANNOT_BE_SENT, e);
         }
     }
 
-    public void sendChangeMessage(String email) throws Exception{ // 임시 비밀번호
+    public void sendChangeMessage(String email) { // 임시 비밀번호
         MimeMessage message = createChangeMessage(email);
         try{
             emailSender.send((message));
-        } catch(MailException es){
-            es.printStackTrace();
-            throw new IllegalArgumentException();
+        } catch(MailException e){
+            throw new AppServiceException(ErrorCode.EMAIL_CANNOT_BE_SENT, e);
         }
     }
 }
