@@ -1,8 +1,8 @@
-package com.dominest.dominestbackend.domain.email.controller;
+package com.dominest.dominestbackend.api.user.component.email.controller;
 
-import com.dominest.dominestbackend.domain.email.request.EmailRequest;
-import com.dominest.dominestbackend.domain.email.service.EmailService;
-import com.dominest.dominestbackend.domain.email.service.EmailVerificationService;
+import com.dominest.dominestbackend.api.user.component.email.request.EmailRequest;
+import com.dominest.dominestbackend.domain.user.component.email.service.EmailService;
+import com.dominest.dominestbackend.domain.user.component.email.service.EmailVerificationService;
 import com.dominest.dominestbackend.global.apiResponse.ApiResponseDto;
 import com.dominest.dominestbackend.global.apiResponse.ErrorStatus;
 import com.dominest.dominestbackend.global.apiResponse.SuccessStatus;

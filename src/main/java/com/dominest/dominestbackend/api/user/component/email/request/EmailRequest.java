@@ -1,4 +1,4 @@
-package com.dominest.dominestbackend.domain.email.request;
+package com.dominest.dominestbackend.api.user.component.email.request;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

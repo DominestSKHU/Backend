@@ -1,4 +1,4 @@
-package com.dominest.dominestbackend.domain.email.service;
+package com.dominest.dominestbackend.domain.user.component.email.service;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
