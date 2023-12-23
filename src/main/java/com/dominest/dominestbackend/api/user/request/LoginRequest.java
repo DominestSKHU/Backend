@@ -1,4 +1,4 @@
-package com.dominest.dominestbackend.api.admin.request;
+package com.dominest.dominestbackend.api.user.request;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -8,9 +8,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Getter
-public class ChangePasswordRequest {
+public class LoginRequest {
+    private String email;
 
     private String password;
-
-    private String newPassword;
 }

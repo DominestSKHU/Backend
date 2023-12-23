@@ -1,4 +1,4 @@
-package com.dominest.dominestbackend.api.admin.request;
+package com.dominest.dominestbackend.api.user.request;
 
 import com.dominest.dominestbackend.global.validation.PhoneNumber;
 import lombok.AccessLevel;

@@ -1,8 +1,8 @@
 package com.dominest.dominestbackend.domain.user.service;
 
 
-import com.dominest.dominestbackend.api.admin.request.JoinRequest;
-import com.dominest.dominestbackend.api.admin.response.JoinResponse;
+import com.dominest.dominestbackend.api.user.request.JoinRequest;
+import com.dominest.dominestbackend.api.user.response.JoinResponse;
 import com.dominest.dominestbackend.domain.jwt.dto.TokenDto;
 import com.dominest.dominestbackend.domain.jwt.service.TokenManager;
 import com.dominest.dominestbackend.domain.user.User;

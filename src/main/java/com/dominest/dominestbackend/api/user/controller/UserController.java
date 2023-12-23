@@ -1,9 +1,9 @@
-package com.dominest.dominestbackend.api.admin.controller;
+package com.dominest.dominestbackend.api.user.controller;
 
-import com.dominest.dominestbackend.api.admin.request.ChangePasswordRequest;
-import com.dominest.dominestbackend.api.admin.request.JoinRequest;
-import com.dominest.dominestbackend.api.admin.request.LoginRequest;
-import com.dominest.dominestbackend.api.admin.response.JoinResponse;
+import com.dominest.dominestbackend.api.user.request.ChangePasswordRequest;
+import com.dominest.dominestbackend.api.user.request.JoinRequest;
+import com.dominest.dominestbackend.api.user.request.LoginRequest;
+import com.dominest.dominestbackend.api.user.response.JoinResponse;
 import com.dominest.dominestbackend.api.common.RspTemplate;
 import com.dominest.dominestbackend.api.schedule.response.UserScheduleResponse;
 import com.dominest.dominestbackend.api.todo.response.TodoUserResponse;

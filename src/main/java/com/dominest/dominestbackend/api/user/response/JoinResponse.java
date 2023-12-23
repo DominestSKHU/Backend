@@ -1,4 +1,4 @@
-package com.dominest.dominestbackend.api.admin.response;
+package com.dominest.dominestbackend.api.user.response;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
