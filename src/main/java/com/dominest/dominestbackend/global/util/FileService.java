@@ -93,7 +93,7 @@ public class FileService {
         String originalFileName = multipartFile.getOriginalFilename();
         String storedFileFolderStr = fileUploadPath + subPath + prefix.getPrefix(); // 절대경로
         String storedFileStr = storedFileFolderStr + originalFileName; // 절대경로
-        String storedReletiveFileStr = subPath + prefix.getPrefix() + originalFileName; // 상대경로
+        String storedRelativeFileStr = subPath + prefix.getPrefix() + originalFileName; // 상대경로
         Path storedFilePath = Paths.get(storedFileStr);
 
         File folder = new File(storedFileFolderStr);
@@ -101,7 +101,7 @@ public class FileService {
             throw new FileIOException(ErrorCode.FOLDER_CANNOT_BE_CREATED, new IOException());
         saveMultipartFile(multipartFile, storedFilePath);
 
-        return storedReletiveFileStr;
+        return storedRelativeFileStr;
     }
 
     private void saveMultipartFile(MultipartFile multipartFile, Path filePathToStore) {
