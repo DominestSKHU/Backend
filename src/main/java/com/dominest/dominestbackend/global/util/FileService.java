@@ -98,7 +98,7 @@ public class FileService {
 
         File folder = new File(storedFileFolderStr);
         if(!folder.exists() && (!folder.mkdirs()))
-            throw new FileIOException(ErrorCode.FOLDER_CANNOT_BE_CREATED, new IOException());
+            throw new FileIOException(ErrorCode.FOLDER_CANNOT_BE_CREATED);
         saveMultipartFile(multipartFile, storedFilePath);
 
         return storedRelativeFileStr;
