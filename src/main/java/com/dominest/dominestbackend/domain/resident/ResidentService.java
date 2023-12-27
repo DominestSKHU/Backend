@@ -44,11 +44,12 @@ public class ResidentService {
         }
 
         Resident resident = findById(id);
+        String fileNameToUpload = resident.generatePdfFileNameToStore();
 
-        String uploadedFilename = fileService.save(filePrefix, pdf, resident.generatePdfFileNameToStore());
+        fileService.save(filePrefix, pdf, fileNameToUpload);
 
         String prevFilename = residentFileManager.getPdfFilename(resident, filePrefix);
-        residentFileManager.setPdfFilenameToResident(resident, filePrefix, uploadedFilename);
+        residentFileManager.setPdfFilenameToResident(resident, filePrefix, fileNameToUpload);
 
         if (prevFilename != null)
             fileService.deleteFile(filePrefix, prevFilename);
@@ -79,10 +80,11 @@ public class ResidentService {
                 continue;
             }
 
-            String uploadedFilename = fileService.save(filePrefix, pdf, resident.generatePdfFileNameToStore());
+            String fileNameToUpload = resident.generatePdfFileNameToStore();
+            fileService.save(filePrefix, pdf, fileNameToUpload);
 
             String prevFilename = residentFileManager.getPdfFilename(resident, filePrefix);
-            residentFileManager.setPdfFilenameToResident(resident, filePrefix, uploadedFilename);
+            residentFileManager.setPdfFilenameToResident(resident, filePrefix, fileNameToUpload);
 
             res.addToDtoList(filename, "OK", null);
             res.addSuccessCount();

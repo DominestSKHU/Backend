@@ -40,7 +40,7 @@ public enum ErrorCode {
     FILE_CANNOT_BE_STORED(500, "파일을 저장할 수 없습니다."),
     FILE_CANNOT_BE_READ(500, "파일을 읽을 수 없습니다."),
     FILE_CANNOT_BE_SENT(500, "읽어들인 파일을 전송할 수 없습니다"),
-    MULTIPART_FILE_CANNOT_BE_READ(500, "파일을 읽을 수 없습니다."),
+    MULTIPART_FILE_CANNOT_BE_READ(500, "업로드한 파일을 읽을 수 없습니다."),
     NO_FILE_UPLOADED(400, "파일명과 현재 입사자 이름이 일치하지 않아 파일이 업로드되지 않았습니다."),
     FILE_NOT_FOUND(400, "해당 파일이 존재하지 않습니다."),
     FILE_CANNOT_BE_DELETED(500, "파일을 삭제할 수 없습니다."),

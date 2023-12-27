@@ -30,42 +30,43 @@ public class FileService {
     /**@return save() 메서드 반환값의 리스트*/
     public List<String> save(FilePrefix prefix, List<MultipartFile> multipartFiles){
         List<String> storedFilePaths = new ArrayList<>();
-        if(multipartFiles == null ) return storedFilePaths;
+        if (multipartFiles == null) {
+            return storedFilePaths;
+        }
+
         for (MultipartFile multipartFile : multipartFiles) {
-            String storedFilePath = save(prefix, multipartFile);
-            if (storedFilePath == null) {
-                log.warn("save() 메서드 null 반환, 파일이 비어있을 수 있음.");
-                continue;
-            }
-            storedFilePaths.add(storedFilePath);
+            Optional<String> storedFilePath = save(prefix, multipartFile);
+            storedFilePath.ifPresentOrElse(
+                    storedFilePaths::add,
+                    () -> log.warn("save() 메서드 Empty Optional 반환, 파일이 비어있을 수 있음.")
+            );
         }
         // 저장한 파일의 경로 리스트를 반환한다.
         return storedFilePaths;
     }
 
     /**@return "저장된 파일명 UUID" + ".확장자". */
-    public String save(FilePrefix prefix, MultipartFile multipartFile){
+    public Optional<String> save(FilePrefix prefix, MultipartFile multipartFile){
         // empty Check. type=file 이며 name이 일치한다면, 본문이 비어있어도 MultiPartFile 객체가 생성된다.
         if (multipartFile.isEmpty()) {
-            return null;
+            return Optional.empty();
         }
         String originalFileName = multipartFile.getOriginalFilename();
         String filenameToStore = convertFileNameToUuid(originalFileName);
         Path filePathToStore = Paths.get(fileUploadPath + prefix.getPrefix() + filenameToStore);
 
         saveMultipartFile(multipartFile, filePathToStore);
-        return filenameToStore;
+        return Optional.of(filenameToStore);
     }
 
-    public String save(FilePrefix prefix, MultipartFile multipartFile, String filenameToStore){
+    public void save(FilePrefix prefix, MultipartFile multipartFile, String filenameToStore){
         // empty Check. type=file 이며 name이 일치한다면, 본문이 비어있어도 MultiPartFile 객체가 생성된다.
         if (multipartFile.isEmpty()) {
-            return null;
+            throw new FileIOException(ErrorCode.MULTIPART_FILE_CANNOT_BE_READ);
         }
         Path filePathToStore = Paths.get(fileUploadPath + prefix.getPrefix() + filenameToStore);
 
         saveMultipartFile(multipartFile, filePathToStore);
-        return filenameToStore;
     }
 
     //일단은 원래 함수를 보존하기 위해서 코드 구조가 매우 유사하지만 코드를 따로 만들었음.
@@ -152,19 +153,6 @@ public class FileService {
 
     public void deleteFile(FilePrefix filePrefix, String fileName) {
         deleteFile(filePrefix.getPrefix()+fileName);
-        /*String filePathToDelete = fileUploadPath + filePrefix.getPrefix() + fileName;
-        Path pathToDelete = Paths.get(filePathToDelete);
-
-        // NotNull 이므로 예외를 발생시키지 않고 바로 빠져나온다.
-        // 파일을 찾을 수 없다면 지울 수도 없으므로 작업 취소. DB파일명은 그대로인데 물리적인 파일만 삭제했을 경우를 대비한다.
-        if (! Files.exists(pathToDelete))
-            return;
-
-        try {
-            Files.delete(pathToDelete);
-        } catch (IOException e) {
-            throw new FileIOException(ErrorCode.FILE_CANNOT_BE_DELETED, e);
-        }*/
     }
 
     public void deleteFile(String filePath) {
@@ -173,7 +161,6 @@ public class FileService {
 
         // NotNull 이므로 예외를 발생시키지 않고 바로 빠져나온다.
         // 파일을 찾을 수 없다면 지울 수도 없으므로 작업 취소. DB파일명은 그대로인데 물리적인 파일만 삭제했을 경우를 대비한다.
-
         if(!Files.exists(pathToDelete)) return;
         try {
             Files.delete(pathToDelete);
